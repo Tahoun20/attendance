@@ -242,7 +242,17 @@ async function initFirebase(){
     // Load data
     await loadAllData();
     // Real-time listeners
-    DB.collection('attendance').onSnapshot(snap=>{att={};snap.forEach(d=>{att[d.id]=d.data()});if(user)refreshDash()});
+    DB.collection('attendance').onSnapshot(snap=>{
+      att={};
+      snap.forEach(d=>{
+        const raw=d.data();att[d.id]={};
+        Object.keys(raw).forEach(k=>{
+          if(k.includes('__')){const[cid,sid]=k.split('__');if(!att[d.id][cid])att[d.id][cid]={};att[d.id][cid][sid]=raw[k]}
+          else if(typeof raw[k]==='object'){att[d.id][k]=raw[k]}
+        });
+      });
+      if(user)refreshDash();
+    });
     DB.collection('teacherAttendance').onSnapshot(snap=>{tatt={};snap.forEach(d=>{tatt[d.id]=d.data()})});
     DB.collection('activityLog').orderBy('ts','desc').limit(30).onSnapshot(snap=>{logs=[];snap.forEach(d=>logs.push(d.data()));if(user)refreshDash()});
     DB.collection('appData').doc('main').onSnapshot(doc=>{if(doc.exists){const d=doc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}});
@@ -255,7 +265,14 @@ async function loadAllData(){
     const mainDoc=await DB.collection('appData').doc('main').get();
     if(mainDoc.exists){const d=mainDoc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}
     else{await DB.collection('appData').doc('main').set({classes,teachers,users})}
-    const aSnap=await DB.collection('attendance').get();att={};aSnap.forEach(d=>{att[d.id]=d.data()});
+    const aSnap=await DB.collection('attendance').get();att={};
+    aSnap.forEach(d=>{
+      const raw=d.data();att[d.id]={};
+      Object.keys(raw).forEach(k=>{
+        if(k.includes('__')){const[cid,sid]=k.split('__');if(!att[d.id][cid])att[d.id][cid]={};att[d.id][cid][sid]=raw[k]}
+        else if(typeof raw[k]==='object'){att[d.id][k]=raw[k]}  // legacy nested
+      });
+    });
     const tSnap=await DB.collection('teacherAttendance').get();tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
     const lSnap=await DB.collection('activityLog').orderBy('ts','desc').limit(30).get();logs=[];lSnap.forEach(d=>logs.push(d.data()));
   }catch(e){console.error('Load:',e)}
@@ -266,10 +283,15 @@ async function fbSaveAtt(date){
   if(!DB)return;
   try{
     if(att[date]){
-      // Ensure nested structure: {classId: {studentId: status}}
-      const clean={};
-      Object.keys(att[date]).forEach(k=>{if(typeof att[date][k]==='object')clean[k]=att[date][k]});
-      await DB.collection('attendance').doc(date).set(clean);
+      // Save as flat keys: "classId__studentId"=status  (Firestore safe)
+      const flat={};
+      Object.keys(att[date]).forEach(cid=>{
+        const cv=att[date][cid];
+        if(typeof cv==='object'){
+          Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]});
+        }
+      });
+      await DB.collection('attendance').doc(date).set(flat);
     }
     if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
   }catch(e){console.error(e)}
@@ -311,8 +333,16 @@ function go(pg,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remo
 // ===== DASHBOARD =====
 function refreshDash(){
   const td=today(),ts=classes.reduce((s,c)=>s+c.students.length,0),to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
-  const ta=att[td]||{};let pr=0,ab=0;Object.values(ta).forEach(v=>{if(typeof v==='object')Object.values(v).forEach(x=>{if(x==='present')pr++;else if(x==='absent')ab++})});
-  $('ds').innerHTML=[{i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},{i:'✅',n:pr,l:'Present Today',c:'gn'},{i:'❌',n:ab,l:'Absent Today',c:'rd'},{i:'💜',n:to,l:'Orphans',c:'pp'}].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
+  const ta=att[td]||{};let pr=0,ab=0,opr=0,oab=0;
+  // Build a set of orphan IDs for quick lookup
+  const orphanIds=new Set();classes.forEach(c=>c.students.forEach(s=>{if(s.o)orphanIds.add(s.id)}));
+  classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;if(s.o)opr++;}else if(v==='absent'){ab++;if(s.o)oab++;}})});
+  $('ds').innerHTML=[
+    {i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},
+    {i:'✅',n:pr,l:'Present Today',c:'gn'},
+    {i:'❌',n:ab,l:'Absent Today',c:'rd'},
+    {i:'💜',n:`${to}<span style="font-size:11px;display:block;font-weight:600;color:var(--ok-d)">✅${opr} ❌${oab}</span>`,l:'Orphans Today',c:'pp'}
+  ].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
   $('al').innerHTML=logs.length===0?'<p style="text-align:center;padding:16px">No activity yet</p>':logs.slice(0,15).map(l=>{
     const t=l.ts?new Date(l.ts):null;const tm=t?t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
     const ic=l.role==='admin'?'👨‍💼':'👨‍🏫';
@@ -364,28 +394,48 @@ function rptS(y,mn,dm,cf,tp){
     if(tp==='orphans')st=st.filter(s=>s.o);
     else if(tp==='nonorphans')st=st.filter(s=>!s.o);
     st.forEach(s=>{
-      let p=0,a=0;
+      let p=0,a=0,school=0;
       for(let d=1;d<=dm;d++){
         const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
         const dy=new Date(y,mn-1,d).getDay();
-        if(dy===5||dy===6)continue;
+        if(dy===5||dy===6)continue; // skip Fri/Sat
+        if(new Date(ds)>new Date())continue; // skip future
         const dayData=att[ds];
         if(!dayData)continue;
-        // Support nested {classId:{studentId:val}} and flat {classId.studentId:val}
-        let val=undefined;
-        if(dayData[c.id]&&typeof dayData[c.id]==='object'){val=dayData[c.id][s.id]}
-        else{val=dayData[c.id+'.'+s.id]}
+        school++; // this day has some record
+        // att is always nested after our fix: att[date][classId][studentId]
+        const val=(dayData[c.id]||{})[s.id];
         if(val==='present')p++;
         else if(val==='absent')a++;
       }
-      const tt=p+a,pc=tt>0?Math.round(p/tt*100):'-';
+      const tt=p+a,pc=tt>0?Math.round(p/tt*100):null;
       rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o});
     });
   });
-  const label=tp==='orphans'?'💜 Orphans':tp==='nonorphans'?'👤 Non-Orphans':'All Students';
+  // summary stats
+  const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;
+  const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;
+  const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
   $('ro').innerHTML=rows.length===0
-    ?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No attendance data found for this period</div>`
-    :`<div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${rows.length} students</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.tt>0?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:11px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`
+    ?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found for this filter</div>`
+    :`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div>
+        <div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div>
+        <div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div>
+      </div>
+      <div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students</div>
+      <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead>
+      <tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}">
+        <td style="color:var(--txt2)">${i+1}</td>
+        <td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td>
+        <td style="font-size:10px">${r.cn}</td>
+        <td style="color:var(--ok);font-weight:700">${r.p}</td>
+        <td style="color:var(--err);font-weight:700">${r.a}</td>
+        <td style="color:var(--txt2)">${r.tt}</td>
+        <td>${r.pc!==null
+          ?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`
+          :'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td>
+      </tr>`).join('')}</tbody></table></div>`
 }
 function rptT(y,mn,dm){
   let rows=[];teachers.forEach(t=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const x=(tatt[ds]||{})[t.id];if(x==='present')p++;else if(new Date(ds)<new Date(today()))a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:t.name,p,a,pc})});
