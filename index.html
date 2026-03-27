@@ -154,7 +154,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="pg on" id="pgD">
     <div class="st">📊 Dashboard</div>
     <div class="sg" id="ds"></div>
-    <div class="card" id="alCard"><div style="font-weight:700;margin-bottom:10px">📋 Activity Log</div><div id="al" style="font-size:12px;color:var(--txt2)"></div></div>
+    <div class="card" id="absentCard" style="display:none">
+      <div style="font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px">❌ Absent Today <span id="absentCount" style="background:var(--err);color:#fff;border-radius:20px;padding:1px 9px;font-size:12px"></span></div>
+      <div id="absentList"></div>
+    </div>
+    <div class="card"><div style="font-weight:700;margin-bottom:10px">📋 Activity Log</div><div id="al" style="font-size:12px;color:var(--txt2)"></div></div>
   </div>
 
   <div class="pg" id="pgA">
@@ -186,7 +190,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="bnav">
     <button class="ni on" onclick="go('D',this)"><span class="ic">📊</span>Home</button>
     <button class="ni" onclick="go('A',this)"><span class="ic">✅</span>Attend</button>
-    <button class="ni" id="nR" onclick="go('R',this)"><span class="ic">📈</span>Reports</button>
+    <button class="ni" onclick="go('R',this)"><span class="ic">📈</span>Reports</button>
     <button class="ni" id="nM" style="display:none" onclick="go('M',this)"><span class="ic">⚙️</span>Admin</button>
   </div>
 </div>
@@ -262,18 +266,7 @@ async function loadAllData(){
 }
 
 async function fbSaveMain(){if(!DB)return;try{await DB.collection('appData').doc('main').set({classes,teachers,users})}catch(e){console.error(e)}}
-async function fbSaveAtt(date){
-  if(!DB)return;
-  try{
-    if(att[date]){
-      // Ensure nested structure: {classId: {studentId: status}}
-      const clean={};
-      Object.keys(att[date]).forEach(k=>{if(typeof att[date][k]==='object')clean[k]=att[date][k]});
-      await DB.collection('attendance').doc(date).set(clean);
-    }
-    if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
-  }catch(e){console.error(e)}
-}
+async function fbSaveAtt(date){if(!DB)return;try{if(att[date])await DB.collection('attendance').doc(date).set(att[date]);if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date])}catch(e){console.error(e)}}
 async function fbLog(action,detail){
   if(!DB)return;
   try{await DB.collection('activityLog').add({user:user?user.n:'?',username:user?user.u:'?',role:user?user.r:'?',action,detail,ts:new Date().toISOString()})}catch(e){console.error(e)}
@@ -289,17 +282,10 @@ function doLogin(){
   fbLog('login','Logged in');
   showApp();
 }
-function doLogout(){user=null;clearSession();$('app').style.display='none';$('lp').style.display='flex';$('un').value='';$('pw').value='';$('le').style.display='none';$('nM').style.display='none';$('nR').style.display='';}
+function doLogout(){user=null;clearSession();$('app').style.display='none';$('lp').style.display='flex';$('un').value='';$('pw').value='';$('le').style.display='none';$('nM').style.display='none'}
 function showApp(){
   $('lp').style.display='none';$('app').style.display='block';$('ub').textContent=user.n;
-  if(user.r==='admin'){
-    $('nM').style.display='';$('pgM').style.display='';
-    $('nR').style.display='';$('pgR').style.display='';
-    $('alCard').style.display='block';
-  } else {
-    $('nR').style.display='none';
-    $('alCard').style.display='none';
-  }
+  if(user.r==='admin'){$('nM').style.display='';$('pgM').style.display=''}
   $('ad').value=today();renderCS();refreshDash();initFilters();if(user.r==='admin')renderAdmin();
 }
 
@@ -313,6 +299,31 @@ function refreshDash(){
   const td=today(),ts=classes.reduce((s,c)=>s+c.students.length,0),to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
   const ta=att[td]||{};let pr=0,ab=0;Object.values(ta).forEach(v=>{if(typeof v==='object')Object.values(v).forEach(x=>{if(x==='present')pr++;else if(x==='absent')ab++})});
   $('ds').innerHTML=[{i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},{i:'✅',n:pr,l:'Present Today',c:'gn'},{i:'❌',n:ab,l:'Absent Today',c:'rd'},{i:'💜',n:to,l:'Orphans',c:'pp'}].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
+  // Absent students breakdown
+  let absentRows=[];
+  classes.forEach(c=>{
+    const da=(ta[c.id])||{};
+    c.students.forEach(s=>{if(da[s.id]==='absent')absentRows.push({name:s.name,cls:c.name,o:s.o})});
+  });
+  const abCard=$('absentCard');
+  if(absentRows.length>0){
+    abCard.style.display='block';
+    $('absentCount').textContent=absentRows.length;
+    const abOrph=absentRows.filter(r=>r.o).length;
+    $('absentList').innerHTML=
+      `<div style="display:flex;gap:8px;margin-bottom:10px;font-size:12px;font-weight:700">
+        <span style="background:#FEE;color:var(--err);padding:3px 10px;border-radius:20px">❌ Regular: ${absentRows.length-abOrph}</span>
+        <span style="background:var(--orp-l);color:var(--orp);padding:3px 10px;border-radius:20px">💜 Orphans: ${abOrph}</span>
+      </div>`+
+      absentRows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--rs);margin-bottom:5px;background:${r.o?'var(--orp-l)':'#FEE'};border-left:3px solid ${r.o?'var(--orp)':'var(--err)'}">
+        <span style="font-size:15px">${r.o?'💜':'❌'}</span>
+        <span style="flex:1;font-weight:600;font-size:13px">${r.name}</span>
+        <span style="font-size:11px;color:var(--txt2);font-weight:600">${r.cls}</span>
+        ${r.o?'<span style="background:var(--orp);color:#fff;border-radius:8px;padding:1px 7px;font-size:10px;font-weight:700">Orphan</span>':''}
+      </div>`).join('');
+  } else {
+    abCard.style.display='none';
+  }
   $('al').innerHTML=logs.length===0?'<p style="text-align:center;padding:16px">No activity yet</p>':logs.slice(0,15).map(l=>{
     const t=l.ts?new Date(l.ts):null;const tm=t?t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
     const ic=l.role==='admin'?'👨‍💼':'👨‍🏫';
@@ -331,10 +342,10 @@ function renderSL(){
   const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
   let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
   $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
-    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
+    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button><button class="ab ${v==='late'?'l':''}" onclick="setAt('${s.id}','late',this)">⏰</button></div></div>`}).join('')
 }
 
-function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}}
+function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':st==='absent'?'a':'l')}}
 
 function mAll(st){const c=classes.find(x=>x.id===selCl);if(!c)return;const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);ss.forEach(s=>{att[dt][selCl][s.id]=st});renderSL()}
 
@@ -359,9 +370,8 @@ function doReport(){const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;con
 
 function rptS(y,mn,dm,cf,oo){
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
-  cl.forEach(c=>{let st=c.students;if(oo)st=st.filter(s=>s.o);st.forEach(s=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const dayData=att[ds];if(!dayData)continue;// Support both nested {classId:{studentId:val}} and flat {classId.studentId:val}
-const val=dayData[c.id]?dayData[c.id][s.id]:dayData[c.id+'.'+s.id];if(val==='present')p++;else if(val==='absent')a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:s.name,cn:c.name,p,a,pc,o:s.o})})});
-  $('ro').innerHTML=rows.length===0?'<div class="card" style="text-align:center;padding:24px">No data</div>':`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Name</th><th>Class</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.o?'or':''}"><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td>${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+  cl.forEach(c=>{let st=c.students;if(oo)st=st.filter(s=>s.o);st.forEach(s=>{let p=0,a=0,l=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const x=(att[ds]||{})[c.id];if(x){if(x[s.id]==='present')p++;else if(x[s.id]==='absent')a++;else if(x[s.id]==='late')l++}}const tt=p+a+l,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:s.name,cn:c.name,p,a,l,pc,o:s.o})})});
+  $('ro').innerHTML=rows.length===0?'<div class="card" style="text-align:center;padding:24px">No data</div>':`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Name</th><th>Class</th><th>P</th><th>A</th><th>L</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.o?'or':''}"><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td>${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--warn);font-weight:700">${r.l}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
 }
 function rptT(y,mn,dm){
   let rows=[];teachers.forEach(t=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const x=(tatt[ds]||{})[t.id];if(x==='present')p++;else if(new Date(ds)<new Date(today()))a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:t.name,p,a,pc})});
