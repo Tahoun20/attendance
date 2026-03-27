@@ -195,6 +195,33 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div class="toast" id="tst"></div>
 
 <script>
+// Parse Firestore attendance doc - handles ALL formats:
+// 1. New flat:    { "c1__s1": "present" }
+// 2. Old nested:  { "c1": { "s1": "present" } }  (Firestore map type)
+// 3. Old dot:     { "c1.s1": "present" }
+function parseAttDoc(raw){
+  const out={};
+  Object.keys(raw).forEach(k=>{
+    const v=raw[k];
+    if(k.includes('__')){
+      // Format 1: flat with double underscore
+      const sep=k.indexOf('__');
+      const cid=k.slice(0,sep),sid=k.slice(sep+2);
+      if(!out[cid])out[cid]={};out[cid][sid]=v;
+    } else if(k.includes('.')&&!k.startsWith('.')){
+      // Format 3: dot separated
+      const[cid,...rest]=k.split('.');
+      const sid=rest.join('.');
+      if(!out[cid])out[cid]={};out[cid][sid]=v;
+    } else if(v&&typeof v==='object'&&!Array.isArray(v)){
+      // Format 2: nested map
+      if(!out[k])out[k]={};
+      Object.keys(v).forEach(sid=>{out[k][sid]=v[sid]});
+    }
+  });
+  return out;
+}
+
 // ===== FIREBASE (loaded inline to avoid CDN issues in artifacts) =====
 let DB=null,firebaseReady=false;
 
@@ -244,13 +271,7 @@ async function initFirebase(){
     // Real-time listeners
     DB.collection('attendance').onSnapshot(snap=>{
       att={};
-      snap.forEach(d=>{
-        const raw=d.data();att[d.id]={};
-        Object.keys(raw).forEach(k=>{
-          if(k.includes('__')){const[cid,sid]=k.split('__');if(!att[d.id][cid])att[d.id][cid]={};att[d.id][cid][sid]=raw[k]}
-          else if(typeof raw[k]==='object'){att[d.id][k]=raw[k]}
-        });
-      });
+      snap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
       if(user)refreshDash();
     });
     DB.collection('teacherAttendance').onSnapshot(snap=>{tatt={};snap.forEach(d=>{tatt[d.id]=d.data()})});
@@ -266,13 +287,7 @@ async function loadAllData(){
     if(mainDoc.exists){const d=mainDoc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}
     else{await DB.collection('appData').doc('main').set({classes,teachers,users})}
     const aSnap=await DB.collection('attendance').get();att={};
-    aSnap.forEach(d=>{
-      const raw=d.data();att[d.id]={};
-      Object.keys(raw).forEach(k=>{
-        if(k.includes('__')){const[cid,sid]=k.split('__');if(!att[d.id][cid])att[d.id][cid]={};att[d.id][cid][sid]=raw[k]}
-        else if(typeof raw[k]==='object'){att[d.id][k]=raw[k]}  // legacy nested
-      });
-    });
+    aSnap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
     const tSnap=await DB.collection('teacherAttendance').get();tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
     const lSnap=await DB.collection('activityLog').orderBy('ts','desc').limit(30).get();logs=[];lSnap.forEach(d=>logs.push(d.data()));
   }catch(e){console.error('Load:',e)}
