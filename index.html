@@ -163,11 +163,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="cs" id="csel"></div>
     <div id="acon" style="display:none">
       <div class="ft" id="sf"></div>
-      <div class="mar">
-        <button class="mab g" onclick="mAll('present')">✓ All Present</button>
-        <button class="mab r" onclick="mAll('absent')">✕ All Absent</button>
-        <button class="mab" style="color:var(--orp)" onclick="mOrphansAbsent()">💜 Orphans Absent</button>
-      </div>
+      <div class="mar"><button class="mab g" onclick="mAll('present')">✓ All Present</button><button class="mab r" onclick="mAll('absent')">✕ All Absent</button></div>
     </div>
     <div id="sl"></div>
     <div class="svb" id="svb"><button class="svbtn" id="svbn" onclick="doSave()">💾 Save Attendance</button></div>
@@ -175,7 +171,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <div class="pg" id="pgR">
     <div class="st">📈 Monthly Reports</div>
-    <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">Orphans Only</option><option value="teachers">Teachers</option></select></div>
+    <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">💜 Orphans Only</option><option value="nonorphans">👤 Non-Orphans Only</option><option value="teachers">Teachers</option></select></div>
     <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Report</button>
     <div id="ro"></div>
   </div>
@@ -199,7 +195,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div class="toast" id="tst"></div>
 
 <script>
-// Firebase Initial Data
+// ===== FIREBASE (loaded inline to avoid CDN issues in artifacts) =====
+let DB=null,firebaseReady=false;
+
 const CLASSES=[
 {id:'c1',name:'Class 1',students:[
 {id:'s1',name:'Saidu M. Kanu',o:1},{id:'s2',name:'Abu-bakar Kamara',o:0},{id:'s3',name:'Ibrahim Sesay',o:0},{id:'s4',name:'Salimatu M. Bangura',o:1},{id:'s5',name:'Mabinity S. Sesay',o:1},{id:'s6',name:'Marion A. Sesay',o:0},{id:'s7',name:'Fatmatu Jalloh',o:1},{id:'s8',name:'Isatu G. Jalloh',o:1},{id:'s9',name:'Abu-bakar Jalloh',o:0},{id:'s10',name:'Kadiatu B. Bangura',o:0},{id:'s11',name:'Isatu Kamara',o:1},{id:'s12',name:'Buya Kanu',o:0},{id:'s13',name:'Issa Sesay',o:0},{id:'s14',name:'Amara Bangura',o:0},{id:'s15',name:'Jossef Tarawalie',o:1},{id:'s16',name:'Abdul-rahman Tarawalie',o:1},{id:'s17',name:'Aminata T. Bangura',o:1},{id:'s18',name:'Hassan Conteh',o:1},{id:'s19',name:'Ibrahim Kamara',o:0},{id:'s20',name:'Deamon Bundor',o:0},{id:'s21',name:'Osman O. Sesay (1)',o:0},{id:'s22',name:'Osman O. Sesay (2)',o:0},{id:'s23',name:'Michael A. Bangura',o:0},{id:'s24',name:'Foday A. Bangura',o:0},{id:'s25',name:'Momoh A. Kamara',o:1},{id:'s26',name:'Abdulai M. Bangura',o:0},{id:'s27',name:'Mariatu S. Kamara',o:0},{id:'s28',name:'Konie Conteh',o:0},{id:'s29',name:'Mabinity F. Kamara',o:0},{id:'s30',name:'Aminata A. Bangura',o:0},{id:'s31',name:'Abdul Sesay',o:0},{id:'s32',name:'Salimatu T. Bangura',o:0},{id:'s33',name:'Fatmtu Kamara',o:0},{id:'s34',name:'Isatu Kamara (2)',o:1},{id:'s35',name:'Adama U. Bangura',o:1},{id:'s36',name:'Hassenatu I. Kamara',o:0},{id:'s37',name:'Ibrahim S. Sesay',o:0},{id:'s38',name:'Zainab S. Bangura',o:0},{id:'s39',name:'Hassan I. Kamara',o:0},{id:'s40',name:'Ibrahim M. Sesay',o:0},{id:'s41',name:'Memunatu Kargbo',o:0}
@@ -215,7 +213,6 @@ const USERS=[
 ];
 const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohamad',u:'mohamad'}];
 
-let DB=null,firebaseReady=false;
 let user=null,att={},tatt={},logs=[],selCl=null,filt='all',classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
 
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -242,7 +239,9 @@ async function initFirebase(){
     firebase.initializeApp({apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",authDomain:"quranschool26-c77e0.firebaseapp.com",projectId:"quranschool26-c77e0",storageBucket:"quranschool26-c77e0.firebasestorage.app",messagingSenderId:"600563978552",appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"});
     DB=firebase.firestore();
     firebaseReady=true;
+    // Load data
     await loadAllData();
+    // Real-time listeners
     DB.collection('attendance').onSnapshot(snap=>{att={};snap.forEach(d=>{att[d.id]=d.data()});if(user)refreshDash()});
     DB.collection('teacherAttendance').onSnapshot(snap=>{tatt={};snap.forEach(d=>{tatt[d.id]=d.data()})});
     DB.collection('activityLog').orderBy('ts','desc').limit(30).onSnapshot(snap=>{logs=[];snap.forEach(d=>logs.push(d.data()));if(user)refreshDash()});
@@ -255,7 +254,10 @@ async function loadAllData(){
   try{
     const mainDoc=await DB.collection('appData').doc('main').get();
     if(mainDoc.exists){const d=mainDoc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}
+    else{await DB.collection('appData').doc('main').set({classes,teachers,users})}
     const aSnap=await DB.collection('attendance').get();att={};aSnap.forEach(d=>{att[d.id]=d.data()});
+    const tSnap=await DB.collection('teacherAttendance').get();tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
+    const lSnap=await DB.collection('activityLog').orderBy('ts','desc').limit(30).get();logs=[];lSnap.forEach(d=>logs.push(d.data()));
   }catch(e){console.error('Load:',e)}
 }
 
@@ -263,7 +265,13 @@ async function fbSaveMain(){if(!DB)return;try{await DB.collection('appData').doc
 async function fbSaveAtt(date){
   if(!DB)return;
   try{
-    if(att[date]) await DB.collection('attendance').doc(date).set(att[date]);
+    if(att[date]){
+      // Ensure nested structure: {classId: {studentId: status}}
+      const clean={};
+      Object.keys(att[date]).forEach(k=>{if(typeof att[date][k]==='object')clean[k]=att[date][k]});
+      await DB.collection('attendance').doc(date).set(clean);
+    }
+    if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
   }catch(e){console.error(e)}
 }
 async function fbLog(action,detail){
@@ -277,91 +285,157 @@ function doLogin(){
   const found=users.find(x=>x.u===u&&x.p===p);
   if(!found){$('le').style.display='block';$('le').textContent='Invalid username or password';return}
   user=found;saveSession();
+  if(user.r==='teacher'){const td=today();if(!tatt[td])tatt[td]={};tatt[td][user.tid]='present';fbSaveAtt(td)}
   fbLog('login','Logged in');
   showApp();
 }
-function doLogout(){user=null;clearSession();$('app').style.display='none';$('lp').style.display='flex';}
+function doLogout(){user=null;clearSession();$('app').style.display='none';$('lp').style.display='flex';$('un').value='';$('pw').value='';$('le').style.display='none';$('nM').style.display='none';$('nR').style.display='';}
 function showApp(){
   $('lp').style.display='none';$('app').style.display='block';$('ub').textContent=user.n;
-  if(user.r==='admin'){$('nM').style.display='';$('pgM').style.display='';$('nR').style.display='';}
-  $('ad').value=today();renderCS();refreshDash();if(user.r==='admin')renderAdmin();
+  if(user.r==='admin'){
+    $('nM').style.display='';$('pgM').style.display='';
+    $('nR').style.display='';$('pgR').style.display='';
+    $('alCard').style.display='block';
+  } else {
+    $('nR').style.display='none';
+    $('alCard').style.display='none';
+  }
+  $('ad').value=today();renderCS();refreshDash();initFilters();if(user.r==='admin')renderAdmin();
 }
 
-function go(pg,btn){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  $('pg'+pg).classList.add('on');
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
-  if(btn)btn.classList.add('on');
-  if(pg==='D')refreshDash();
+function go(pg,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));$('pg'+pg).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));if(btn)btn.classList.add('on');
+  if(pg==='D')refreshDash();if(pg==='R')initFilters();if(pg==='M')renderAdmin();
+  if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS()}
 }
 
-// DASHBOARD: tracking absent orphans
+// ===== DASHBOARD =====
 function refreshDash(){
   const td=today(),ts=classes.reduce((s,c)=>s+c.students.length,0),to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
-  const ta=att[td]||{};
-  let pr=0,ab=0,abOrphan=0;
-  
-  classes.forEach(c=>{
-    const classData=ta[c.id]||{};
-    c.students.forEach(s=>{
-      const status=classData[s.id];
-      if(status==='present')pr++;
-      else if(status==='absent'){ab++;if(s.o)abOrphan++;}
-    });
-  });
-
-  $('ds').innerHTML=[
-    {i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},
-    {i:'✅',n:pr,l:'Present Today',c:'gn'},
-    {i:'❌',n:ab,l:'Total Absent',c:'rd'},
-    {i:'💜',n:abOrphan,l:'Absent Orphans',c:'pp'}
-  ].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
-  
-  $('al').innerHTML=logs.slice(0,10).map(l=>`<div><b>${l.user}</b>: ${l.detail||l.action}</div>`).join('');
+  const ta=att[td]||{};let pr=0,ab=0;Object.values(ta).forEach(v=>{if(typeof v==='object')Object.values(v).forEach(x=>{if(x==='present')pr++;else if(x==='absent')ab++})});
+  $('ds').innerHTML=[{i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},{i:'✅',n:pr,l:'Present Today',c:'gn'},{i:'❌',n:ab,l:'Absent Today',c:'rd'},{i:'💜',n:to,l:'Orphans',c:'pp'}].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
+  $('al').innerHTML=logs.length===0?'<p style="text-align:center;padding:16px">No activity yet</p>':logs.slice(0,15).map(l=>{
+    const t=l.ts?new Date(l.ts):null;const tm=t?t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    const ic=l.role==='admin'?'👨‍💼':'👨‍🏫';
+    return`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0f0f0;gap:6px"><div style="flex:1"><div style="font-weight:700;font-size:12px">${ic} ${l.user||l.username}</div><div style="font-size:10px;color:var(--txt2);margin-top:1px">${l.detail||l.action}</div></div><div style="font-size:9px;color:var(--txt2);white-space:nowrap">${tm}</div></div>`
+  }).join('');
 }
 
-// ATTENDANCE
-function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}</button>`).join('')}
+// ===== ATTENDANCE =====
+function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`).join('')}
 function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';$('svb').style.display='block'}
-function renderSF(){const c=classes.find(x=>x.id===selCl);$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans</button>`}
+function renderSF(){const c=classes.find(x=>x.id===selCl);if(!c)return;$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`}
 function setF(m){filt=m;renderSF();renderSL()}
 
 function renderSL(){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
   const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
   let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
-  
-  $('sl').innerHTML=st.map((s,i)=>{
-    const v=da[s.id]||'';
-    const orphanAlert=(s.o&&v==='absent')?'style="background:var(--orp-l);border:1px solid var(--orp);"':'';
-    return`<div class="si2 ${s.o?'orp':''}" ${orphanAlert}><div class="snum">${i+1}</div><div class="sname">${s.o?'<span class="ob">💜 ORPHAN</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
+  $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
+    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
 }
 
-function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};att[dt][selCl][sid]=st;renderSL()}
+function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}}
 
-function mAll(st){
-  const c=classes.find(x=>x.id===selCl);if(!c)return;const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
-  c.students.forEach(s=>{if(filt==='all'||(filt==='orphans'&&s.o))att[dt][selCl][s.id]=st});renderSL()
-}
-
-function mOrphansAbsent(){
-  const c=classes.find(x=>x.id===selCl);if(!c)return;const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
-  c.students.forEach(s=>{if(s.o)att[dt][selCl][s.id]='absent'});renderSL()
-}
+function mAll(st){const c=classes.find(x=>x.id===selCl);if(!c)return;const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);ss.forEach(s=>{att[dt][selCl][s.id]=st});renderSL()}
 
 async function doSave(){
-  const dt=$('ad').value;await fbSaveAtt(dt);toast('Saved ✅');refreshDash();
+  if(!selCl)return;const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span class="sp" style="width:18px;height:18px;border-width:3px;display:inline-block"></span> Saving...';
+  const dt=$('ad').value;const cls=classes.find(x=>x.id===selCl);
+  const da=(att[dt]||{})[selCl]||{};const pc=Object.values(da).filter(v=>v==='present').length;const ac=Object.values(da).filter(v=>v==='absent').length;
+  await fbSaveAtt(dt);
+  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}`);
+  btn.disabled=false;btn.innerHTML='💾 Saved ✅';setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
+  toast('Saved to server ✅','ok');refreshDash();
 }
 
-// ADMIN PANEL
+// ===== REPORTS =====
+function initFilters(){
+  const ms=$('rm'),now=new Date();ms.innerHTML='';
+  for(let i=0;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');ms.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`}
+  const cs=$('rc');cs.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{cs.innerHTML+=`<option value="${c.id}">${c.name}</option>`})
+}
+
+function doReport(){const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp)}
+
+function rptS(y,mn,dm,cf,tp){
+  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
+  cl.forEach(c=>{
+    let st=c.students;
+    if(tp==='orphans')st=st.filter(s=>s.o);
+    else if(tp==='nonorphans')st=st.filter(s=>!s.o);
+    st.forEach(s=>{
+      let p=0,a=0;
+      for(let d=1;d<=dm;d++){
+        const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const dy=new Date(y,mn-1,d).getDay();
+        if(dy===5||dy===6)continue;
+        const dayData=att[ds];
+        if(!dayData)continue;
+        // Support nested {classId:{studentId:val}} and flat {classId.studentId:val}
+        let val=undefined;
+        if(dayData[c.id]&&typeof dayData[c.id]==='object'){val=dayData[c.id][s.id]}
+        else{val=dayData[c.id+'.'+s.id]}
+        if(val==='present')p++;
+        else if(val==='absent')a++;
+      }
+      const tt=p+a,pc=tt>0?Math.round(p/tt*100):'-';
+      rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o});
+    });
+  });
+  const label=tp==='orphans'?'💜 Orphans':tp==='nonorphans'?'👤 Non-Orphans':'All Students';
+  $('ro').innerHTML=rows.length===0
+    ?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No attendance data found for this period</div>`
+    :`<div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${rows.length} students</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.tt>0?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:11px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`
+}
+function rptT(y,mn,dm){
+  let rows=[];teachers.forEach(t=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const x=(tatt[ds]||{})[t.id];if(x==='present')p++;else if(new Date(ds)<new Date(today()))a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:t.name,p,a,pc})});
+  $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+}
+
+// ===== ADMIN =====
 function renderAdmin(){
-  $('ac').innerHTML=classes.map(c=>`<div class="card"><strong>${c.name}</strong><br><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add Student</button></div>`).join('')
+  let h='';classes.forEach(c=>{const oc=c.students.filter(s=>s.o).length;
+  h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">${c.students.map((s,i)=>`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${i+1}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`).join('')}</div></div>`});
+  h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
+  $('ac').innerHTML=h;
+  $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
+  $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('')
 }
 
-// BOOT
+async function tgO(ci,si){const c=classes.find(x=>x.id===ci),s=c.students.find(x=>x.id===si);s.o=s.o?0:1;await fbSaveMain();renderAdmin();toast(s.o?'💜 Marked':'Unmarked')}
+function showM(c){$('moc').innerHTML=c;$('mov').classList.add('sh')}
+function hideM(){$('mov').classList.remove('sh')}
+
+function mAddS(ci){showM(`<div class="mt">Add Student</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="cg"><input type="checkbox" id="_o"><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="aS('${ci}')">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aS(ci){const n=$('_n').value.trim();if(!n)return;classes.find(c=>c.id===ci).students.push({id:'s_'+Date.now(),name:n,o:$('_o').checked?1:0});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mEdS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);showM(`<div class="mt">Edit Student</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${s.name}"></div><div class="cg"><input type="checkbox" id="_o" ${s.o?'checked':''}><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="svS('${ci}','${si}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);const n=$('_n').value.trim();if(n)s.name=n;s.o=$('_o').checked?1:0;await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
+async function dS(ci,si){if(!confirm('Delete this student?'))return;const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();toast('Deleted')}
+function mAddC(){showM(`<div class="mt">Add Class</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="mb"><button class="btn btn-p" onclick="aC()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aC(){const n=$('_n').value.trim();if(!n)return;classes.push({id:'c_'+Date.now(),name:n,students:[]});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mAddT(){showM(`<div class="mt">Add Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="ig"><label>Username</label><input type="text" id="_u"></div><div class="ig"><label>Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="aT()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aT(){const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();if(!u||!p)return;const id='t_'+Date.now();teachers.push({id,name:n||u,u});users.push({u,p,r:'teacher',n:n||u,tid:id});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mEdT(ti){const t=teachers.find(x=>x.id===ti);showM(`<div class="mt">Edit Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${t.name}"></div><div class="mb"><button class="btn btn-p" onclick="svT('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim();if(n){t.name=n;const u2=users.find(x=>x.tid===ti);if(u2)u2.n=n}await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
+async function dT(ti){if(!confirm('Delete?'))return;teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted')}
+function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svPW(un){const p=$('_p').value.trim();if(!p)return;users.find(x=>x.u===un).p=p;await fbSaveMain();hideM();toast('Password changed ✅')}
+
+$('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
+$('ad').addEventListener('change',()=>{if(selCl)renderSL()});
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+// ===== BOOT =====
 (async function(){
-  await initFirebase();$('ld').classList.add('hide');
-  const saved=loadSession();if(saved){user=saved;showApp()}else{$('lp').style.display='flex'}
+  const ok=await initFirebase();
+  $('ld').classList.add('hide');
+  // Try restore session
+  const saved=loadSession();
+  if(saved){user=saved;showApp()}
+  else{$('lp').style.display='flex'}
+  const cs=$('cs');
+  if(ok){cs.className='conn y';cs.textContent='🟢 Connected to server'}
+  else{cs.className='conn n';cs.textContent='🔴 Offline mode'}
 })();
 </script>
 </body>
