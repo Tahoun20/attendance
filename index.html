@@ -5,88 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Quran School Attendance</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
 [dir="rtl"] { font-family: 'Amiri', serif; }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition: background 0.3s}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:0.3s}
 .loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
 .loader .sp{width:48px;height:48px;border:4px solid var(--acc-l);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .loader.hide{display:none}
 
 /* LOGIN */
-.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri),var(--pri-l))}
-.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);animation:fadeUp .5s ease}
-.login-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--pri),var(--acc));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:34px;color:#fff}
-.login-title{text-align:center;font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:24px}
+.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri))}
+.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15)}
 .ig{margin-bottom:16px}
 .ig label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:5px}
-.ig input,.ig select{width:100%;padding:13px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;transition:.3s;background:#FAFBFC}
-.ig input:focus{outline:none;border-color:var(--acc)}
-
-.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.3s}
-.btn-p{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;box-shadow:0 4px 16px rgba(27,73,101,.3)}
+.ig input, .ig select{width:100%;padding:13px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;background:#FAFBFC}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.3s}
+.btn-p{background:var(--pri);color:#fff}
 .btn-s{background:#E8EDF2;color:var(--txt)}
 
-/* APP UI */
+/* APP */
 .app{display:none;min-height:100vh;padding-bottom:80px}
-.top{background:linear-gradient(135deg,var(--pri-d),var(--pri));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100}
-.top-a{display:flex;align-items:center;gap:10px}
-.ubadge{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
-
+.top{background:var(--pri-d);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100}
+.ubadge{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:20px;font-size:12px}
 .bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;padding:8px;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
-.ni{flex:1;max-width:80px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--txt2);font-size:10px;font-weight:700;cursor:pointer}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;background:none;border:none;color:var(--txt2);font-size:10px;font-weight:700}
 .ni.on{color:var(--pri)}
-.ni .ic{font-size:20px}
-
-.pg{display:none;padding:16px}.pg.on{display:block;animation:fadeUp .3s ease}
-.st{font-size:18px;font-weight:800;color:var(--pri-d);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-
+.pg{display:none;padding:16px}.pg.on{display:block}
+.st{font-size:18px;font-weight:800;margin-bottom:14px}
 .card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.sc{background:var(--card);border-radius:var(--r);padding:14px 12px;box-shadow:var(--sh);text-align:center;position:relative;overflow:hidden}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.sc.bl::before{background:var(--pri)}.sc.gn::before{background:var(--ok)}.sc.rd::before{background:var(--err)}.sc.pp::before{background:var(--orp)}
-.sc .sn{font-size:22px;font-weight:900}
-
-.si2{display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:var(--rs);margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,.04);border-left:4px solid transparent}
-.si2.orp{border-left-color:var(--orp);background:var(--orp-l)}
+.sc{background:var(--card);border-radius:var(--r);padding:14px;text-align:center;border-top:4px solid var(--pri)}
+.sc.gn{border-color:var(--ok)}.sc.rd{border-color:var(--err)}.sc.pp{border-color:var(--orp)}
+.si2{display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:var(--rs);margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.si2.orp{background:var(--orp-l)}
 .abs{display:flex;gap:5px}
-.ab{width:40px;height:40px;border:2px solid #E8EDF2;border-radius:8px;background:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
-.ab.p{background:var(--ok);border-color:var(--ok);color:#fff}
-.ab.a{background:var(--err);border-color:var(--err);color:#fff}
-.ab.l{background:var(--warn);border-color:var(--warn);color:#fff}
-
-.streak-warn{background:#FFF5F5;border:1px solid #FEB2B2;color:#C53030;padding:8px 12px;border-radius:10px;font-size:11px;margin-top:8px;font-weight:600}
-
+.ab{width:40px;height:40px;border:2px solid #E8EDF2;border-radius:8px;background:#fff;cursor:pointer}
+.ab.p{background:var(--ok);color:#fff}.ab.a{background:var(--err);color:#fff}
 .rt{width:100%;border-collapse:collapse;font-size:12px}
 .rt th{background:var(--pri);color:#fff;padding:10px;text-align:left}
+[dir="rtl"] .rt th{text-align:right}
 .rt td{padding:10px;border-bottom:1px solid #EEE}
-[dir="rtl"] .rt th, [dir="rtl"] .rt td { text-align: right; }
+.streak-warn{background:#FFF5F5;border:1px solid #FEB2B2;color:#C53030;padding:8px;border-radius:8px;font-size:11px;margin-top:5px}
 
-.lang-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
-.lock-badge{background:var(--txt);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;margin-left:5px}
-
-@media print {
-    .bnav, .top, .rf, .btn, .no-print { display: none !important; }
-    body { background: #fff; }
-    .pg { padding: 0; }
-    .card { box-shadow: none; border: 1px solid #eee; }
-}
+@media print { .bnav, .top, .rf, .btn, .no-print { display: none !important; } body{background:#fff} .pg{padding:0} }
 </style>
 </head>
 <body>
 
-<div class="loader" id="ld"><div class="sp"></div><div id="ltxt">Loading...</div></div>
+<div class="loader" id="ld"><div class="sp"></div><div data-t="loading">Loading...</div></div>
 
 <div class="login-page" id="lp">
   <div class="login-box">
-    <div class="login-logo">🏫</div>
-    <div class="login-title" data-t="app_title">Quran School Attendance</div>
+    <div style="text-align:center;font-size:40px;margin-bottom:10px">🏫</div>
+    <div class="st" style="text-align:center" data-t="app_title">Quran School</div>
     <div class="ig"><label data-t="username">Username</label><input type="text" id="un"></div>
     <div class="ig"><label data-t="password">Password</label><input type="password" id="pw"></div>
     <button class="btn btn-p" onclick="doLogin()" data-t="sign_in">Sign In</button>
@@ -95,36 +69,41 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <div class="app" id="app">
   <div class="top">
-    <div class="top-t"><span>🏫</span><span data-t="app_name">Attendance</span></div>
-    <div class="top-a">
-      <button class="lang-btn" onclick="toggleLang()" id="lbtn">العربية</button>
+    <div data-t="app_name">Attendance</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-s" onclick="toggleLang()" id="lbtn" style="padding:4px 8px;font-size:11px">العربية</button>
       <span class="ubadge" id="ub"></span>
-      <button onclick="doLogout()" style="background:none;border:none;font-size:20px;cursor:pointer">🚪</button>
+      <button onclick="doLogout()" style="background:none;border:none;font-size:20px">🚪</button>
     </div>
   </div>
 
   <div class="pg on" id="pgD">
     <div class="st">📊 <span data-t="dashboard">Dashboard</span></div>
-    <div class="dr" style="margin-bottom:15px; background: #fff; padding: 10px; border-radius: 12px; box-shadow: var(--sh)">
-        <label style="font-size:12px;font-weight:700" data-t="view_date">View Date:</label>
-        <input type="date" id="ddate" onchange="refreshDash()" style="border:none; font-family:inherit; font-weight:700; color:var(--pri)">
+    <div class="card">
+        <label style="font-size:12px;font-weight:700" data-t="view_date">Date:</label>
+        <input type="date" id="ddate" onchange="refreshDash()" style="border:none;font-weight:700;color:var(--pri);font-family:inherit">
     </div>
     <div class="sg" id="ds"></div>
-    <div class="card" id="streakCard" style="display:none">
-        <div style="font-weight:800;font-size:14px;margin-bottom:8px;color:var(--err)" data-t="absent_alerts">⚠️ Absent Alerts (3+ Days)</div>
-        <div id="streakList"></div>
+    
+    <div id="adminDashExtras" style="display:none">
+        <div class="card" id="streakCard">
+            <div style="font-weight:800;font-size:14px;margin-bottom:8px;color:var(--err)" data-t="absent_alerts">⚠️ Absent Alerts (3+ Days)</div>
+            <div id="streakList"></div>
+        </div>
+        <div class="card">
+            <div style="font-weight:700;margin-bottom:10px" data-t="activity_log">📋 Activity Log</div>
+            <div id="al" style="font-size:11px;color:var(--txt2)"></div>
+        </div>
     </div>
-    <div class="card"><div style="font-weight:700;margin-bottom:10px" data-t="activity_log">📋 Activity Log</div><div id="al" style="font-size:12px;color:var(--txt2)"></div></div>
   </div>
 
   <div class="pg" id="pgA">
     <div class="st">✅ <span data-t="take_attendance">Take Attendance</span></div>
-    <div class="dr" style="margin-bottom:10px"><input type="date" id="ad" style="width:100%; padding:12px; border-radius:10px; border:2px solid #eee"></div>
-    <div id="lockMsg" style="display:none; color:var(--err); font-size:12px; font-weight:700; margin-bottom:10px; text-align:center" data-t="date_locked">🔒 This date is locked by Admin</div>
-    <div class="sg" id="csel" style="grid-template-columns: 1fr 1fr"></div>
+    <div class="card rf"><input type="date" id="ad" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd"></div>
+    <div id="lockMsg" style="display:none;color:var(--err);text-align:center;font-weight:700;margin-bottom:10px" data-t="date_locked">🔒 Date Locked</div>
+    <div class="sg" id="csel"></div>
     <div id="sl"></div>
-    <div style="height:80px"></div>
-    <div style="position:fixed; bottom:70px; left:16px; right:16px" id="saveBar">
+    <div style="position:fixed;bottom:75px;left:16px;right:16px" id="saveBar">
         <button class="btn btn-p" onclick="doSave()" id="svbn">💾 <span data-t="save_attendance">Save Attendance</span></button>
     </div>
   </div>
@@ -138,160 +117,109 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             <select id="rtp">
                 <option value="all" data-t="all_students">All Students</option>
                 <option value="orphans" data-t="orphans_only">Orphans Only</option>
-                <option value="nonorphans" data-t="non_orphans">Non-Orphans Only</option>
                 <option value="teachers" data-t="teachers">Teachers</option>
             </select>
         </div>
-        <button class="btn btn-p" onclick="doReport()" data-t="generate">Generate Report</button>
-    </div>
-    <div id="reportActions" style="display:none; gap:10px; margin-bottom:15px">
-        <button class="btn btn-s" onclick="exportCSV()" style="flex:1">📥 CSV</button>
-        <button class="btn btn-s" onclick="window.print()" style="flex:1">🖨️ Print</button>
+        <button class="btn btn-p" onclick="doReport()" data-t="generate">Generate</button>
     </div>
     <div id="ro"></div>
+    <div id="reportActions" style="display:none;gap:10px;margin-top:15px">
+        <button class="btn btn-s" onclick="exportCSV()">CSV</button>
+        <button class="btn btn-s" onclick="window.print()">Print</button>
+    </div>
   </div>
 
   <div class="pg" id="pgM">
-    <div class="st">⚙️ <span data-t="admin">Admin Panel</span></div>
+    <div class="st">⚙️ <span data-t="admin">Admin</span></div>
     <div class="card">
-        <div style="font-weight:700; margin-bottom:10px" data-t="lock_settings">Attendance Locking</div>
-        <div class="ig"><label data-t="lock_before">Lock all dates before:</label><input type="date" id="lockDateInput" onchange="saveLockDate()"></div>
+        <div style="font-weight:700;margin-bottom:10px" data-t="lock_settings">Lock Attendance</div>
+        <div class="ig"><label data-t="lock_before">Lock before:</label><input type="date" id="lockDateInput" onchange="saveLockDate()"></div>
     </div>
-    <div id="adminContent"></div>
   </div>
 
   <div class="bnav">
-    <button class="ni on" onclick="go('D',this)"><span class="ic">📊</span><span data-t="home">Home</span></button>
-    <button class="ni" onclick="go('A',this)"><span class="ic">✅</span><span data-t="attend">Attend</span></button>
-    <button class="ni" id="nR" onclick="go('R',this)"><span class="ic">📈</span><span data-t="reports">Reports</span></button>
-    <button class="ni" id="nM" style="display:none" onclick="go('M',this)"><span class="ic">⚙️</span><span data-t="admin">Admin</span></button>
+    <button class="ni on" onclick="go('D',this)"><span>📊</span><span data-t="home">Home</span></button>
+    <button class="ni" onclick="go('A',this)"><span>✅</span><span data-t="attend">Attend</span></button>
+    <button class="ni" id="nR" onclick="go('R',this)"><span>📈</span><span data-t="reports">Reports</span></button>
+    <button class="ni" id="nM" style="display:none" onclick="go('M',this)"><span>⚙️</span><span data-t="admin">Admin</span></button>
   </div>
 </div>
 
-<div class="mo" id="mov" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000">
-    <div class="card" id="moc" style="width:90%; max-width:400px; margin-bottom:0"></div>
-</div>
-
 <script>
-// --- TRANSLATIONS ---
 const T = {
     en: {
-        app_title: "Quran School Attendance", app_name: "Attendance", username: "Username", password: "Password", sign_in: "Sign In",
-        dashboard: "Dashboard", view_date: "View Date", total_students: "Total Students", present: "Present", absent: "Absent",
+        app_title: "Quran School", app_name: "Attendance", username: "Username", password: "Password", sign_in: "Sign In",
+        dashboard: "Dashboard", view_date: "View Date", total_students: "Students", present: "Present", absent: "Absent",
         orphans: "Orphans", home: "Home", attend: "Attend", reports: "Reports", admin: "Admin", take_attendance: "Take Attendance",
-        save_attendance: "Save Attendance", all_students: "All Students", orphans_only: "Orphans Only", non_orphans: "Non-Orphans",
-        teachers: "Teachers", generate: "Generate Report", activity_log: "Activity Log", date_locked: "Date is locked by Admin",
-        absent_alerts: "Absent Alerts (3+ Days)", lock_settings: "Lock Attendance", lock_before: "Lock all dates before:"
+        save_attendance: "Save Attendance", all_students: "All Students", orphans_only: "Orphans Only",
+        teachers: "Teachers", generate: "Generate Report", activity_log: "Activity Log", date_locked: "Locked by Admin",
+        absent_alerts: "Absent Alerts", lock_settings: "Lock Records", lock_before: "Lock before:", loading: "Loading..."
     },
     ar: {
-        app_title: "نظام الحضور لمدرسة القرآن", app_name: "الحضور", username: "اسم المستخدم", password: "كلمة المرور", sign_in: "تسجيل الدخول",
-        dashboard: "لوحة التحكم", view_date: "عرض التاريخ", total_students: "إجمالي الطلاب", present: "حاضر", absent: "غائب",
-        orphans: "الأيتام", home: "الرئيسية", attend: "تحضير", reports: "التقارير", admin: "الإدارة", take_attendance: "تسجيل الحضور",
-        save_attendance: "حفظ الحضور", all_students: "جميع الطلاب", orphans_only: "الأيتام فقط", non_orphans: "غير الأيتام",
-        teachers: "المعلمون", generate: "إصدار التقرير", activity_log: "سجل الأنشطة", date_locked: "هذا التاريخ مغلق من قبل الإدارة",
-        absent_alerts: "تنبيهات الغياب (3+ أيام)", lock_settings: "قفل التحضير", lock_before: "قفل التواريخ قبل:"
+        app_title: "مدرسة القرآن", app_name: "الحضور والغياب", username: "اسم المستخدم", password: "كلمة المرور", sign_in: "دخول",
+        dashboard: "الإحصائيات", view_date: "التاريخ", total_students: "الطلاب", present: "حضور", absent: "غياب",
+        orphans: "أيتام", home: "الرئيسية", attend: "التحضير", reports: "التقارير", admin: "الإدارة", take_attendance: "تسجيل الحضور",
+        save_attendance: "حفظ الحضور", all_students: "جميع الطلاب", orphans_only: "الأيتام فقط",
+        teachers: "المعلمون", generate: "عرض التقرير", activity_log: "سجل الأنشطة", date_locked: "التاريخ مغلق",
+        absent_alerts: "تنبيهات الغياب", lock_settings: "قفل السجلات", lock_before: "قفل ما قبل:", loading: "جاري التحميل..."
     }
 };
+
 let curLang = localStorage.getItem('qs_lang') || 'en';
+let DB, user=null, att={}, classes=[], logs=[], config={lockDate:''};
 
-function updateUIStrings() {
-    document.documentElement.lang = curLang;
-    document.documentElement.dir = curLang === 'ar' ? 'rtl' : 'ltr';
-    document.querySelectorAll('[data-t]').forEach(el => {
-        const key = el.getAttribute('data-t');
-        if (T[curLang][key]) el.textContent = T[curLang][key];
-    });
-    document.getElementById('lbtn').textContent = curLang === 'en' ? 'العربية' : 'English';
-}
-
-function toggleLang() {
-    curLang = curLang === 'en' ? 'ar' : 'en';
-    localStorage.setItem('qs_lang', curLang);
-    updateUIStrings();
-    if(user) renderCS(); 
-}
-
-// --- DATA HANDLING ---
 function parseAttDoc(raw) {
-    const out = {};
-    if (!raw) return out;
+    const out = {}; if(!raw) return out;
     Object.keys(raw).forEach(k => {
-        const v = raw[k];
-        if (k.includes('__')) {
+        if(k.includes('__')) {
             const [cid, sid] = k.split('__');
-            if (!out[cid]) out[cid] = {};
-            out[cid][sid] = v;
-        } else if (typeof v === 'object' && !Array.isArray(v)) {
-            out[k] = v;
-        }
+            if(!out[cid]) out[cid] = {}; out[cid][sid] = raw[k];
+        } else if(typeof raw[k] === 'object') out[k] = raw[k];
     });
     return out;
 }
 
-// --- CORE LOGIC ---
-let DB, user = null, att = {}, tatt = {}, classes = [], teachers = [], users = [], logs = [], config = { lockDate: '' };
+async function init() {
+    // Firebase Compat Loaders
+    const loadScript = (src) => new Promise(r => { const s=document.createElement('script'); s.src=src; s.onload=r; document.head.appendChild(s); });
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
 
-async function initFirebase() {
-    try {
-        const s1 = document.createElement('script');
-        s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
-        document.head.appendChild(s1);
-        await new Promise(r => s1.onload = r);
-        const s2 = document.createElement('script');
-        s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
-        document.head.appendChild(s2);
-        await new Promise(r => s2.onload = r);
+    firebase.initializeApp({ apiKey: "AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04", authDomain: "quranschool26-c77e0.firebaseapp.com", projectId: "quranschool26-c77e0" });
+    DB = firebase.firestore();
 
-        firebase.initializeApp({
-            apiKey: "AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",
-            authDomain: "quranschool26-c77e0.firebaseapp.com",
-            projectId: "quranschool26-c77e0"
-        });
-        DB = firebase.firestore();
-        
-        // Listeners
-        DB.collection('appData').doc('main').onSnapshot(doc => {
-            if(doc.exists) {
-                const d = doc.data();
-                classes = d.classes || [];
-                teachers = d.teachers || [];
-                users = d.users || [];
-                config.lockDate = d.lockDate || '';
-                if(user) { renderAdmin(); initFilters(); }
-            }
-        });
+    DB.collection('appData').doc('main').onSnapshot(doc => {
+        if(doc.exists) {
+            classes = doc.data().classes || [];
+            config.lockDate = doc.data().lockDate || '';
+            if(user) { renderCS(); initFilters(); }
+        }
+    });
 
-        DB.collection('attendance').onSnapshot(snap => {
-            snap.forEach(d => { att[d.id] = parseAttDoc(d.data()); });
-            if(user) refreshDash();
-        });
+    DB.collection('attendance').onSnapshot(snap => {
+        snap.forEach(d => att[d.id] = parseAttDoc(d.data()));
+        if(user) refreshDash();
+    });
 
-        DB.collection('teacherAttendance').onSnapshot(snap => {
-            snap.forEach(d => { tatt[d.id] = d.data(); });
-        });
+    DB.collection('activityLog').orderBy('ts', 'desc').limit(15).onSnapshot(snap => {
+        logs = []; snap.forEach(d => logs.push(d.data()));
+        if(user) refreshDash();
+    });
 
-        DB.collection('activityLog').orderBy('ts', 'desc').limit(20).onSnapshot(snap => {
-            logs = []; snap.forEach(d => logs.push(d.data()));
-            if(user) refreshDash();
-        });
-
-        return true;
-    } catch(e) { console.error(e); return false; }
+    document.getElementById('ld').classList.add('hide');
+    const saved = sessionStorage.getItem('qs_user');
+    if(saved) { user = JSON.parse(saved); showApp(); } else { document.getElementById('lp').style.display='flex'; }
 }
 
 function doLogin() {
     const u = document.getElementById('un').value.toLowerCase(), p = document.getElementById('pw').value;
-    const found = users.find(x => x.u === u && x.p === p);
-    if (found) {
-        user = found;
-        sessionStorage.setItem('qs_user', JSON.stringify(user));
-        showApp();
-    } else alert("Invalid Login");
-}
-
-function doLogout() {
-    user = null; sessionStorage.clear();
-    location.reload();
+    // Note: In real production, this would be a DB fetch. Using local users from index.html logic.
+    DB.collection('appData').doc('main').get().then(doc => {
+        const users = doc.data().users || [];
+        const found = users.find(x => x.u === u && x.p === p);
+        if(found) { user=found; sessionStorage.setItem('qs_user', JSON.stringify(user)); showApp(); }
+        else alert("Login Failed");
+    });
 }
 
 function showApp() {
@@ -302,19 +230,16 @@ function showApp() {
     document.getElementById('ad').value = new Date().toISOString().split('T')[0];
     if(user.r === 'admin') {
         document.getElementById('nM').style.display = 'flex';
-        document.getElementById('lockDateInput').value = config.lockDate;
+        document.getElementById('adminDashExtras').style.display = 'block';
     }
     updateUIStrings();
-    renderCS();
     refreshDash();
-    initFilters();
 }
 
-// --- DASHBOARD ---
 function refreshDash() {
     const d = document.getElementById('ddate').value;
     const dayData = att[d] || {};
-    let p = 0, a = 0, op = 0, oa = 0, ts = 0, to = 0;
+    let p=0, a=0, ts=0, to=0, op=0;
 
     classes.forEach(c => {
         ts += c.students.length;
@@ -322,53 +247,40 @@ function refreshDash() {
         c.students.forEach(s => {
             if(s.o) to++;
             if(cData[s.id] === 'present') { p++; if(s.o) op++; }
-            else if(cData[s.id] === 'absent') { a++; if(s.o) oa++; }
+            else if(cData[s.id] === 'absent') a++;
         });
     });
 
     document.getElementById('ds').innerHTML = `
-        <div class="sc bl"><div class="sn">${ts}</div><div class="sl">${T[curLang].total_students}</div></div>
-        <div class="sc gn"><div class="sn">${p}</div><div class="sl">${T[curLang].present}</div></div>
-        <div class="sc rd"><div class="sn">${a}</div><div class="sl">${T[curLang].absent}</div></div>
-        <div class="sc pp"><div class="sn">${op}/${to}</div><div class="sl">${T[curLang].orphans}</div></div>
+        <div class="sc"><div style="font-size:20px;font-weight:800">${ts}</div><div>${T[curLang].total_students}</div></div>
+        <div class="sc gn"><div style="font-size:20px;font-weight:800">${p}</div><div>${T[curLang].present}</div></div>
+        <div class="sc rd"><div style="font-size:20px;font-weight:800">${a}</div><div>${T[curLang].absent}</div></div>
+        <div class="sc pp"><div style="font-size:20px;font-weight:800">${op}/${to}</div><div>${T[curLang].orphans}</div></div>
     `;
 
-    // Activity Log
-    document.getElementById('al').innerHTML = logs.map(l => `
-        <div style="padding:5px 0; border-bottom:1px solid #eee">
-            <b>${l.user}</b>: ${l.detail} <span style="font-size:9px; color:#999">${l.ts.split('T')[1].slice(0,5)}</span>
-        </div>
-    `).join('');
-
-    checkStreaks();
+    if(user.r === 'admin') {
+        document.getElementById('al').innerHTML = logs.map(l => `
+            <div style="border-bottom:1px solid #eee;padding:4px 0"><b>${l.user}</b>: ${l.detail}</div>
+        `).join('');
+        checkStreaks();
+    }
 }
 
 function checkStreaks() {
     const list = [];
-    const dates = Object.keys(att).sort().reverse().slice(0, 10);
-    
+    const dates = Object.keys(att).sort().reverse().slice(0, 7);
     classes.forEach(c => {
         c.students.forEach(s => {
             let streak = 0;
             for(let date of dates) {
-                const day = att[date] && att[date][c.id] ? att[date][c.id][s.id] : null;
-                if(day === 'absent') streak++;
-                else if(day === 'present') break;
+                if((att[date]?.[c.id]?.[s.id]) === 'absent') streak++; else break;
             }
-            if(streak >= 3) list.push({n: s.name, c: c.name, s: streak});
+            if(streak >= 3) list.push(`${s.name} (${c.name}): ${streak} days`);
         });
     });
-
-    const box = document.getElementById('streakCard');
-    if(list.length > 0) {
-        box.style.display = 'block';
-        document.getElementById('streakList').innerHTML = list.map(x => `
-            <div class="streak-warn">⚠️ ${x.n} (${x.c}) - ${x.s} days absent</div>
-        `).join('');
-    } else box.style.display = 'none';
+    document.getElementById('streakList').innerHTML = list.map(l => `<div class="streak-warn">${l}</div>`).join('');
 }
 
-// --- ATTENDANCE ---
 let selCl = null;
 function renderCS() {
     document.getElementById('csel').innerHTML = classes.map(c => `
@@ -376,17 +288,12 @@ function renderCS() {
     `).join('');
 }
 
-function selectClass(cid) {
-    selCl = cid;
-    renderCS();
-    renderSL();
-}
+function selectClass(cid) { selCl = cid; renderCS(); renderSL(); }
 
 function renderSL() {
     if(!selCl) return;
     const date = document.getElementById('ad').value;
     const isLocked = config.lockDate && date <= config.lockDate && user.r !== 'admin';
-    
     document.getElementById('lockMsg').style.display = isLocked ? 'block' : 'none';
     document.getElementById('saveBar').style.display = isLocked ? 'none' : 'block';
 
@@ -394,15 +301,13 @@ function renderSL() {
     const dayData = (att[date] || {})[selCl] || {};
 
     document.getElementById('sl').innerHTML = cls.students.map(s => {
-        const status = dayData[s.id] || '';
+        const st = dayData[s.id] || '';
         return `
             <div class="si2 ${s.o?'orp':''}">
-                <div style="flex:1">
-                    <div style="font-weight:700">${s.o?'💜 ':''}${s.name}</div>
-                </div>
+                <div style="flex:1;font-weight:600">${s.o?'💜 ':''}${s.name}</div>
                 <div class="abs">
-                    <button class="ab ${status==='present'?'p':''}" onclick="mark('${s.id}','present')" ${isLocked?'disabled':''}>✓</button>
-                    <button class="ab ${status==='absent'?'a':''}" onclick="mark('${s.id}','absent')" ${isLocked?'disabled':''}>✕</button>
+                    <button class="ab ${st==='present'?'p':''}" onclick="mark('${s.id}','present')" ${isLocked?'disabled':''}>✓</button>
+                    <button class="ab ${st==='absent'?'a':''}" onclick="mark('${s.id}','absent')" ${isLocked?'disabled':''}>✕</button>
                 </div>
             </div>
         `;
@@ -410,122 +315,45 @@ function renderSL() {
 }
 
 function mark(sid, status) {
-    const date = document.getElementById('ad').value;
-    if(!att[date]) att[date] = {};
-    if(!att[date][selCl]) att[date][selCl] = {};
-    
-    if(att[date][selCl][sid] === status) delete att[date][selCl][sid];
-    else att[date][selCl][sid] = status;
+    const d = document.getElementById('ad').value;
+    if(!att[d]) att[d] = {}; if(!att[d][selCl]) att[d][selCl] = {};
+    att[d][selCl][sid] = (att[d][selCl][sid] === status) ? null : status;
     renderSL();
 }
 
 async function doSave() {
-    const date = document.getElementById('ad').value;
+    const d = document.getElementById('ad').value;
     const btn = document.getElementById('svbn');
     btn.disabled = true;
-    
     try {
         const flat = {};
-        Object.keys(att[date]).forEach(cid => {
-            Object.keys(att[date][cid]).forEach(sid => {
-                flat[`${cid}__${sid}`] = att[date][cid][sid];
+        Object.keys(att[d]).forEach(cid => {
+            Object.keys(att[d][cid]).forEach(sid => {
+                if(att[d][cid][sid]) flat[`${cid}__${sid}`] = att[d][cid][sid];
             });
         });
-        
-        await DB.collection('attendance').doc(date).set(flat);
-        await DB.collection('activityLog').add({
-            user: user.n, detail: `Updated attendance for ${date}`, ts: new Date().toISOString()
-        });
-        alert("Saved successfully!");
+        await DB.collection('attendance').doc(d).set(flat);
+        await DB.collection('activityLog').add({ user: user.n, detail: `Updated ${d}`, ts: new Date().toISOString() });
+        alert("Saved ✅");
     } catch(e) {
-        alert("Error saving: " + e.message);
-    } finally {
-        btn.disabled = false;
-    }
+        alert("Error: " + e.message);
+    } finally { btn.disabled = false; }
 }
 
-// --- REPORTS ---
-function initFilters() {
-    const rm = document.getElementById('rm');
-    rm.innerHTML = '';
-    const now = new Date();
-    for(let i=0; i<6; i++) {
-        const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-        const val = d.toISOString().slice(0,7);
-        rm.innerHTML += `<option value="${val}">${d.toLocaleString(curLang, {month:'long', year:'numeric'})}</option>`;
-    }
-    const rc = document.getElementById('rc');
-    rc.innerHTML = `<option value="all">${T[curLang].all_students}</option>` + classes.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-}
-
-function doReport() {
-    const month = document.getElementById('rm').value; // YYYY-MM
-    const cid = document.getElementById('rc').value;
-    const type = document.getElementById('rtp').value;
-    
-    if(type === 'teachers') return reportTeachers(month);
-
-    let html = `
-        <div class="card no-print" style="background:var(--pri); color:#fff">
-            <h3 style="margin-bottom:5px">${month} - Summary</h3>
-            <div id="summaryRow" style="display:flex; justify-content:space-between; font-size:12px">Calculating...</div>
-        </div>
-        <table class="rt">
-            <thead><tr><th>Name</th><th>Class</th><th>P</th><th>A</th><th>%</th></tr></thead>
-            <tbody>`;
-    
-    let totalP = 0, totalA = 0, studentCount = 0;
-    const rows = [];
-
-    classes.forEach(c => {
-        if(cid !== 'all' && c.id !== cid) return;
-        c.students.forEach(s => {
-            if(type === 'orphans' && !s.o) return;
-            if(type === 'nonorphans' && s.o) return;
-
-            let p=0, a=0;
-            Object.keys(att).forEach(d => {
-                if(d.startsWith(month)) {
-                    const status = (att[d][c.id] || {})[s.id];
-                    if(status === 'present') p++;
-                    else if(status === 'absent') a++;
-                }
-            });
-
-            const rate = (p+a) > 0 ? Math.round((p/(p+a))*100) : 0;
-            totalP += p; totalA += a; studentCount++;
-            rows.push({n: s.name, cl: c.name, p, a, rate, o: s.o});
-            html += `<tr>
-                <td>${s.o?'💜 ':''}${s.name}</td>
-                <td>${c.name}</td>
-                <td style="color:var(--ok-d); font-weight:700">${p}</td>
-                <td style="color:var(--err); font-weight:700">${a}</td>
-                <td><b>${rate}%</b></td>
-            </tr>`;
-        });
+function updateUIStrings() {
+    document.documentElement.dir = curLang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-t]').forEach(el => {
+        const k = el.getAttribute('data-t');
+        if(T[curLang][k]) el.textContent = T[curLang][k];
     });
-
-    html += `</tbody></table>`;
-    document.getElementById('ro').innerHTML = html;
-    document.getElementById('reportActions').style.display = 'flex';
-    document.getElementById('summaryRow').innerHTML = `
-        <span>Students: ${studentCount}</span>
-        <span>Avg Rate: ${studentCount > 0 ? Math.round(totalP / (totalP+totalA) * 100) || 0 : 0}%</span>
-    `;
-    window.currentReport = rows;
+    document.getElementById('lbtn').textContent = curLang === 'en' ? 'العربية' : 'English';
 }
 
-function exportCSV() {
-    if(!window.currentReport) return;
-    let csv = "Name,Class,Present,Absent,Rate\n";
-    window.currentReport.forEach(r => {
-        csv += `"${r.n}","${r.cl}",${r.p},${r.a},${r.rate}%\n`;
-    });
-    const blob = new Blob([csv], {type: 'text/csv'});
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `report_${new Date().getTime()}.csv`;
-    a.click();
+function toggleLang() {
+    curLang = curLang === 'en' ? 'ar' : 'en';
+    localStorage.setItem('qs_lang', curLang);
+    updateUIStrings();
+    if(user) renderCS();
 }
 
 function go(id, btn) {
@@ -533,36 +361,11 @@ function go(id, btn) {
     document.getElementById('pg'+id).classList.add('on');
     document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
     btn.classList.add('on');
-    if(id === 'M') renderAdmin();
 }
 
-// Admin Lock Save
-async function saveLockDate() {
-    const d = document.getElementById('lockDateInput').value;
-    config.lockDate = d;
-    await DB.collection('appData').doc('main').update({ lockDate: d });
-    alert("Lock settings updated");
-}
+function doLogout() { sessionStorage.clear(); location.reload(); }
 
-function renderAdmin() {
-    let h = `<h3>${T[curLang].teachers}</h3>`;
-    teachers.forEach(t => {
-        h += `<div class="si2"><div style="flex:1">${t.name} (@${t.u})</div></div>`;
-    });
-    document.getElementById('adminContent').innerHTML = h;
-}
-
-// Boot
-(async () => {
-    const ok = await initFirebase();
-    document.getElementById('ld').classList.add('hide');
-    const saved = sessionStorage.getItem('qs_user');
-    if(saved) { user = JSON.parse(saved); showApp(); }
-    else document.getElementById('lp').style.display = 'flex';
-    if(!ok) alert("Offline Mode: Data may not sync");
-})();
-
-document.getElementById('ad').onchange = renderSL;
+init();
 </script>
 </body>
 </html>
