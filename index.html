@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quran School Attendance</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ck{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
+.loader .sp{width:48px;height:48px;border:4px solid var(--acc-l);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite}
+.loader.hide{display:none}
+
+/* LOGIN */
+.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri),var(--pri-l))}
+.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);animation:fadeUp .5s ease}
+.login-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--pri),var(--acc));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:34px;color:#fff}
+.login-title{text-align:center;font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:24px}
+.ig{margin-bottom:16px}
+.ig label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:5px}
+.ig input,.ig select{width:100%;padding:13px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;transition:.3s;background:#FAFBFC}
+.ig input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(98,182,203,.15)}
+.lerr{background:#FEE;color:var(--err);padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;text-align:center}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.3s}
+.btn-p{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;box-shadow:0 4px 16px rgba(27,73,101,.3)}
+.btn-p:hover{transform:translateY(-2px)}.btn-p:active{transform:translateY(0)}
+.btn-s{background:#E8EDF2;color:var(--txt)}
+.conn{text-align:center;margin-top:12px;font-size:11px;padding:6px;border-radius:8px}
+.conn.y{background:#E8F8F0;color:var(--ok-d)}.conn.n{background:#FEE;color:var(--err)}
+
+/* APP */
+.app{display:none;min-height:100vh;padding-bottom:72px}
+.top{background:linear-gradient(135deg,var(--pri-d),var(--pri));padding:14px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.top-t{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-a{display:flex;align-items:center;gap:8px}
+.top-b{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:10px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ubadge{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;padding:6px 12px;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
+.ni{flex:1;max-width:90px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border:none;background:none;cursor:pointer;color:var(--txt2);font:inherit;font-size:10px;font-weight:600;border-radius:10px}
+.ni.on{color:var(--pri);background:var(--acc-l)}
+.ni .ic{font-size:20px}
+
+.pg{display:none;padding:16px 14px 20px}.pg.on{display:block;animation:fadeUp .3s ease}
+.st{font-size:18px;font-weight:800;color:var(--pri-d);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sc{background:var(--card);border-radius:var(--r);padding:14px 12px;box-shadow:var(--sh);text-align:center;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.bl::before{background:linear-gradient(90deg,var(--pri),var(--acc))}
+.sc.gn::before{background:var(--ok)}.sc.rd::before{background:var(--err)}.sc.pp::before{background:var(--orp)}
+.sc .si{font-size:24px;margin-bottom:4px}.sc .sn{font-size:24px;font-weight:900;color:var(--pri-d)}.sc .sl{font-size:11px;color:var(--txt2);font-weight:600}
+
+.cs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cb{padding:16px;border:3px solid #E8EDF2;border-radius:var(--r);background:#fff;cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:var(--txt);text-align:center}
+.cb:hover{border-color:var(--acc)}.cb.on{border-color:var(--pri);background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff}
+.cb small{display:block;font-size:11px;font-weight:400;opacity:.8;margin-top:3px}
+
+.dr{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:#fff;padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh)}
+.dr input[type=date]{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:14px;font-weight:600;color:var(--pri-d)}
+.dr input:focus{outline:none;border-color:var(--acc)}
+.dl{font-size:12px;font-weight:700;color:var(--pri)}
+
+.ft{display:flex;gap:8px;margin-bottom:12px}
+.fb{padding:7px 14px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:var(--txt2)}
+.fb.on{border-color:var(--pri);background:var(--pri);color:#fff}.fb.ot.on{border-color:var(--orp);background:var(--orp);color:#fff}
+
+.si2{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:var(--rs);margin-bottom:7px;box-shadow:0 2px 6px rgba(0,0,0,.04);animation:fadeUp .3s ease;border-left:4px solid transparent}
+.si2.orp{border-left-color:var(--orp);background:var(--orp-l)}
+.snum{width:30px;height:30px;border-radius:8px;background:var(--acc-l);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.si2.orp .snum{background:var(--orp);color:#fff}
+.sname{flex:1;font-size:13px;font-weight:600}
+.ob{display:inline-flex;background:var(--orp);color:#fff;padding:1px 7px;border-radius:8px;font-size:9px;font-weight:700}
+.abs{display:flex;gap:5px}
+.ab{width:42px;height:42px;border:2px solid #E8EDF2;border-radius:9px;background:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.ab:active{transform:scale(.9)}
+.ab.p{background:var(--ok);border-color:var(--ok);color:#fff;animation:ck .3s}
+.ab.a{background:var(--err);border-color:var(--err);color:#fff;animation:ck .3s}
+.ab.l{background:var(--warn);border-color:var(--warn);color:#fff;animation:ck .3s}
+
+.mar{display:flex;gap:8px;margin-bottom:10px}
+.mab{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:9px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
+.mab:hover{border-color:var(--acc)}.mab.g{color:var(--ok)}.mab.r{color:var(--err)}
+
+.svb{position:fixed;bottom:64px;left:14px;right:14px;z-index:90;display:none}
+.svbtn{width:100%;padding:14px;border:none;border-radius:var(--r);background:linear-gradient(135deg,var(--ok),var(--ok-d));color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(46,204,113,.4);display:flex;align-items:center;justify-content:center;gap:8px}
+.svbtn:disabled{opacity:.6;cursor:not-allowed}
+
+.rf{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.rf select{flex:1;min-width:90px;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff}
+.rt{width:100%;border-collapse:separate;border-spacing:0;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);font-size:11px}
+.rt thead th{background:var(--pri);color:#fff;padding:10px 5px;font-weight:700;text-align:center}
+.rt td{padding:8px 5px;text-align:center;border-bottom:1px solid #F0F0F0;background:#fff}
+.rt tr:hover td{background:var(--acc-l)}.rt tr.or td{background:var(--orp-l)}
+.pb{height:5px;border-radius:3px;background:#E8EDF2;overflow:hidden;margin-top:3px}
+.pf{height:100%;border-radius:3px}.ph{background:var(--ok)}.pm{background:var(--warn)}.pl{background:var(--err)}
+
+.as{margin-bottom:20px}
+.ast{font-size:15px;font-weight:700;color:var(--pri);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ali{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#fff;border-radius:var(--rs);margin-bottom:5px;box-shadow:0 2px 6px rgba(0,0,0,.04);flex-wrap:wrap}
+.ali.io{background:var(--orp-l);border-left:3px solid var(--orp)}
+.ali .nm{flex:1;font-weight:600;font-size:12px;min-width:70px}
+.abtn{padding:5px 10px;border:none;border-radius:7px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.abtn.ed{background:var(--acc-l);color:var(--pri)}.abtn.dl{background:#FEE;color:var(--err)}
+.abtn.ot{background:var(--orp-l);color:var(--orp)}.abtn.ot.on{background:var(--orp);color:#fff}
+.abtn.ad{background:var(--acc-l);color:var(--pri);padding:9px 18px;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.mo.sh{display:flex}
+.md{background:#fff;border-radius:var(--r);padding:24px 20px;width:100%;max-width:380px;animation:fadeUp .3s;max-height:90vh;overflow-y:auto}
+.mt{font-size:17px;font-weight:800;color:var(--pri-d);margin-bottom:18px;text-align:center}
+.mb{display:flex;gap:10px;margin-top:18px}.mb .btn{flex:1;padding:11px;font-size:13px}
+
+.cg{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;background:var(--orp-l);border-radius:var(--rs);border:2px solid #D2B4DE}
+.cg input[type=checkbox]{width:20px;height:20px;accent-color:var(--orp);cursor:pointer}
+.cg label{font-size:13px;font-weight:600;color:var(--orp);cursor:pointer}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--pri-d);color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:13px;z-index:300;transition:transform .4s cubic-bezier(.68,-.55,.27,1.55);box-shadow:0 8px 24px rgba(0,0,0,.2);white-space:nowrap}
+.toast.ok{background:var(--ok-d)}.toast.er{background:var(--err)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="loader" id="ld"><div class="sp"></div><div style="font-size:15px;font-weight:700;color:var(--pri)">Loading...</div></div>
+
+<div class="login-page" id="lp">
+  <div class="login-box">
+    <div class="login-logo">🏫</div>
+    <div class="login-title">Quran School Attendance</div>
+    <div class="lerr" id="le"></div>
+    <div class="ig"><label>Username</label><input type="text" id="un" autocomplete="username"></div>
+    <div class="ig"><label>Password</label><input type="password" id="pw" autocomplete="current-password"></div>
+    <button class="btn btn-p" onclick="doLogin()">Sign In</button>
+    <div class="conn" id="cs"></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <div class="top">
+    <div class="top-t"><span>🏫</span><span>Attendance</span></div>
+    <div class="top-a"><span class="ubadge" id="ub"></span><button class="top-b" onclick="doLogout()">🚪</button></div>
+  </div>
+
+  <div class="pg on" id="pgD">
+    <div class="st">📊 Dashboard</div>
+    <div class="sg" id="ds"></div>
+    <div class="card" id="alCard"><div style="font-weight:700;margin-bottom:10px">📋 Activity Log</div><div id="al" style="font-size:12px;color:var(--txt2)"></div></div>
+  </div>
+
+  <div class="pg" id="pgA">
+    <div class="st">✅ Take Attendance</div>
+    <div class="dr"><span class="dl">Date:</span><input type="date" id="ad"></div>
+    <div class="cs" id="csel"></div>
+    <div id="acon" style="display:none">
+      <div class="ft" id="sf"></div>
+      <div class="mar"><button class="mab g" onclick="mAll('present')">✓ All Present</button><button class="mab r" onclick="mAll('absent')">✕ All Absent</button></div>
+    </div>
+    <div id="sl"></div>
+    <div class="svb" id="svb"><button class="svbtn" id="svbn" onclick="doSave()">💾 Save Attendance</button></div>
+  </div>
+
+  <div class="pg" id="pgR">
+    <div class="st">📈 Monthly Reports</div>
+    <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">Orphans Only</option><option value="teachers">Teachers</option></select></div>
+    <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Report</button>
+    <div id="ro"></div>
+  </div>
+
+  <div class="pg" id="pgM" style="display:none">
+    <div class="st">⚙️ Admin Panel</div>
+    <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
+    <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
+    <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
+  </div>
+
+  <div class="bnav">
+    <button class="ni on" onclick="go('D',this)"><span class="ic">📊</span>Home</button>
+    <button class="ni" onclick="go('A',this)"><span class="ic">✅</span>Attend</button>
+    <button class="ni" id="nR" onclick="go('R',this)"><span class="ic">📈</span>Reports</button>
+    <button class="ni" id="nM" style="display:none" onclick="go('M',this)"><span class="ic">⚙️</span>Admin</button>
+  </div>
+</div>
+
+<div class="mo" id="mov"><div class="md" id="moc"></div></div>
+<div class="toast" id="tst"></div>
+
+<script>
+// ===== FIREBASE (loaded inline to avoid CDN issues in artifacts) =====
+let DB=null,firebaseReady=false;
+
+const CLASSES=[
+{id:'c1',name:'Class 1',students:[
+{id:'s1',name:'Saidu M. Kanu',o:1},{id:'s2',name:'Abu-bakar Kamara',o:0},{id:'s3',name:'Ibrahim Sesay',o:0},{id:'s4',name:'Salimatu M. Bangura',o:1},{id:'s5',name:'Mabinity S. Sesay',o:1},{id:'s6',name:'Marion A. Sesay',o:0},{id:'s7',name:'Fatmatu Jalloh',o:1},{id:'s8',name:'Isatu G. Jalloh',o:1},{id:'s9',name:'Abu-bakar Jalloh',o:0},{id:'s10',name:'Kadiatu B. Bangura',o:0},{id:'s11',name:'Isatu Kamara',o:1},{id:'s12',name:'Buya Kanu',o:0},{id:'s13',name:'Issa Sesay',o:0},{id:'s14',name:'Amara Bangura',o:0},{id:'s15',name:'Jossef Tarawalie',o:1},{id:'s16',name:'Abdul-rahman Tarawalie',o:1},{id:'s17',name:'Aminata T. Bangura',o:1},{id:'s18',name:'Hassan Conteh',o:1},{id:'s19',name:'Ibrahim Kamara',o:0},{id:'s20',name:'Deamon Bundor',o:0},{id:'s21',name:'Osman O. Sesay (1)',o:0},{id:'s22',name:'Osman O. Sesay (2)',o:0},{id:'s23',name:'Michael A. Bangura',o:0},{id:'s24',name:'Foday A. Bangura',o:0},{id:'s25',name:'Momoh A. Kamara',o:1},{id:'s26',name:'Abdulai M. Bangura',o:0},{id:'s27',name:'Mariatu S. Kamara',o:0},{id:'s28',name:'Konie Conteh',o:0},{id:'s29',name:'Mabinity F. Kamara',o:0},{id:'s30',name:'Aminata A. Bangura',o:0},{id:'s31',name:'Abdul Sesay',o:0},{id:'s32',name:'Salimatu T. Bangura',o:0},{id:'s33',name:'Fatmtu Kamara',o:0},{id:'s34',name:'Isatu Kamara (2)',o:1},{id:'s35',name:'Adama U. Bangura',o:1},{id:'s36',name:'Hassenatu I. Kamara',o:0},{id:'s37',name:'Ibrahim S. Sesay',o:0},{id:'s38',name:'Zainab S. Bangura',o:0},{id:'s39',name:'Hassan I. Kamara',o:0},{id:'s40',name:'Ibrahim M. Sesay',o:0},{id:'s41',name:'Memunatu Kargbo',o:0}
+]},
+{id:'c2',name:'Class 2',students:[
+{id:'s42',name:'Musa Kamara',o:1},{id:'s43',name:'Foday A. Kamara',o:1},{id:'s44',name:'Andrew T. Bangura',o:0},{id:'s45',name:'Foday M. Bangura',o:1},{id:'s46',name:'Osman A. Kargbo',o:0},{id:'s47',name:'Mohamed A. Kamara',o:1},{id:'s48',name:'Abibatu M. Bangura',o:1},{id:'s49',name:'Rugiatu F. Bangura',o:1},{id:'s50',name:'Lamin L. Sesay',o:1},{id:'s51',name:'Alimamy T. Bangura',o:0},{id:'s52',name:'Ramatu G. Jalloh',o:1},{id:'s53',name:'Josef O. Kamara',o:1},{id:'s54',name:'Kadiatu B. Kamara',o:1},{id:'s55',name:'Isatu M. Bangura',o:1},{id:'s56',name:'Moulayah Turay',o:1},{id:'s57',name:'Ibrahim Sesay',o:0},{id:'s58',name:'Fouad A. Bangura',o:0},{id:'s59',name:'Ibrahim Sorie Bangura',o:0},{id:'s60',name:'Idrisa I. Kamara',o:1},{id:'s61',name:'Ibrahim M. Bangura',o:0}
+]}];
+
+const USERS=[
+{u:'admin',p:'admin123',r:'admin',n:'Admin'},
+{u:'shuaib',p:'shuaib123',r:'teacher',n:'Sh. Shuaib',tid:'t1'},
+{u:'mohamad',p:'mohamad123',r:'teacher',n:'Sh. Mohamad',tid:'t2'}
+];
+const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohamad',u:'mohamad'}];
+
+let user=null,att={},tatt={},logs=[],selCl=null,filt='all',classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
+
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dim(y,m){return new Date(y,m,0).getDate()}
+function toast(m,t='ok'){const e=$('tst');e.textContent=m;e.className='toast '+t;requestAnimationFrame(()=>e.classList.add('show'));setTimeout(()=>e.classList.remove('show'),3000)}
+function $(id){return document.getElementById(id)}
+
+// ===== SESSION =====
+function saveSession(){try{sessionStorage.setItem('qs_user',JSON.stringify(user))}catch{}}
+function loadSession(){try{const s=sessionStorage.getItem('qs_user');if(s){const u=JSON.parse(s);const match=users.find(x=>x.u===u.u&&x.p===u.p);if(match)return match}return null}catch{return null}}
+function clearSession(){try{sessionStorage.removeItem('qs_user')}catch{}}
+
+// ===== FIREBASE =====
+async function initFirebase(){
+  try{
+    const s1=document.createElement('script');
+    s1.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+    document.head.appendChild(s1);
+    await new Promise((r,j)=>{s1.onload=r;s1.onerror=j});
+    const s2=document.createElement('script');
+    s2.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+    document.head.appendChild(s2);
+    await new Promise((r,j)=>{s2.onload=r;s2.onerror=j});
+    firebase.initializeApp({apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",authDomain:"quranschool26-c77e0.firebaseapp.com",projectId:"quranschool26-c77e0",storageBucket:"quranschool26-c77e0.firebasestorage.app",messagingSenderId:"600563978552",appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"});
+    DB=firebase.firestore();
+    firebaseReady=true;
+    // Load data
+    await loadAllData();
+    // Real-time listeners
+    DB.collection('attendance').onSnapshot(snap=>{att={};snap.forEach(d=>{att[d.id]=d.data()});if(user)refreshDash()});
+    DB.collection('teacherAttendance').onSnapshot(snap=>{tatt={};snap.forEach(d=>{tatt[d.id]=d.data()})});
+    DB.collection('activityLog').orderBy('ts','desc').limit(30).onSnapshot(snap=>{logs=[];snap.forEach(d=>logs.push(d.data()));if(user)refreshDash()});
+    DB.collection('appData').doc('main').onSnapshot(doc=>{if(doc.exists){const d=doc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}});
+    return true;
+  }catch(e){console.error('Firebase init:',e);return false}
+}
+
+async function loadAllData(){
+  try{
+    const mainDoc=await DB.collection('appData').doc('main').get();
+    if(mainDoc.exists){const d=mainDoc.data();if(d.users)users=d.users;if(d.classes)classes=d.classes;if(d.teachers)teachers=d.teachers}
+    else{await DB.collection('appData').doc('main').set({classes,teachers,users})}
+    const aSnap=await DB.collection('attendance').get();att={};aSnap.forEach(d=>{att[d.id]=d.data()});
+    const tSnap=await DB.collection('teacherAttendance').get();tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
+    const lSnap=await DB.collection('activityLog').orderBy('ts','desc').limit(30).get();logs=[];lSnap.forEach(d=>logs.push(d.data()));
+  }catch(e){console.error('Load:',e)}
+}
+
+async function fbSaveMain(){if(!DB)return;try{await DB.collection('appData').doc('main').set({classes,teachers,users})}catch(e){console.error(e)}}
+async function fbSaveAtt(date){
+  if(!DB)return;
+  try{
+    if(att[date]){
+      // Ensure nested structure: {classId: {studentId: status}}
+      const clean={};
+      Object.keys(att[date]).forEach(k=>{if(typeof att[date][k]==='object')clean[k]=att[date][k]});
+      await DB.collection('attendance').doc(date).set(clean);
+    }
+    if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
+  }catch(e){console.error(e)}
+}
+async function fbLog(action,detail){
+  if(!DB)return;
+  try{await DB.collection('activityLog').add({user:user?user.n:'?',username:user?user.u:'?',role:user?user.r:'?',action,detail,ts:new Date().toISOString()})}catch(e){console.error(e)}
+}
+
+// ===== AUTH =====
+function doLogin(){
+  const u=$('un').value.trim().toLowerCase(),p=$('pw').value.trim();
+  const found=users.find(x=>x.u===u&&x.p===p);
+  if(!found){$('le').style.display='block';$('le').textContent='Invalid username or password';return}
+  user=found;saveSession();
+  if(user.r==='teacher'){const td=today();if(!tatt[td])tatt[td]={};tatt[td][user.tid]='present';fbSaveAtt(td)}
+  fbLog('login','Logged in');
+  showApp();
+}
+function doLogout(){user=null;clearSession();$('app').style.display='none';$('lp').style.display='flex';$('un').value='';$('pw').value='';$('le').style.display='none';$('nM').style.display='none';$('nR').style.display='';}
+function showApp(){
+  $('lp').style.display='none';$('app').style.display='block';$('ub').textContent=user.n;
+  if(user.r==='admin'){
+    $('nM').style.display='';$('pgM').style.display='';
+    $('nR').style.display='';$('pgR').style.display='';
+    $('alCard').style.display='block';
+  } else {
+    $('nR').style.display='none';
+    $('alCard').style.display='none';
+  }
+  $('ad').value=today();renderCS();refreshDash();initFilters();if(user.r==='admin')renderAdmin();
+}
+
+function go(pg,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));$('pg'+pg).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));if(btn)btn.classList.add('on');
+  if(pg==='D')refreshDash();if(pg==='R')initFilters();if(pg==='M')renderAdmin();
+  if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS()}
+}
+
+// ===== DASHBOARD =====
+function refreshDash(){
+  const td=today(),ts=classes.reduce((s,c)=>s+c.students.length,0),to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
+  const ta=att[td]||{};let pr=0,ab=0;Object.values(ta).forEach(v=>{if(typeof v==='object')Object.values(v).forEach(x=>{if(x==='present')pr++;else if(x==='absent')ab++})});
+  $('ds').innerHTML=[{i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},{i:'✅',n:pr,l:'Present Today',c:'gn'},{i:'❌',n:ab,l:'Absent Today',c:'rd'},{i:'💜',n:to,l:'Orphans',c:'pp'}].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
+  $('al').innerHTML=logs.length===0?'<p style="text-align:center;padding:16px">No activity yet</p>':logs.slice(0,15).map(l=>{
+    const t=l.ts?new Date(l.ts):null;const tm=t?t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    const ic=l.role==='admin'?'👨‍💼':'👨‍🏫';
+    return`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0f0f0;gap:6px"><div style="flex:1"><div style="font-weight:700;font-size:12px">${ic} ${l.user||l.username}</div><div style="font-size:10px;color:var(--txt2);margin-top:1px">${l.detail||l.action}</div></div><div style="font-size:9px;color:var(--txt2);white-space:nowrap">${tm}</div></div>`
+  }).join('');
+}
+
+// ===== ATTENDANCE =====
+function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`).join('')}
+function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';$('svb').style.display='block'}
+function renderSF(){const c=classes.find(x=>x.id===selCl);if(!c)return;$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`}
+function setF(m){filt=m;renderSF();renderSL()}
+
+function renderSL(){
+  const c=classes.find(x=>x.id===selCl);if(!c)return;
+  const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
+  let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
+  $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
+    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
+}
+
+function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}}
+
+function mAll(st){const c=classes.find(x=>x.id===selCl);if(!c)return;const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);ss.forEach(s=>{att[dt][selCl][s.id]=st});renderSL()}
+
+async function doSave(){
+  if(!selCl)return;const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span class="sp" style="width:18px;height:18px;border-width:3px;display:inline-block"></span> Saving...';
+  const dt=$('ad').value;const cls=classes.find(x=>x.id===selCl);
+  const da=(att[dt]||{})[selCl]||{};const pc=Object.values(da).filter(v=>v==='present').length;const ac=Object.values(da).filter(v=>v==='absent').length;
+  await fbSaveAtt(dt);
+  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}`);
+  btn.disabled=false;btn.innerHTML='💾 Saved ✅';setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
+  toast('Saved to server ✅','ok');refreshDash();
+}
+
+// ===== REPORTS =====
+function initFilters(){
+  const ms=$('rm'),now=new Date();ms.innerHTML='';
+  for(let i=0;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');ms.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`}
+  const cs=$('rc');cs.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{cs.innerHTML+=`<option value="${c.id}">${c.name}</option>`})
+}
+
+function doReport(){const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp==='orphans')}
+
+function rptS(y,mn,dm,cf,oo){
+  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
+  cl.forEach(c=>{let st=c.students;if(oo)st=st.filter(s=>s.o);st.forEach(s=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const dayData=att[ds];if(!dayData)continue;// Support both nested {classId:{studentId:val}} and flat {classId.studentId:val}
+const val=dayData[c.id]?dayData[c.id][s.id]:dayData[c.id+'.'+s.id];if(val==='present')p++;else if(val==='absent')a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:s.name,cn:c.name,p,a,pc,o:s.o})})});
+  $('ro').innerHTML=rows.length===0?'<div class="card" style="text-align:center;padding:24px">No data</div>':`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Name</th><th>Class</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.o?'or':''}"><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td>${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+}
+function rptT(y,mn,dm){
+  let rows=[];teachers.forEach(t=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;const x=(tatt[ds]||{})[t.id];if(x==='present')p++;else if(new Date(ds)<new Date(today()))a++}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:t.name,p,a,pc})});
+  $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+}
+
+// ===== ADMIN =====
+function renderAdmin(){
+  let h='';classes.forEach(c=>{const oc=c.students.filter(s=>s.o).length;
+  h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">${c.students.map((s,i)=>`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${i+1}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`).join('')}</div></div>`});
+  h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
+  $('ac').innerHTML=h;
+  $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
+  $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('')
+}
+
+async function tgO(ci,si){const c=classes.find(x=>x.id===ci),s=c.students.find(x=>x.id===si);s.o=s.o?0:1;await fbSaveMain();renderAdmin();toast(s.o?'💜 Marked':'Unmarked')}
+function showM(c){$('moc').innerHTML=c;$('mov').classList.add('sh')}
+function hideM(){$('mov').classList.remove('sh')}
+
+function mAddS(ci){showM(`<div class="mt">Add Student</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="cg"><input type="checkbox" id="_o"><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="aS('${ci}')">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aS(ci){const n=$('_n').value.trim();if(!n)return;classes.find(c=>c.id===ci).students.push({id:'s_'+Date.now(),name:n,o:$('_o').checked?1:0});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mEdS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);showM(`<div class="mt">Edit Student</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${s.name}"></div><div class="cg"><input type="checkbox" id="_o" ${s.o?'checked':''}><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="svS('${ci}','${si}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);const n=$('_n').value.trim();if(n)s.name=n;s.o=$('_o').checked?1:0;await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
+async function dS(ci,si){if(!confirm('Delete this student?'))return;const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();toast('Deleted')}
+function mAddC(){showM(`<div class="mt">Add Class</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="mb"><button class="btn btn-p" onclick="aC()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aC(){const n=$('_n').value.trim();if(!n)return;classes.push({id:'c_'+Date.now(),name:n,students:[]});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mAddT(){showM(`<div class="mt">Add Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="ig"><label>Username</label><input type="text" id="_u"></div><div class="ig"><label>Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="aT()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aT(){const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();if(!u||!p)return;const id='t_'+Date.now();teachers.push({id,name:n||u,u});users.push({u,p,r:'teacher',n:n||u,tid:id});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mEdT(ti){const t=teachers.find(x=>x.id===ti);showM(`<div class="mt">Edit Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${t.name}"></div><div class="mb"><button class="btn btn-p" onclick="svT('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim();if(n){t.name=n;const u2=users.find(x=>x.tid===ti);if(u2)u2.n=n}await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
+async function dT(ti){if(!confirm('Delete?'))return;teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted')}
+function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svPW(un){const p=$('_p').value.trim();if(!p)return;users.find(x=>x.u===un).p=p;await fbSaveMain();hideM();toast('Password changed ✅')}
+
+$('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
+$('ad').addEventListener('change',()=>{if(selCl)renderSL()});
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+// ===== BOOT =====
+(async function(){
+  const ok=await initFirebase();
+  $('ld').classList.add('hide');
+  // Try restore session
+  const saved=loadSession();
+  if(saved){user=saved;showApp()}
+  else{$('lp').style.display='flex'}
+  const cs=$('cs');
+  if(ok){cs.className='conn y';cs.textContent='🟢 Connected to server'}
+  else{cs.className='conn n';cs.textContent='🔴 Offline mode'}
+})();
+</script>
+</body>
+</html>
