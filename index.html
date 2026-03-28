@@ -265,7 +265,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 
   <!-- ADMIN PAGE -->
-  <div class="pg" id="pgM" style="display:none">
+  <div class="pg" id="pgM">
     <div class="st">⚙️ Admin Panel</div>
     <div class="ig" style="margin-bottom: 15px;"><input type="text" id="adminSearch" placeholder="🔍 Search students by name..." oninput="doAdminSearch(this.value)"></div>
     <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
@@ -440,26 +440,26 @@ function showApp(){
 // ===== NAV & HOME CARDS =====
 function buildNav(){
   const isAdmin=user.r==='admin';
-  // Always: Home, Attendance, Orphans
-  // Admin extra: Reports, Log, Admin
+  // Teachers: Home, Attendance only
+  // Admins: Home, Attendance, Orphans, Reports, Log, Admin
   let navItems=[
     {id:'H',ic:'🏠',lbl:'Home'},
     {id:'A',ic:'✅',lbl:'Attend'},
-    {id:'O',ic:'💜',lbl:'Orphans'},
   ];
   if(isAdmin){
+    navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
     navItems.push({id:'R',ic:'📈',lbl:'Reports'});
     navItems.push({id:'L',ic:'📋',lbl:'Log'});
     navItems.push({id:'M',ic:'⚙️',lbl:'Admin'});
   }
   $('bnav').innerHTML=navItems.map((n,i)=>`<button class="ni${i===0?' on':''}" id="ni${n.id}" onclick="go('${n.id}',this)"><span class="ic">${n.ic}</span>${n.lbl}</button>`).join('');
 
-  // Build home portal cards
+  // Build home portal cards — admin sees all, teacher sees only Attendance
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
-    {id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true},
   ];
   if(isAdmin){
+    cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true});
     cards.push({id:'R',ic:'📈',title:'Reports',desc:'Monthly attendance reports by class or student',badge:'',badgeNew:false});
     cards.push({id:'M',ic:'⚙️',title:'Admin',desc:'Manage students, teachers & passwords',badge:'',badgeNew:false});
   }
