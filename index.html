@@ -162,9 +162,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="dr"><span class="dl">Date:</span><input type="date" id="ad"></div>
     <div class="cs" id="csel"></div>
     <div id="acon" style="display:none">
-      <div class="ig" style="margin-bottom: 10px;">
-        <input type="text" id="sSearch" placeholder="🔍 Search student name..." oninput="renderSL()">
-      </div>
       <div class="ft" id="sf"></div>
       <div class="mar"><button class="mab g" onclick="mAll('present')">✓ All Present</button><button class="mab r" onclick="mAll('absent')">✕ All Absent</button></div>
     </div>
@@ -181,6 +178,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <div class="pg" id="pgM" style="display:none">
     <div class="st">⚙️ Admin Panel</div>
+    <div class="ig" style="margin-bottom: 15px;"><input type="text" id="adminSearch" placeholder="🔍 Search students by name..." oninput="doAdminSearch(this.value)"></div>
     <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
     <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
     <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
@@ -199,25 +197,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 // Parse Firestore attendance doc - handles ALL formats:
-// 1. New flat:    { "c1__s1": "present" }
-// 2. Old nested:  { "c1": { "s1": "present" } }  (Firestore map type)
-// 3. Old dot:     { "c1.s1": "present" }
 function parseAttDoc(raw){
   const out={};
   Object.keys(raw).forEach(k=>{
     const v=raw[k];
     if(k.includes('__')){
-      // Format 1: flat with double underscore
       const sep=k.indexOf('__');
       const cid=k.slice(0,sep),sid=k.slice(sep+2);
       if(!out[cid])out[cid]={};out[cid][sid]=v;
     } else if(k.includes('.')&&!k.startsWith('.')){
-      // Format 3: dot separated
       const[cid,...rest]=k.split('.');
       const sid=rest.join('.');
       if(!out[cid])out[cid]={};out[cid][sid]=v;
     } else if(v&&typeof v==='object'&&!Array.isArray(v)){
-      // Format 2: nested map
       if(!out[k])out[k]={};
       Object.keys(v).forEach(sid=>{out[k][sid]=v[sid]});
     }
@@ -225,7 +217,7 @@ function parseAttDoc(raw){
   return out;
 }
 
-// ===== FIREBASE (loaded inline to avoid CDN issues in artifacts) =====
+// ===== FIREBASE (loaded inline) =====
 let DB=null,firebaseReady=false;
 
 const CLASSES=[
@@ -243,7 +235,7 @@ const USERS=[
 ];
 const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohamad',u:'mohamad'}];
 
-let user=null,att={},tatt={},logs=[],selCl=null,filt='all',classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
+let user=null,att={},tatt={},logs=[],selCl=null,filt='all',adminSearchTerm='',classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
 
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dim(y,m){return new Date(y,m,0).getDate()}
@@ -269,9 +261,7 @@ async function initFirebase(){
     firebase.initializeApp({apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",authDomain:"quranschool26-c77e0.firebaseapp.com",projectId:"quranschool26-c77e0",storageBucket:"quranschool26-c77e0.firebasestorage.app",messagingSenderId:"600563978552",appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"});
     DB=firebase.firestore();
     firebaseReady=true;
-    // Load data
     await loadAllData();
-    // Real-time listeners
     DB.collection('attendance').onSnapshot(snap=>{
       att={};
       snap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
@@ -301,7 +291,6 @@ async function fbSaveAtt(date){
   if(!DB)return;
   try{
     if(att[date]){
-      // Save as flat keys: "classId__studentId"=status  (Firestore safe)
       const flat={};
       Object.keys(att[date]).forEach(cid=>{
         const cv=att[date][cid];
@@ -352,7 +341,6 @@ function go(pg,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remo
 function refreshDash(){
   const td=today(),ts=classes.reduce((s,c)=>s+c.students.length,0),to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
   const ta=att[td]||{};let pr=0,ab=0,opr=0,oab=0;
-  // Build a set of orphan IDs for quick lookup
   const orphanIds=new Set();classes.forEach(c=>c.students.forEach(s=>{if(s.o)orphanIds.add(s.id)}));
   classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;if(s.o)opr++;}else if(v==='absent'){ab++;if(s.o)oab++;}})});
   $('ds').innerHTML=[
@@ -370,46 +358,16 @@ function refreshDash(){
 
 // ===== ATTENDANCE =====
 function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`).join('')}
-function selClass(id){
-  selCl=id;
-  filt='all';
-  // Reset search box when switching classes
-  if($('sSearch')) $('sSearch').value = '';
-  renderCS();
-  renderSF();
-  renderSL();
-  $('acon').style.display='block';
-  $('svb').style.display='block'
-}
+function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';$('svb').style.display='block'}
 function renderSF(){const c=classes.find(x=>x.id===selCl);if(!c)return;$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`}
 function setF(m){filt=m;renderSF();renderSL()}
 
 function renderSL(){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
   const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
-  
-  // Search feature logic
-  const query = $('sSearch') ? $('sSearch').value.toLowerCase().trim() : '';
-  
-  let st=c.students;
-  if(filt==='orphans')st=st.filter(s=>s.o);
-  
-  // Apply Search filter without affecting existing orphan filters
-  if(query){
-    st = st.filter(s => s.name.toLowerCase().includes(query));
-  }
-
-  $('sl').innerHTML=st.map((s,i)=>{
-    const v=da[s.id]||'';
-    // Maintaining original student numbering
-    const idx=c.students.indexOf(s)+1;
-    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`
-  }).join('');
-
-  // No results message
-  if(st.length === 0 && query){
-    $('sl').innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt2);font-size:13px;">No students found matching your search.</div>';
-  }
+  let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
+  $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
+    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
 }
 
 function setAt(sid,st,btn){const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}}
@@ -446,12 +404,11 @@ function rptS(y,mn,dm,cf,tp){
       for(let d=1;d<=dm;d++){
         const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
         const dy=new Date(y,mn-1,d).getDay();
-        if(dy===5||dy===6)continue; // skip Fri/Sat
-        if(new Date(ds)>new Date())continue; // skip future
+        if(dy===5||dy===6)continue;
+        if(new Date(ds)>new Date())continue;
         const dayData=att[ds];
         if(!dayData)continue;
-        school++; // this day has some record
-        // att is always nested after our fix: att[date][classId][studentId]
+        school++;
         const val=(dayData[c.id]||{})[s.id];
         if(val==='present')p++;
         else if(val==='absent')a++;
@@ -460,7 +417,6 @@ function rptS(y,mn,dm,cf,tp){
       rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o});
     });
   });
-  // summary stats
   const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;
   const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;
   const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
@@ -491,9 +447,24 @@ function rptT(y,mn,dm){
 }
 
 // ===== ADMIN =====
+function doAdminSearch(val) {
+  adminSearchTerm = val.toLowerCase();
+  renderAdmin();
+}
+
 function renderAdmin(){
-  let h='';classes.forEach(c=>{const oc=c.students.filter(s=>s.o).length;
-  h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">${c.students.map((s,i)=>`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${i+1}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`).join('')}</div></div>`});
+  let h='';
+  classes.forEach(c=>{
+    const filteredStudents = c.students.filter(s => s.name.toLowerCase().includes(adminSearchTerm));
+    if (filteredStudents.length > 0 || adminSearchTerm === '') {
+      const oc=c.students.filter(s=>s.o).length;
+      h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
+      h+=filteredStudents.map((s)=>{
+        const originalIndex = c.students.indexOf(s) + 1;
+        return `<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${originalIndex}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`}).join('');
+      h+=`</div></div>`;
+    }
+  });
   h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
   $('ac').innerHTML=h;
   $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
@@ -527,7 +498,6 @@ $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 (async function(){
   const ok=await initFirebase();
   $('ld').classList.add('hide');
-  // Try restore session
   const saved=loadSession();
   if(saved){user=saved;showApp()}
   else{$('lp').style.display='flex'}
