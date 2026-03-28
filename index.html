@@ -65,7 +65,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cb small{display:block;font-size:11px;font-weight:400;opacity:.8;margin-top:3px}
 
 .dr{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:#fff;padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh)}
-.dr input[type=date]{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:14px;font-weight:600;color:var(--pri-d)}
+.dr input[type=date], .dr input[type=text]{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:14px;font-weight:600;color:var(--pri-d)}
 .dr input:focus{outline:none;border-color:var(--acc)}
 .dl{font-size:12px;font-weight:700;color:var(--pri)}
 
@@ -178,7 +178,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <div class="pg" id="pgM" style="display:none">
     <div class="st">⚙️ Admin Panel</div>
-    <div class="ig" style="margin-bottom: 15px;"><input type="text" id="adminSearch" placeholder="🔍 Search students by name..." oninput="doAdminSearch(this.value)"></div>
+    <div class="dr"><span class="dl">🔍</span><input type="text" id="adminSearch" placeholder="Search student name..." oninput="doAdminSearch(this.value)"></div>
     <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
     <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
     <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
@@ -196,7 +196,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div class="toast" id="tst"></div>
 
 <script>
-// Parse Firestore attendance doc - handles ALL formats:
+// Parse Firestore attendance doc
 function parseAttDoc(raw){
   const out={};
   Object.keys(raw).forEach(k=>{
@@ -217,7 +217,7 @@ function parseAttDoc(raw){
   return out;
 }
 
-// ===== FIREBASE (loaded inline) =====
+// ===== FIREBASE =====
 let DB=null,firebaseReady=false;
 
 const CLASSES=[
@@ -332,8 +332,19 @@ function showApp(){
   $('ad').value=today();renderCS();refreshDash();initFilters();if(user.r==='admin')renderAdmin();
 }
 
-function go(pg,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));$('pg'+pg).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));if(btn)btn.classList.add('on');
-  if(pg==='D')refreshDash();if(pg==='R')initFilters();if(pg==='M')renderAdmin();
+function go(pg,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  $('pg'+pg).classList.add('on');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  
+  if(pg==='D')refreshDash();
+  if(pg==='R')initFilters();
+  if(pg==='M'){
+    adminSearchTerm = '';
+    if($('adminSearch')) $('adminSearch').value = '';
+    renderAdmin();
+  }
   if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS()}
 }
 
@@ -448,23 +459,45 @@ function rptT(y,mn,dm){
 
 // ===== ADMIN =====
 function doAdminSearch(val) {
-  adminSearchTerm = val.toLowerCase();
+  adminSearchTerm = val.toLowerCase().trim();
   renderAdmin();
 }
 
 function renderAdmin(){
   let h='';
   classes.forEach(c=>{
-    const filteredStudents = c.students.filter(s => s.name.toLowerCase().includes(adminSearchTerm));
+    const filteredStudents = c.students.filter(s => 
+      s.name.toLowerCase().includes(adminSearchTerm)
+    );
+
     if (filteredStudents.length > 0 || adminSearchTerm === '') {
       const oc=c.students.filter(s=>s.o).length;
-      h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
-      h+=filteredStudents.map((s)=>{
-        const originalIndex = c.students.indexOf(s) + 1;
-        return `<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${originalIndex}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`}).join('');
-      h+=`</div></div>`;
+      h+=`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+          <strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong>
+          <button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button>
+        </div>
+        <div style="max-height:280px;overflow-y:auto">`;
+      
+      h += filteredStudents.map((s) => {
+        const originalIndex = c.students.findIndex(orig => orig.id === s.id) + 1;
+        return `<div class="ali ${s.o?'io':''}">
+          <span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${originalIndex}</span>
+          <span class="nm">${s.o?'💜 ':''}${s.name}</span>
+          <button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button>
+          <button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button>
+          <button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button>
+        </div>`;
+      }).join('');
+      
+      h += `</div></div>`;
     }
   });
+
+  if (h === '' && adminSearchTerm !== '') {
+    h = `<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students match "${adminSearchTerm}"</div>`;
+  }
+
   h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
   $('ac').innerHTML=h;
   $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
