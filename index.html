@@ -4,193 +4,939 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Quran School Attendance</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* CSS STYLES - PRESERVED & OPTIMIZED */
 :root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ck{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+
 .loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
 .loader .sp{width:48px;height:48px;border:4px solid var(--acc-l);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
 .loader.hide{display:none}
-.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri))}
-.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+
+/* LOGIN */
+.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri),var(--pri-l))}
+.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);animation:fadeUp .5s ease}
+.login-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--pri),var(--acc));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:34px;color:#fff}
+.login-title{text-align:center;font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:6px}
+.login-sub{text-align:center;font-size:12px;color:var(--txt2);margin-bottom:24px}
 .ig{margin-bottom:16px}
 .ig label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:5px}
-.ig input, .ig select{width:100%;padding:12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit}
-.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-weight:700;cursor:pointer;transition:.3s}
-.btn-p{background:var(--pri);color:#fff}
-.app{display:none;padding-bottom:80px}
-.top{background:var(--pri-d);padding:14px 20px;display:flex;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100}
-.pg{display:none;padding:16px 14px}.pg.on{display:block}
-.card{background:#fff;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.ig input,.ig select{width:100%;padding:13px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;transition:.3s;background:#FAFBFC}
+.ig input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(98,182,203,.15)}
+.lerr{background:#FEE;color:var(--err);padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;text-align:center}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.3s}
+.btn-p{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;box-shadow:0 4px 16px rgba(27,73,101,.3)}
+.btn-p:hover{transform:translateY(-2px)}.btn-p:active{transform:translateY(0)}
+.btn-s{background:#E8EDF2;color:var(--txt)}
+.conn{text-align:center;margin-top:12px;font-size:11px;padding:6px;border-radius:8px}
+.conn.y{background:#E8F8F0;color:var(--ok-d)}.conn.n{background:#FEE;color:var(--err)}
+
+/* HOME PORTAL — new landing after login */
+.home-portal{padding:16px 14px 20px}
+.hp-hero{background:linear-gradient(135deg,var(--pri-d),var(--pri));border-radius:20px;padding:20px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.hp-hero::after{content:'🕌';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:56px;opacity:.18}
+.hp-greeting{font-size:13px;opacity:.75;margin-bottom:4px}
+.hp-name{font-size:22px;font-weight:800;margin-bottom:2px}
+.hp-role{font-size:11px;opacity:.65;background:rgba(255,255,255,.15);display:inline-block;padding:3px 10px;border-radius:20px;margin-top:6px}
+.hp-date{font-size:11px;opacity:.6;margin-top:6px}
+
+.hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.hp-card{background:#fff;border-radius:var(--r);padding:20px 16px;box-shadow:var(--sh);cursor:pointer;transition:.25s;border:2px solid transparent;text-align:center;position:relative;overflow:hidden}
+.hp-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(27,73,101,.18)}
+.hp-card:active{transform:translateY(0)}
+.hp-card.hl{border-color:var(--acc)}
+.hp-card-ic{font-size:32px;margin-bottom:8px}
+.hp-card-title{font-size:13px;font-weight:800;color:var(--pri-d);margin-bottom:3px}
+.hp-card-desc{font-size:10px;color:var(--txt2);font-weight:500;line-height:1.4}
+.hp-card-badge{position:absolute;top:10px;right:10px;background:var(--acc-l);color:var(--pri);font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px}
+.hp-card.new-badge .hp-card-badge{background:var(--orp-l);color:var(--orp)}
+
+/* APP */
+.app{display:none;min-height:100vh;padding-bottom:72px}
+.top{background:linear-gradient(135deg,var(--pri-d),var(--pri));padding:14px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.top-t{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-a{display:flex;align-items:center;gap:8px}
+.top-b{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:10px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ubadge{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;padding:6px 12px;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
+.ni{flex:1;max-width:80px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border:none;background:none;cursor:pointer;color:var(--txt2);font:inherit;font-size:9px;font-weight:600;border-radius:10px}
+.ni.on{color:var(--pri);background:var(--acc-l)}
+.ni .ic{font-size:19px}
+
+.pg{display:none;padding:16px 14px 20px}.pg.on{display:block;animation:fadeUp .3s ease}
+.st{font-size:18px;font-weight:800;color:var(--pri-d);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.sc{background:#fff;border-radius:var(--r);padding:14px;text-align:center;box-shadow:var(--sh)}
-.sn{font-size:24px;font-weight:900}.sl{font-size:11px;color:var(--txt2)}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;padding:10px;box-shadow:0 -4px 20px rgba(0,0,0,.08)}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;border:none;background:none;font-size:10px;color:var(--txt2)}
-.ni.on{color:var(--pri)}
-.rt{width:100%;border-collapse:collapse;font-size:12px}.rt th{background:var(--pri);color:#fff;padding:8px}.rt td{padding:8px;text-align:center;border-bottom:1px solid #eee}
+.sc{background:var(--card);border-radius:var(--r);padding:14px 12px;box-shadow:var(--sh);text-align:center;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.bl::before{background:linear-gradient(90deg,var(--pri),var(--acc))}
+.sc.gn::before{background:var(--ok)}.sc.rd::before{background:var(--err)}.sc.pp::before{background:var(--orp)}
+.sc .si{font-size:24px;margin-bottom:4px}.sc .sn{font-size:24px;font-weight:900;color:var(--pri-d)}.sc .sl{font-size:11px;color:var(--txt2);font-weight:600}
+
+.cs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cb{padding:16px;border:3px solid #E8EDF2;border-radius:var(--r);background:#fff;cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:var(--txt);text-align:center}
+.cb:hover{border-color:var(--acc)}.cb.on{border-color:var(--pri);background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff}
+.cb small{display:block;font-size:11px;font-weight:400;opacity:.8;margin-top:3px}
+
+.dr{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:#fff;padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh)}
+.dr input[type=date]{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:14px;font-weight:600;color:var(--pri-d)}
+.dr input:focus{outline:none;border-color:var(--acc)}
+.dl{font-size:12px;font-weight:700;color:var(--pri)}
+
+.ft{display:flex;gap:8px;margin-bottom:12px}
+.fb{padding:7px 14px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:var(--txt2)}
+.fb.on{border-color:var(--pri);background:var(--pri);color:#fff}.fb.ot.on{border-color:var(--orp);background:var(--orp);color:#fff}
+
+.si2{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:var(--rs);margin-bottom:7px;box-shadow:0 2px 6px rgba(0,0,0,.04);animation:fadeUp .3s ease;border-left:4px solid transparent}
+.si2.orp{border-left-color:var(--orp);background:var(--orp-l)}
+.snum{width:30px;height:30px;border-radius:8px;background:var(--acc-l);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.si2.orp .snum{background:var(--orp);color:#fff}
+.sname{flex:1;font-size:13px;font-weight:600}
+.ob{display:inline-flex;background:var(--orp);color:#fff;padding:1px 7px;border-radius:8px;font-size:9px;font-weight:700}
+.abs{display:flex;gap:5px}
+.ab{width:42px;height:42px;border:2px solid #E8EDF2;border-radius:9px;background:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.ab:active{transform:scale(.9)}
+.ab.p{background:var(--ok);border-color:var(--ok);color:#fff;animation:ck .3s}
+.ab.a{background:var(--err);border-color:var(--err);color:#fff;animation:ck .3s}
+
+.mar{display:flex;gap:8px;margin-bottom:10px}
+.mab{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:9px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
+.mab:hover{border-color:var(--acc)}.mab.g{color:var(--ok)}.mab.r{color:var(--err)}
+
+/* Unsaved changes banner */
+.unsaved-bar{display:none;position:sticky;top:62px;z-index:90;background:#FFF3CD;border-bottom:2px solid var(--warn);padding:8px 14px;font-size:12px;font-weight:700;color:#856404;align-items:center;gap:8px}
+.unsaved-bar.show{display:flex}
+.unsaved-bar span{flex:1}
+
+.svb{position:fixed;bottom:64px;left:14px;right:14px;z-index:90;display:none}
+.svbtn{width:100%;padding:14px;border:none;border-radius:var(--r);background:linear-gradient(135deg,var(--ok),var(--ok-d));color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(46,204,113,.4);display:flex;align-items:center;justify-content:center;gap:8px}
+.svbtn:disabled{opacity:.6;cursor:not-allowed}
+
+.rf{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.rf select{flex:1;min-width:90px;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff}
+.rt{width:100%;border-collapse:separate;border-spacing:0;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);font-size:11px}
+.rt thead th{background:var(--pri);color:#fff;padding:10px 5px;font-weight:700;text-align:center}
+.rt td{padding:8px 5px;text-align:center;border-bottom:1px solid #F0F0F0;background:#fff}
+.rt tr:hover td{background:var(--acc-l)}.rt tr.or td{background:var(--orp-l)}
+.pb{height:5px;border-radius:3px;background:#E8EDF2;overflow:hidden;margin-top:3px}
+.pf{height:100%;border-radius:3px}.ph{background:var(--ok)}.pm{background:var(--warn)}.pl{background:var(--err)}
+
+.as{margin-bottom:20px}
+.ast{font-size:15px;font-weight:700;color:var(--pri);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ali{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#fff;border-radius:var(--rs);margin-bottom:5px;box-shadow:0 2px 6px rgba(0,0,0,.04);flex-wrap:wrap}
+.ali.io{background:var(--orp-l);border-left:3px solid var(--orp)}
+.ali .nm{flex:1;font-weight:600;font-size:12px;min-width:70px}
+.abtn{padding:5px 10px;border:none;border-radius:7px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.abtn.ed{background:var(--acc-l);color:var(--pri)}.abtn.dl{background:#FEE;color:var(--err)}
+.abtn.ot{background:var(--orp-l);color:var(--orp)}.abtn.ot.on{background:var(--orp);color:#fff}
+.abtn.ad{background:var(--acc-l);color:var(--pri);padding:9px 18px;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+
+/* Orphans page */
+.coming-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
+.coming-soon .cs-ic{font-size:64px;margin-bottom:16px;animation:fadeUp .5s ease}
+.coming-soon h2{font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:8px}
+.coming-soon p{font-size:13px;color:var(--txt2);max-width:260px;line-height:1.6}
+.cs-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.cs-pill{background:var(--orp-l);color:var(--orp);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700}
+
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.mo.sh{display:flex}
+.md{background:#fff;border-radius:var(--r);padding:24px 20px;width:100%;max-width:380px;animation:fadeUp .3s;max-height:90vh;overflow-y:auto}
+.mt{font-size:17px;font-weight:800;color:var(--pri-d);margin-bottom:18px;text-align:center}
+.mb{display:flex;gap:10px;margin-top:18px}.mb .btn{flex:1;padding:11px;font-size:13px}
+
+.cg{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;background:var(--orp-l);border-radius:var(--rs);border:2px solid #D2B4DE}
+.cg input[type=checkbox]{width:20px;height:20px;accent-color:var(--orp);cursor:pointer}
+.cg label{font-size:13px;font-weight:600;color:var(--orp);cursor:pointer}
+
+/* Confirm modal */
+.conf-modal .conf-ic{font-size:48px;text-align:center;margin-bottom:10px}
+.conf-modal .conf-msg{font-size:14px;color:var(--txt2);text-align:center;margin-bottom:4px;line-height:1.5}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--pri-d);color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:13px;z-index:300;transition:transform .4s cubic-bezier(.68,-.55,.27,1.55);box-shadow:0 8px 24px rgba(0,0,0,.2);white-space:nowrap}
+.toast.ok{background:var(--ok-d)}.toast.er{background:var(--err)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Report accuracy note */
+.report-note{background:#EEF7FF;border-left:3px solid var(--acc);padding:10px 12px;border-radius:8px;font-size:11px;color:var(--pri);margin-bottom:12px;line-height:1.5}
+
+.dash-date-bar{display:flex;align-items:center;gap:8px;background:#fff;border-radius:var(--r);padding:10px 14px;box-shadow:var(--sh);margin-bottom:14px}
+.dash-date-bar input[type=date]{flex:1;padding:8px 10px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:13px;font-weight:600;color:var(--pri-d)}
+.dash-date-bar input:focus{outline:none;border-color:var(--acc)}
+.dash-date-label{font-size:11px;font-weight:700;color:var(--pri);white-space:nowrap}
+.dash-nav{display:flex;gap:8px;margin-bottom:4px}
+.dash-nav button{padding:6px 12px;border:none;background:rgba(255,255,255,.18);color:#fff;border-radius:8px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;opacity:.75}
+.dash-nav button:hover{opacity:1;background:rgba(255,255,255,.28)}
+.dash-date-tag{display:inline-block;margin-bottom:10px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.dash-date-tag.today{background:var(--ok);color:#fff}
+.dash-date-tag.past{background:var(--acc-l);color:var(--pri)}
+.dash-date-tag.nodata{background:#F0F0F0;color:var(--txt2)}
+.rpt-tabs{display:flex;gap:0;margin-bottom:14px;background:#E8EDF2;border-radius:var(--rs);padding:3px}
+.rpt-tab{flex:1;padding:9px;border:none;background:none;border-radius:8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--txt2);transition:.2s}
+.rpt-tab.on{background:#fff;color:var(--pri);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.day-rpt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.day-rpt-card{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:var(--sh)}
+.day-rpt-card .drn{font-size:20px;font-weight:900;color:var(--pri-d)}
+.day-rpt-card .drl{font-size:10px;color:var(--txt2);font-weight:600;margin-top:2px}
+@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
 </style>
 </head>
 <body>
+<div class="loader" id="ld"><div class="sp"></div><div style="font-size:15px;font-weight:700;color:var(--pri)">Loading...</div></div>
 
-<div class="loader" id="ld"><div class="sp"></div><div>Loading School System...</div></div>
-
+<!-- LOGIN -->
 <div class="login-page" id="lp">
-    <div class="login-box">
-        <h2 style="text-align:center;margin-bottom:20px">Quran School Login</h2>
-        <div id="le" style="color:red;display:none;text-align:center;margin-bottom:10px"></div>
-        <div class="ig"><label>Username</label><input type="text" id="un"></div>
-        <div class="ig"><label>Password</label><input type="password" id="pw"></div>
-        <button class="btn btn-p" onclick="doLogin()">Sign In</button>
-    </div>
+  <div class="login-box">
+    <div class="login-logo">🏫</div>
+    <div class="login-title">Quran School</div>
+    <div class="login-sub">Attendance Management System</div>
+    <div class="lerr" id="le"></div>
+    <div class="ig"><label>Username</label><input type="text" id="un" autocomplete="username"></div>
+    <div class="ig"><label>Password</label><input type="password" id="pw" autocomplete="current-password"></div>
+    <button class="btn btn-p" onclick="doLogin()">Sign In</button>
+    <div class="conn" id="cs"></div>
+  </div>
 </div>
 
+<!-- APP -->
 <div class="app" id="app">
-    <div class="top">
-        <div id="topTitle">Home</div>
-        <button onclick="doLogout()" style="background:none;border:none;color:#fff;font-size:20px">🚪</button>
-    </div>
+  <div class="top">
+    <div class="top-t"><span>🏫</span><span id="topTitle">Home</span></div>
+    <div class="top-a"><span class="ubadge" id="ub"></span><button class="top-b" onclick="doLogout()">🚪</button></div>
+  </div>
 
-    <div class="pg on" id="pgH">
-        <div class="card" id="adminDateCard" style="display:none">
-            <label style="font-size:12px;font-weight:700">Check Date Status:</label>
-            <input type="date" id="homeDate" onchange="refreshDash()" style="width:100%;padding:8px;margin-top:5px;border:1px solid #ddd;border-radius:8px">
+  <!-- Unsaved changes banner (Attendance page) -->
+  <div class="unsaved-bar" id="unsavedBar">
+    <span>⚠️ You have unsaved attendance changes</span>
+    <button class="abtn ed" onclick="doSave()">Save Now</button>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="pg on" id="pgH">
+    <div class="home-portal">
+      <div class="hp-hero">
+        <div class="hp-greeting">Welcome back,</div>
+        <div class="hp-name" id="hpName">—</div>
+        <div class="hp-role" id="hpRole">—</div>
+        <div class="hp-date" id="hpDate">—</div>
+      </div>
+      <div id="dashDateBar" style="display:none">
+        <div class="dash-date-bar">
+          <span class="dash-date-label">📅 Viewing:</span>
+          <input type="date" id="dashDate" onchange="refreshDash()">
+          <button class="abtn ed" onclick="dashGoToday()" id="dashTodayBtn" style="white-space:nowrap">Today</button>
         </div>
-        <div id="ds" class="sg"></div>
-        <div id="hpCards" class="sg"></div>
+      </div>
+      <div id="ds" class="sg"></div>
+      <div id="dashDateTag"></div>
+      <div id="hpCards" class="hp-grid"></div>
     </div>
+  </div>
 
-    <div class="pg" id="pgA">
-        <div class="card">
-            <input type="date" id="ad" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd">
-            <select id="csel" style="width:100%;margin-top:10px;padding:10px" onchange="renderSL()"></select>
-        </div>
-        <div id="sl"></div>
-        <button class="btn btn-p" onclick="doSave()" style="margin-top:10px">Save Attendance</button>
+  <!-- ATTENDANCE PAGE -->
+  <div class="pg" id="pgA">
+    <div class="st">✅ Take Attendance</div>
+    <div class="dr"><span class="dl">Date:</span><input type="date" id="ad"></div>
+    <div class="cs" id="csel"></div>
+    <div id="acon" style="display:none">
+      <div class="ft" id="sf"></div>
+      <div class="mar"><button class="mab g" onclick="mAll('present')">✓ All Present</button><button class="mab r" onclick="mAll('absent')">✕ All Absent</button></div>
     </div>
+    <div id="sl"></div>
+    <div class="svb" id="svb"><button class="svbtn" id="svbn" onclick="doSave()">💾 Save Attendance</button></div>
+  </div>
 
-    <div class="pg" id="pgR">
-        <div class="card">
-            <select id="reportType" onchange="toggleReport()" style="width:100%;padding:10px;margin-bottom:10px">
-                <option value="monthly">Monthly Report</option>
-                <option value="daily">Daily Report</option>
-            </select>
-            <div id="mSelects">
-                <select id="rm" style="width:100%;padding:10px;margin-bottom:10px"></select>
-            </div>
-            <div id="dSelects" style="display:none">
-                <input type="date" id="rdt" style="width:100%;padding:10px;margin-bottom:10px">
-            </div>
-            <button class="btn btn-p" onclick="doReport()">Generate</button>
-        </div>
-        <div id="ro" class="card" style="overflow-x:auto"></div>
+  <!-- REPORTS PAGE -->
+  <div class="pg" id="pgR">
+    <div class="st">📈 Reports</div>
+    <div class="rpt-tabs">
+      <button class="rpt-tab on" id="rtab-daily" onclick="switchRptTab('daily')">📅 Daily</button>
+      <button class="rpt-tab" id="rtab-monthly" onclick="switchRptTab('monthly')">📆 Monthly</button>
     </div>
+    <!-- DAILY REPORT SECTION -->
+    <div id="rpt-daily-section">
+      <div class="rf" style="margin-bottom:10px">
+        <input type="date" id="rd" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff;color:var(--pri-d)">
+        <select id="rdc" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff"><option value="all">All Classes</option></select>
+      </div>
+      <button class="btn btn-p" onclick="doDailyReport()" style="margin-bottom:14px">📊 Generate Daily Report</button>
+      <div id="rdo"></div>
+    </div>
+    <!-- MONTHLY REPORT SECTION -->
+    <div id="rpt-monthly-section" style="display:none">
+      <div class="report-note">ℹ️ Attendance % is calculated only over days where records were actually saved. Days with no saved record are excluded from totals.</div>
+      <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">💜 Orphans Only</option><option value="nonorphans">👤 Non-Orphans Only</option><option value="teachers">Teachers</option></select></div>
+      <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Monthly Report</button>
+      <div id="ro"></div>
+    </div>
+  </div>
 
-    <div class="bnav" id="bnav"></div>
+  <!-- ORPHANS PAGE -->
+  <div class="pg" id="pgO">
+    <div class="st">💜 Orphans</div>
+    <div class="coming-soon">
+      <div class="cs-ic">💜</div>
+      <h2>Orphan Records</h2>
+      <p>This section will contain detailed profiles, sponsorship tracking, welfare notes, and progress records for all orphaned students.</p>
+      <div class="cs-pills">
+        <span class="cs-pill">👤 Student Profiles</span>
+        <span class="cs-pill">📋 Welfare Notes</span>
+        <span class="cs-pill">💰 Sponsorship</span>
+        <span class="cs-pill">📊 Progress Tracking</span>
+        <span class="cs-pill">📞 Guardian Contact</span>
+      </div>
+      <div style="margin-top:24px;background:var(--orp-l);border-radius:var(--r);padding:16px;width:100%;max-width:320px">
+        <div style="font-size:13px;font-weight:700;color:var(--orp);margin-bottom:8px">Current Orphan Count</div>
+        <div id="orphanCountDisplay" style="font-size:32px;font-weight:900;color:var(--pri-d)">—</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:4px">across all classes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY LOG PAGE -->
+  <div class="pg" id="pgL">
+    <div class="st">📋 Activity Log</div>
+    <div class="card" id="alCard"><div id="al" style="font-size:12px;color:var(--txt2)"></div></div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div class="pg" id="pgM">
+    <div class="st">⚙️ Admin Panel</div>
+    <div class="ig" style="margin-bottom: 15px;"><input type="text" id="adminSearch" placeholder="🔍 Search students by name..." oninput="doAdminSearch(this.value)"></div>
+    <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
+    <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
+    <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
+  </div>
+
+  <div class="bnav" id="bnav"></div>
 </div>
 
-<script type="module">
-// FIREBASE IMPORT & BOOT LOGIC
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<div class="mo" id="mov"><div class="md" id="moc"></div></div>
+<div class="toast" id="tst"></div>
 
-const firebaseConfig = { /* Your config will be automatically injected if hosted on Firebase, otherwise add it here */ };
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
+<script>
+// ===== UTILS =====
+function parseAttDoc(raw){
+  const out={};
+  Object.keys(raw).forEach(k=>{
+    const v=raw[k];
+    if(k.includes('__')){
+      const sep=k.indexOf('__');
+      const cid=k.slice(0,sep),sid=k.slice(sep+2);
+      if(!out[cid])out[cid]={};out[cid][sid]=v;
+    } else if(k.includes('.')&&!k.startsWith('.')){
+      const[cid,...rest]=k.split('.');const sid=rest.join('.');
+      if(!out[cid])out[cid]={};out[cid][sid]=v;
+    } else if(v&&typeof v==='object'&&!Array.isArray(v)){
+      if(!out[k])out[k]={};
+      Object.keys(v).forEach(sid=>{if(typeof v[sid]==='string')out[k][sid]=v[sid]});
+    }
+    // FIX: plain string top-level values silently dropped before — now handled via __ and . paths above
+  });
+  return out;
+}
 
-// DATA & STATE
-const CLASSES = [
-    {id:'c1', name:'Class 1', students:[{id:'s1',name:'Saidu M. Kanu',o:1},{id:'s2',name:'Abu-bakar Kamara',o:0}]},
-    {id:'c2', name:'Class 2', students:[{id:'s42',name:'Musa Kamara',o:1},{id:'s43',name:'Foday A. Kamara',o:1}]}
+// Simple hash (djb2) — passwords hashed client-side before storing
+// NOTE: For production use a proper backend auth solution. This is a step up from plaintext.
+function hashPW(str){let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h)+str.charCodeAt(i);return(h>>>0).toString(16)}
+
+let DB=null,firebaseReady=false;
+
+const CLASSES=[
+{id:'c1',name:'Class 1',students:[
+{id:'s1',name:'Saidu M. Kanu',o:1},{id:'s2',name:'Abu-bakar Kamara',o:0},{id:'s3',name:'Ibrahim Sesay',o:0},{id:'s4',name:'Salimatu M. Bangura',o:1},{id:'s5',name:'Mabinity S. Sesay',o:1},{id:'s6',name:'Marion A. Sesay',o:0},{id:'s7',name:'Fatmatu Jalloh',o:1},{id:'s8',name:'Isatu G. Jalloh',o:1},{id:'s9',name:'Abu-bakar Jalloh',o:0},{id:'s10',name:'Kadiatu B. Bangura',o:0},{id:'s11',name:'Isatu Kamara',o:1},{id:'s12',name:'Buya Kanu',o:0},{id:'s13',name:'Issa Sesay',o:0},{id:'s14',name:'Amara Bangura',o:0},{id:'s15',name:'Jossef Tarawalie',o:1},{id:'s16',name:'Abdul-rahman Tarawalie',o:1},{id:'s17',name:'Aminata T. Bangura',o:1},{id:'s18',name:'Hassan Conteh',o:1},{id:'s19',name:'Ibrahim Kamara',o:0},{id:'s20',name:'Deamon Bundor',o:0},{id:'s21',name:'Osman O. Sesay (1)',o:0},{id:'s22',name:'Osman O. Sesay (2)',o:0},{id:'s23',name:'Michael A. Bangura',o:0},{id:'s24',name:'Foday A. Bangura',o:0},{id:'s25',name:'Momoh A. Kamara',o:1},{id:'s26',name:'Abdulai M. Bangura',o:0},{id:'s27',name:'Mariatu S. Kamara',o:0},{id:'s28',name:'Konie Conteh',o:0},{id:'s29',name:'Mabinity F. Kamara',o:0},{id:'s30',name:'Aminata A. Bangura',o:0},{id:'s31',name:'Abdul Sesay',o:0},{id:'s32',name:'Salimatu T. Bangura',o:0},{id:'s33',name:'Fatmtu Kamara',o:0},{id:'s34',name:'Isatu Kamara (2)',o:1},{id:'s35',name:'Adama U. Bangura',o:1},{id:'s36',name:'Hassenatu I. Kamara',o:0},{id:'s37',name:'Ibrahim S. Sesay',o:0},{id:'s38',name:'Zainab S. Bangura',o:0},{id:'s39',name:'Hassan I. Kamara',o:0},{id:'s40',name:'Ibrahim M. Sesay',o:0},{id:'s41',name:'Memunatu Kargbo',o:0}
+]},
+{id:'c2',name:'Class 2',students:[
+{id:'s42',name:'Musa Kamara',o:1},{id:'s43',name:'Foday A. Kamara',o:1},{id:'s44',name:'Andrew T. Bangura',o:0},{id:'s45',name:'Foday M. Bangura',o:1},{id:'s46',name:'Osman A. Kargbo',o:0},{id:'s47',name:'Mohamed A. Kamara',o:1},{id:'s48',name:'Abibatu M. Bangura',o:1},{id:'s49',name:'Rugiatu F. Bangura',o:1},{id:'s50',name:'Lamin L. Sesay',o:1},{id:'s51',name:'Alimamy T. Bangura',o:0},{id:'s52',name:'Ramatu G. Jalloh',o:1},{id:'s53',name:'Josef O. Kamara',o:1},{id:'s54',name:'Kadiatu B. Kamara',o:1},{id:'s55',name:'Isatu M. Bangura',o:1},{id:'s56',name:'Moulayah Turay',o:1},{id:'s57',name:'Ibrahim Sesay',o:0},{id:'s58',name:'Fouad A. Bangura',o:0},{id:'s59',name:'Ibrahim Sorie Bangura',o:0},{id:'s60',name:'Idrisa I. Kamara',o:1},{id:'s61',name:'Ibrahim M. Bangura',o:0}
+]}];
+
+// Passwords stored as hashes. Legacy plaintext passwords are compared by also checking hash.
+const USERS=[
+{u:'admin',ph:hashPW('admin123'),r:'admin',n:'Admin'},
+{u:'shuaib',ph:hashPW('shuaib123'),r:'teacher',n:'Sh. Shuaib',tid:'t1'},
+{u:'mohamad',ph:hashPW('mohamad123'),r:'teacher',n:'Sh. Mohamad',tid:'t2'}
 ];
-const USERS = [{u:'admin', p:'admin123', r:'admin', n:'Administrator'}];
+const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohamad',u:'mohamad'}];
 
-let user = null;
-let att = {}; // Student attendance
-let tatt = {}; // Teacher attendance
+let user=null,att={},tatt={},logs=[],selCl=null,filt='all',adminSearchTerm='';
+let classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
+let hasUnsaved=false; // FIX: track unsaved changes
 
-window.doLogin = () => {
-    const u = document.getElementById('un').value;
-    const p = document.getElementById('pw').value;
-    const found = USERS.find(x => x.u === u && x.p === p);
-    if(found) {
-        user = found;
-        document.getElementById('lp').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        initApp();
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dim(y,m){return new Date(y,m,0).getDate()}
+function toast(m,t='ok'){const e=$('tst');e.textContent=m;e.className='toast '+t;requestAnimationFrame(()=>e.classList.add('show'));setTimeout(()=>e.classList.remove('show'),3000)}
+function $(id){return document.getElementById(id)}
+
+// ===== SESSION — store only u/r/n/tid, no password =====
+function saveSession(){try{sessionStorage.setItem('qs_user',JSON.stringify({u:user.u,r:user.r,n:user.n,tid:user.tid||null}))}catch{}}
+function loadSession(){
+  try{
+    const s=sessionStorage.getItem('qs_user');
+    if(!s)return null;
+    const saved=JSON.parse(s);
+    // Re-validate against current users list
+    const match=users.find(x=>x.u===saved.u&&x.r===saved.r);
+    return match||null;
+  }catch{return null}
+}
+function clearSession(){try{sessionStorage.removeItem('qs_user')}catch{}}
+
+// ===== FIREBASE =====
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    // reuse if already loaded
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
+  });
+}
+
+async function initFirebase(){
+  try{
+    // Load both SDK scripts IN PARALLEL — cuts wait time in half
+    await Promise.all([
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js')
+    ]);
+    // Firestore needs app first — safe because Promise.all waits for both
+    firebase.initializeApp({apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",authDomain:"quranschool26-c77e0.firebaseapp.com",projectId:"quranschool26-c77e0",storageBucket:"quranschool26-c77e0.firebasestorage.app",messagingSenderId:"600563978552",appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"});
+    DB=firebase.firestore();
+    // Enable offline persistence — app works even on flaky connections
+    try{await DB.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('Persistence:',e.code)}
+    firebaseReady=true;
+    // Kick off background data load — don't await it here
+    loadAllData();
+    return true;
+  }catch(e){console.error('Firebase init:',e);return false}
+}
+
+async function loadAllData(){
+  try{
+    // Load appData first (users/classes/teachers) — needed before login works
+    const mainDoc=await DB.collection('appData').doc('main').get();
+    if(mainDoc.exists){
+      const d=mainDoc.data();
+      if(d.users)users=d.users;
+      if(d.classes)classes=d.classes;
+      if(d.teachers)teachers=d.teachers;
     } else {
-        document.getElementById('le').innerText = "Invalid credentials";
-        document.getElementById('le').style.display = 'block';
+      await DB.collection('appData').doc('main').set({classes,teachers,users});
     }
-};
 
-async function initApp() {
-    document.getElementById('ld').classList.add('hide');
-    if(user.r === 'admin') document.getElementById('adminDateCard').style.display = 'block';
-    document.getElementById('homeDate').value = new Date().toISOString().split('T')[0];
-    setupNav();
-    refreshDash();
-    fillSelectors();
+    // Load attendance collections in parallel
+    const [aSnap,tSnap,lSnap]=await Promise.all([
+      DB.collection('attendance').get(),
+      DB.collection('teacherAttendance').get(),
+      DB.collection('activityLog').orderBy('ts','desc').limit(30).get()
+    ]);
+    att={};aSnap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
+    tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
+    logs=[];lSnap.forEach(d=>logs.push(d.data()));
+
+    // Refresh UI if user is already logged in (session restore case)
+    if(user){refreshDash();refreshLog();}
+
+    // Set up real-time listeners AFTER initial load (avoids double-processing)
+    DB.collection('attendance').onSnapshot(snap=>{
+      att={};snap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
+      if(user)refreshDash();
+    });
+    DB.collection('teacherAttendance').onSnapshot(snap=>{
+      tatt={};snap.forEach(d=>{tatt[d.id]=d.data()});
+    });
+    DB.collection('activityLog').orderBy('ts','desc').limit(30).onSnapshot(snap=>{
+      logs=[];snap.forEach(d=>logs.push(d.data()));
+      if(user)refreshLog();
+    });
+    DB.collection('appData').doc('main').onSnapshot(doc=>{
+      if(doc.exists){
+        const d=doc.data();
+        if(d.users)users=d.users;
+        if(d.classes)classes=d.classes;
+        if(d.teachers)teachers=d.teachers;
+      }
+    });
+  }catch(e){console.error('LoadAllData:',e)}
 }
 
-function setupNav() {
-    const nav = document.getElementById('bnav');
-    const items = [
-        {id:'H', n:'Home', i:'🏠'},
-        {id:'A', n:'Attendance', i:'✅'},
-        {id:'R', n:'Reports', i:'📊'}
-    ];
-    nav.innerHTML = items.map(x => `<button class="ni" onclick="showPg('${x.id}')"><span>${x.i}</span>${x.n}</button>`).join('');
-}
-
-window.showPg = (id) => {
-    document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-    document.getElementById('pg'+id).classList.add('on');
-};
-
-window.refreshDash = () => {
-    const targetDate = document.getElementById('homeDate').value;
-    const sData = att[targetDate] || {};
-    // Logic to calculate counts...
-    document.getElementById('ds').innerHTML = `
-        <div class="sc"><b>${targetDate}</b><div class="sl">Status View</div></div>
-        <div class="sc"><b>Check</b><div class="sl">Reports Tab</div></div>
-    `;
-};
-
-window.toggleReport = () => {
-    const isDaily = document.getElementById('reportType').value === 'daily';
-    document.getElementById('mSelects').style.display = isDaily ? 'none' : 'block';
-    document.getElementById('dSelects').style.display = isDaily ? 'block' : 'none';
-};
-
-window.doReport = () => {
-    const type = document.getElementById('reportType').value;
-    const out = document.getElementById('ro');
-    if(type === 'daily') {
-        const d = document.getElementById('rdt').value;
-        out.innerHTML = `<h4>Daily Report for ${d}</h4><p>No records found for this date.</p>`;
-    } else {
-        out.innerHTML = `<h4>Monthly Summary</h4><p>Generating calculation...</p>`;
+async function fbSaveMain(){if(!DB)return;try{await DB.collection('appData').doc('main').set({classes,teachers,users})}catch(e){console.error(e)}}
+async function fbSaveAtt(date){
+  if(!DB)return;
+  try{
+    if(att[date]){
+      const flat={};
+      Object.keys(att[date]).forEach(cid=>{const cv=att[date][cid];if(typeof cv==='object')Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]})});
+      await DB.collection('attendance').doc(date).set(flat);
     }
-};
+    if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
+  }catch(e){console.error(e)}
+}
+async function fbLog(action,detail){if(!DB)return;try{await DB.collection('activityLog').add({user:user?user.n:'?',username:user?user.u:'?',role:user?user.r:'?',action,detail,ts:new Date().toISOString()})}catch(e){console.error(e)}}
 
-function fillSelectors() {
-    const csel = document.getElementById('csel');
-    csel.innerHTML = CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    
-    const rm = document.getElementById('rm');
-    const now = new Date();
-    rm.innerHTML = `<option value="${now.getFullYear()}-${now.getMonth()+1}">${now.toLocaleString('default', { month: 'long' })}</option>`;
+// ===== AUTH =====
+function doLogin(){
+  const u=$('un').value.trim().toLowerCase(),p=$('pw').value.trim();
+  // FIX: support both hashed passwords (new) and legacy plaintext (migration)
+  const found=users.find(x=>x.u===u&&(x.ph===hashPW(p)||(x.p&&x.p===p)));
+  if(!found){$('le').style.display='block';$('le').textContent='Invalid username or password';return}
+  user=found;saveSession();
+  // FIX: mark teacher attendance AFTER data is loaded (we're past initFirebase at this point)
+  if(user.r==='teacher'&&user.tid){
+    const td=today();
+    if(!tatt[td])tatt[td]={};
+    tatt[td][user.tid]='present';
+    fbSaveAtt(td);
+  }
+  fbLog('login','Logged in');
+  showApp();
 }
 
-window.doLogout = () => { location.reload(); };
+function doLogout(){
+  // FIX: warn about unsaved changes before logout
+  if(hasUnsaved){
+    showConfirm('⚠️ Unsaved Changes','You have unsaved attendance. Leave anyway?',()=>{_doLogout()});
+    return;
+  }
+  _doLogout();
+}
+function _doLogout(){
+  user=null;clearSession();hasUnsaved=false;
+  $('app').style.display='none';$('lp').style.display='flex';
+  $('un').value='';$('pw').value='';$('le').style.display='none';
+}
 
-// Ensure loader hides if something fails
-setTimeout(() => document.getElementById('ld').classList.add('hide'), 2000);
+function showApp(){
+  $('lp').style.display='none';$('app').style.display='block';$('ub').textContent=user.n;
+  // Set hero
+  $('hpName').textContent=user.n;
+  $('hpRole').textContent=user.r==='admin'?'Administrator':'Teacher';
+  const now=new Date();
+  $('hpDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Build nav and home cards based on role
+  buildNav();
+  $('ad').value=today();
+  $('ad').setAttribute('max',today()); // FIX: prevent future date selection
+  renderCS();refreshDash();initFilters();
+  if(user.r==='admin')renderAdmin();
+  updateOrphanCount();
+}
+
+// ===== NAV & HOME CARDS =====
+function buildNav(){
+  const isAdmin=user.r==='admin';
+  // Teachers: Home, Attendance only
+  // Admins: Home, Attendance, Orphans, Reports, Log, Admin
+  let navItems=[
+    {id:'H',ic:'🏠',lbl:'Home'},
+    {id:'A',ic:'✅',lbl:'Attend'},
+  ];
+  if(isAdmin){
+    navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
+    navItems.push({id:'R',ic:'📈',lbl:'Reports'});
+    navItems.push({id:'L',ic:'📋',lbl:'Log'});
+    navItems.push({id:'M',ic:'⚙️',lbl:'Admin'});
+  }
+  $('bnav').innerHTML=navItems.map((n,i)=>`<button class="ni${i===0?' on':''}" id="ni${n.id}" onclick="go('${n.id}',this)"><span class="ic">${n.ic}</span>${n.lbl}</button>`).join('');
+
+  // Build home portal cards — admin sees all, teacher sees only Attendance
+  let cards=[
+    {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
+  ];
+  if(isAdmin){
+    cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true});
+    cards.push({id:'R',ic:'📈',title:'Reports',desc:'Monthly attendance reports by class or student',badge:'',badgeNew:false});
+    cards.push({id:'M',ic:'⚙️',title:'Admin',desc:'Manage students, teachers & passwords',badge:'',badgeNew:false});
+  }
+  $('hpCards').innerHTML=cards.map(c=>`<div class="hp-card${c.badgeNew?' new-badge':''}" onclick="go('${c.id}',null)">
+    ${c.badge?`<div class="hp-card-badge">${c.badge}</div>`:''}
+    <div class="hp-card-ic">${c.ic}</div>
+    <div class="hp-card-title">${c.title}</div>
+    <div class="hp-card-desc">${c.desc}</div>
+  </div>`).join('');
+}
+
+function go(pg,btn){
+  // FIX: warn if navigating away from attendance with unsaved changes
+  if(pg!=='A'&&hasUnsaved){
+    showConfirm('⚠️ Unsaved Changes','You have unsaved attendance changes. Leave without saving?',()=>{_go(pg,btn)});
+    return;
+  }
+  _go(pg,btn);
+}
+function _go(pg,btn){
+  if(pg!=='A'){hasUnsaved=false;$('unsavedBar').classList.remove('show')}
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));$('pg'+pg).classList.add('on');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
+  // Update top title
+  const titles={H:'Home',A:'Attendance',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel'};
+  $('topTitle').textContent=titles[pg]||'';
+  if(pg==='H')refreshDash();
+  if(pg==='R')initFilters();
+  if(pg==='M')renderAdmin();
+  if(pg==='L')refreshLog();
+  if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS()}
+}
+
+// ===== DASHBOARD =====
+function dashGoToday(){$('dashDate').value=today();refreshDash()}
+
+function refreshDash(){
+  const isAdmin=user&&user.r==='admin';
+  const td=today();
+  const selDate=isAdmin&&$('dashDate')?$('dashDate').value||td:td;
+  const isToday=selDate===td;
+
+  // show/hide date picker for admin
+  if(isAdmin&&$('dashDateBar')){
+    $('dashDateBar').style.display='block';
+    if(!$('dashDate').value)$('dashDate').value=td;
+    $('dashDate').setAttribute('max',td);
+  }
+
+  const ts=classes.reduce((s,c)=>s+c.students.length,0);
+  const to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
+  const ta=att[selDate]||{};
+  let pr=0,ab=0,opr=0,oab=0,marked=0;
+  classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++}else if(v==='absent'){ab++;marked++;if(s.o)oab++}})});
+
+  // date context tag
+  const tagEl=$('dashDateTag');
+  if(tagEl&&isAdmin){
+    const hasData=marked>0;
+    const label=isToday?'📅 Today — '+selDate:selDate;
+    const cls=isToday?'today':hasData?'past':'nodata';
+    const extra=!hasData&&!isToday?' (no record saved)':'';
+    tagEl.innerHTML=`<div class="dash-date-tag ${cls}">${label}${extra}</div>`;
+  } else if(tagEl){tagEl.innerHTML='';}
+
+  const presLabel=isToday?'Present Today':'Present';
+  const absLabel=isToday?'Absent Today':'Absent';
+  $('ds').innerHTML=[
+    {i:'👨‍🎓',n:ts,l:'Total Students',c:'bl'},
+    {i:'✅',n:pr,l:presLabel,c:'gn'},
+    {i:'❌',n:ab,l:absLabel,c:'rd'},
+    {i:'💜',n:`${to}<span style="font-size:11px;display:block;font-weight:600;color:var(--ok-d)">✅${opr} ❌${oab}</span>`,l:'Orphans',c:'pp'}
+  ].map(s=>`<div class="sc ${s.c}"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sl">${s.l}</div></div>`).join('');
+}
+
+function refreshLog(){
+  $('al').innerHTML=logs.length===0?'<p style="text-align:center;padding:16px">No activity yet</p>':logs.slice(0,30).map(l=>{
+    const t=l.ts?new Date(l.ts):null;const tm=t?t.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    const ic=l.role==='admin'?'👨‍💼':'👨‍🏫';
+    return`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0f0f0;gap:6px"><div style="flex:1"><div style="font-weight:700;font-size:12px">${ic} ${l.user||l.username}</div><div style="font-size:10px;color:var(--txt2);margin-top:1px">${l.detail||l.action}</div></div><div style="font-size:9px;color:var(--txt2);white-space:nowrap">${tm}</div></div>`
+  }).join('');
+}
+
+function updateOrphanCount(){
+  const total=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
+  const el=$('orphanCountDisplay');if(el)el.textContent=total;
+}
+
+// ===== ATTENDANCE =====
+function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`).join('')}
+function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';$('svb').style.display='block'}
+function renderSF(){const c=classes.find(x=>x.id===selCl);if(!c)return;$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`}
+function setF(m){filt=m;renderSF();renderSL()}
+
+function renderSL(){
+  const c=classes.find(x=>x.id===selCl);if(!c)return;
+  const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
+  let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
+  $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
+    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
+}
+
+function setAt(sid,st,btn){
+  const dt=$('ad').value;
+  if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
+  if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}
+  else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}
+  // FIX: mark unsaved
+  setUnsaved(true);
+}
+
+function mAll(st){
+  const c=classes.find(x=>x.id===selCl);if(!c)return;
+  const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
+  let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);
+  ss.forEach(s=>{att[dt][selCl][s.id]=st});
+  renderSL();
+  setUnsaved(true); // FIX
+}
+
+function setUnsaved(v){
+  hasUnsaved=v;
+  $('unsavedBar').classList.toggle('show',v);
+}
+
+async function doSave(){
+  if(!selCl)return;
+  const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Saving...';
+  const dt=$('ad').value;const cls=classes.find(x=>x.id===selCl);
+  const da=(att[dt]||{})[selCl]||{};
+  const pc=Object.values(da).filter(v=>v==='present').length;
+  const ac=Object.values(da).filter(v=>v==='absent').length;
+  await fbSaveAtt(dt);
+  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}`);
+  btn.disabled=false;btn.innerHTML='💾 Saved ✅';
+  setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
+  setUnsaved(false); // FIX: clear unsaved state after successful save
+  toast('Saved to server ✅','ok');refreshDash();
+}
+
+// ===== REPORTS =====
+function switchRptTab(tab){
+  $('rpt-daily-section').style.display=tab==='daily'?'block':'none';
+  $('rpt-monthly-section').style.display=tab==='monthly'?'block':'none';
+  document.querySelectorAll('.rpt-tab').forEach(b=>b.classList.remove('on'));
+  $('rtab-'+tab).classList.add('on');
+}
+
+function initFilters(){
+  // init monthly selects
+  const ms=$('rm'),now=new Date();ms.innerHTML='';
+  for(let i=0;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');ms.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`}
+  const cs=$('rc');cs.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{cs.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
+  // init daily selects
+  const rdc=$('rdc');rdc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rdc.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
+  if(!$('rd').value)$('rd').value=today();
+  $('rd').setAttribute('max',today());
+}
+
+function doDailyReport(){
+  const dt=$('rd').value;
+  const cf=$('rdc').value;
+  if(!dt){toast('Pick a date first','er');return;}
+  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
+  const ta=att[dt]||{};
+  const dayName=new Date(dt+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const hasRecord=Object.keys(ta).length>0;
+
+  let totalS=0,totalP=0,totalA=0,totalO=0,totalOP=0,totalOA=0;
+  let classRows='';
+
+  cl.forEach(c=>{
+    const cd=ta[c.id]||{};
+    const classHasRecord=Object.keys(cd).length>0;
+    let cp=0,ca=0,cu=0;
+    c.students.forEach(s=>{
+      const v=cd[s.id];
+      if(v==='present'){cp++;totalP++;if(s.o){totalOP++;}}
+      else if(v==='absent'){ca++;totalA++;if(s.o){totalOA++;}}
+      else cu++;
+      totalS++;if(s.o)totalO++;
+    });
+    const ctt=cp+ca;
+    const cpc=ctt>0?Math.round(cp/ctt*100):null;
+    // student detail rows
+    const studentRows=c.students.map((s,i)=>{
+      const v=cd[s.id]||'';
+      const statusIcon=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';
+      return`<tr class="${s.o?'or':''}"><td style="color:var(--txt2);font-size:10px">${i+1}</td><td style="text-align:left;font-weight:600;font-size:11px">${s.o?'💜 ':''}${s.name}</td><td>${statusIcon}</td></tr>`;
+    }).join('');
+
+    classRows+=`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+        <strong style="color:var(--pri-d)">${c.name}</strong>
+        <div style="display:flex;gap:10px;font-size:12px;font-weight:700">
+          <span style="color:var(--ok)">✅ ${cp}</span>
+          <span style="color:var(--err)">❌ ${ca}</span>
+          ${cu>0?`<span style="color:var(--txt2)">— ${cu}</span>`:''}
+          ${cpc!==null?`<span style="color:${cpc>=80?'var(--ok)':cpc>=60?'var(--warn)':'var(--err)'}">📊 ${cpc}%</span>`:''}
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Student</th><th>Status</th></tr></thead><tbody>${studentRows}</tbody></table></div>
+    </div>`;
+  });
+
+  const totalTT=totalP+totalA;
+  const avgPc=totalTT>0?Math.round(totalP/totalTT*100):null;
+
+  $('rdo').innerHTML=`
+    <div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}</div>
+    ${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}
+    <div class="day-rpt-grid">
+      <div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div>
+      <div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div>
+      <div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div>
+      <div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div>
+      <div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div>
+      <div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div>
+    </div>
+    ${classRows}
+  `;
+}
+
+function doReport(){const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp)}
+
+function rptS(y,mn,dm,cf,tp){
+  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
+  cl.forEach(c=>{
+    let st=c.students;
+    if(tp==='orphans')st=st.filter(s=>s.o);
+    else if(tp==='nonorphans')st=st.filter(s=>!s.o);
+    st.forEach(s=>{
+      let p=0,a=0,recordedDays=0;
+      for(let d=1;d<=dm;d++){
+        const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const dy=new Date(y,mn-1,d).getDay();
+        if(dy===5||dy===6)continue; // skip weekends
+        if(new Date(ds)>new Date())continue; // skip future
+        const dayData=att[ds];
+        // FIX: only count days where a record was actually saved for this class
+        if(!dayData||!dayData[c.id])continue;
+        recordedDays++;
+        const val=(dayData[c.id]||{})[s.id];
+        if(val==='present')p++;
+        else if(val==='absent')a++;
+      }
+      const tt=p+a;
+      // FIX: pc based on recorded days only — unmarked within a recorded session count as absent
+      const pc=recordedDays>0?Math.round(p/Math.max(tt,1)*100):null;
+      rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o,recordedDays});
+    });
+  });
+  const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;
+  const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;
+  const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
+  $('ro').innerHTML=rows.length===0
+    ?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found for this filter</div>`
+    :`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div>
+        <div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div>
+        <div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div>
+      </div>
+      <div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students</div>
+      <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead>
+      <tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}">
+        <td style="color:var(--txt2)">${i+1}</td>
+        <td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td>
+        <td style="font-size:10px">${r.cn}</td>
+        <td style="color:var(--ok);font-weight:700">${r.p}</td>
+        <td style="color:var(--err);font-weight:700">${r.a}</td>
+        <td style="color:var(--txt2)">${r.tt}</td>
+        <td>${r.pc!==null
+          ?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`
+          :'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td>
+      </tr>`).join('')}</tbody></table></div>`
+}
+
+function rptT(y,mn,dm){
+  // FIX: only count days where teacher attendance was actually recorded, not all past weekdays
+  let rows=[];
+  teachers.forEach(t=>{
+    let p=0,a=0;
+    for(let d=1;d<=dm;d++){
+      const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const dy=new Date(y,mn-1,d).getDay();
+      if(dy===5||dy===6)continue;
+      if(new Date(ds)>=new Date(today()))continue;
+      const dayRec=tatt[ds];
+      if(!dayRec)continue; // FIX: skip days with no record at all
+      const x=dayRec[t.id];
+      if(x==='present')p++;
+      else a++; // present in the record but not marked = counted absent only if record exists
+    }
+    const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;
+    rows.push({n:t.name,p,a,pc});
+  });
+  $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+}
+
+// ===== ADMIN =====
+function doAdminSearch(val){adminSearchTerm=val.toLowerCase();renderAdmin()}
+
+function renderAdmin(){
+  let h='';
+  classes.forEach(c=>{
+    const filteredStudents=c.students.filter(s=>s.name.toLowerCase().includes(adminSearchTerm));
+    if(filteredStudents.length>0||adminSearchTerm===''){
+      const oc=c.students.filter(s=>s.o).length;
+      h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?' <span style="color:var(--orp)">💜'+oc+'</span>':''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
+      h+=filteredStudents.map(s=>{const oi=c.students.indexOf(s)+1;return`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`}).join('');
+      h+=`</div></div>`;
+    }
+  });
+  h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
+  $('ac').innerHTML=h;
+  $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
+  $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('')
+}
+
+async function tgO(ci,si){const c=classes.find(x=>x.id===ci),s=c.students.find(x=>x.id===si);s.o=s.o?0:1;await fbSaveMain();renderAdmin();updateOrphanCount();toast(s.o?'💜 Marked as orphan':'Unmarked')}
+function showM(c){$('moc').innerHTML=c;$('mov').classList.add('sh')}
+function hideM(){$('mov').classList.remove('sh')}
+
+// FIX: replaced confirm() with custom modal
+function showConfirm(title,msg,onYes){
+  showM(`<div class="conf-modal"><div class="conf-ic">⚠️</div><div class="mt" style="margin-bottom:6px">${title}</div><div class="conf-msg">${msg}</div><div class="mb"><button class="btn btn-p" onclick="hideM();(${onYes.toString()})()">Yes, proceed</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div></div>`);
+}
+
+function mAddS(ci){showM(`<div class="mt">Add Student</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="cg"><input type="checkbox" id="_o"><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="aS('${ci}')">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aS(ci){const n=$('_n').value.trim();if(!n)return;classes.find(c=>c.id===ci).students.push({id:'s_'+Date.now(),name:n,o:$('_o').checked?1:0});await fbSaveMain();hideM();renderAdmin();updateOrphanCount();toast('Added ✅')}
+function mEdS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);showM(`<div class="mt">Edit Student</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${s.name}"></div><div class="cg"><input type="checkbox" id="_o" ${s.o?'checked':''}><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="svS('${ci}','${si}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);const n=$('_n').value.trim();if(n)s.name=n;s.o=$('_o').checked?1:0;await fbSaveMain();hideM();renderAdmin();updateOrphanCount();toast('Updated ✅')}
+
+// FIX: delete uses custom confirm modal instead of confirm()
+function dS(ci,si){
+  showConfirm('Delete Student','Are you sure you want to delete this student? This cannot be undone.',async()=>{
+    const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();updateOrphanCount();toast('Deleted');
+  });
+}
+function mAddC(){showM(`<div class="mt">Add Class</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="mb"><button class="btn btn-p" onclick="aC()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aC(){const n=$('_n').value.trim();if(!n)return;classes.push({id:'c_'+Date.now(),name:n,students:[]});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+function mAddT(){showM(`<div class="mt">Add Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="ig"><label>Username</label><input type="text" id="_u"></div><div class="ig"><label>Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="aT()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function aT(){
+  const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();
+  if(!u||!p)return;
+  const id='t_'+Date.now();
+  teachers.push({id,name:n||u,u});
+  users.push({u,ph:hashPW(p),r:'teacher',n:n||u,tid:id}); // FIX: store hashed
+  await fbSaveMain();hideM();renderAdmin();toast('Added ✅')
+}
+function mEdT(ti){const t=teachers.find(x=>x.id===ti);showM(`<div class="mt">Edit Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${t.name}"></div><div class="mb"><button class="btn btn-p" onclick="svT('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim();if(n){t.name=n;const u2=users.find(x=>x.tid===ti);if(u2)u2.n=n}await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
+function dT(ti){
+  showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{
+    teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');
+  });
+}
+function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
+async function svPW(un){
+  const p=$('_p').value.trim();if(!p)return;
+  const u=users.find(x=>x.u===un);
+  u.ph=hashPW(p);delete u.p; // FIX: hash new pw, remove any legacy plaintext
+  await fbSaveMain();hideM();toast('Password changed ✅')
+}
+
+$('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
+$('ad').addEventListener('change',()=>{if(selCl)renderSL()});
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+// ===== BOOT =====
+(async function(){
+  // Step 1: load Firebase SDKs (fast — parallel, ~300-600ms)
+  const ok=await initFirebase();
+
+  // Step 2: hide loader and show UI immediately — don't wait for Firestore data
+  $('ld').classList.add('hide');
+  const cs=$('cs');
+  if(ok){cs.className='conn y';cs.textContent='🟢 Connected to server'}
+  else{cs.className='conn n';cs.textContent='🔴 Offline – cached data shown'}
+
+  // Step 3: restore session or show login — app is usable right away
+  const saved=loadSession();
+  if(saved){user=saved;showApp()}
+  else{$('lp').style.display='flex'}
+})();
 </script>
 </body>
 </html>
