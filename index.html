@@ -450,8 +450,8 @@ async function initFirebase(){
     // Enable offline persistence — app works even on flaky connections
     try{await DB.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('Persistence:',e.code)}
     firebaseReady=true;
-    // Kick off background data load — don't await it here
-    loadAllData();
+    // Start data load — we await it so att/classes are ready before login
+    await loadAllData();
     return true;
   }catch(e){console.error('Firebase init:',e);return false}
 }
@@ -485,7 +485,14 @@ async function loadAllData(){
     if(user){refreshDash();refreshLog();}
 
     DB.collection('attendance').onSnapshot(snap=>{
-      att={};snap.forEach(d=>{att[d.id]=parseAttDoc(d.data())});
+      // Merge incoming docs into att — don't wipe unsaved in-memory marks
+      snap.docChanges().forEach(change=>{
+        if(change.type==='added'||change.type==='modified'){
+          att[change.doc.id]=parseAttDoc(change.doc.data());
+        } else if(change.type==='removed'){
+          delete att[change.doc.id];
+        }
+      });
       if(user)refreshDash();
     });
     DB.collection('teacherAttendance').onSnapshot(snap=>{
@@ -584,13 +591,20 @@ async function loadStudentProgress(){
 async function fbSaveAtt(date){
   if(!DB)return;
   try{
+    // Always attempt write — att[date] is set in memory by setAt() before doSave() is called
+    const flat={};
     if(att[date]){
-      const flat={};
-      Object.keys(att[date]).forEach(cid=>{const cv=att[date][cid];if(typeof cv==='object')Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]})});
-      await DB.collection('attendance').doc(date).set(flat);
+      Object.keys(att[date]).forEach(cid=>{
+        const cv=att[date][cid];
+        if(cv&&typeof cv==='object'){
+          Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]});
+        }
+      });
     }
+    // Write even if flat is empty (clears a previously saved record)
+    await DB.collection('attendance').doc(date).set(flat);
     if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
-  }catch(e){console.error(e)}
+  }catch(e){console.error('fbSaveAtt error:',e);throw e;}
 }
 async function fbLog(action,detail){if(!DB)return;try{await DB.collection('activityLog').add({user:user?user.n:'?',username:user?user.u:'?',role:user?user.r:'?',action,detail,ts:new Date().toISOString()})}catch(e){console.error(e)}}
 
@@ -824,11 +838,17 @@ async function doSave(){
   const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Saving...';
   const pc=Object.values(da).filter(v=>v==='present').length;
   const ac=Object.values(da).filter(v=>v==='absent').length;
-  await fbSaveAtt(dt);
-  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}${unmarked.length>0?' ⚠️'+unmarked.length+' unmarked':''}`);
-  btn.disabled=false;btn.innerHTML='💾 Saved ✅';
-  setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
-  setUnsaved(false);toast('Saved to server ✅','ok');refreshDash();
+  try{
+    await fbSaveAtt(dt);
+    await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}${unmarked.length>0?' ⚠️'+unmarked.length+' unmarked':''}`);
+    btn.disabled=false;btn.innerHTML='💾 Saved ✅';
+    setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
+    setUnsaved(false);toast('Saved to server ✅','ok');refreshDash();
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='💾 Save Attendance';
+    toast('❌ Save failed — check connection','er');
+    console.error('doSave failed:',e);
+  }
 }
 
 // ===== REPORTS =====
