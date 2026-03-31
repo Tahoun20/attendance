@@ -185,6 +185,29 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .day-rpt-card{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:var(--sh)}
 .day-rpt-card .drn{font-size:20px;font-weight:900;color:var(--pri-d)}
 .day-rpt-card .drl{font-size:10px;color:var(--txt2);font-weight:600;margin-top:2px}
+
+/* ── Read-only lock banner ── */
+.ro-bar{display:none;background:#FFF3CD;border-bottom:2px solid var(--warn);padding:8px 14px;font-size:12px;font-weight:700;color:#856404;align-items:center;gap:8px}
+.ro-bar.show{display:flex}
+/* ── Completion warning on save btn ── */
+.svbtn.warn{background:linear-gradient(135deg,var(--warn),#e67e22) !important;box-shadow:0 6px 20px rgba(243,156,18,.4) !important}
+/* ── Student Progress page ── */
+.sp-class-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.sp-class-tab{padding:8px 18px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:var(--txt2)}
+.sp-class-tab.on{border-color:var(--pri);background:var(--pri);color:#fff}
+.sp-student-card{background:#fff;border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--sh);border-left:4px solid transparent}
+.sp-student-card.orp{border-left-color:var(--orp)}
+.sp-student-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.sp-student-num{width:28px;height:28px;border-radius:8px;background:var(--acc-l);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.sp-student-name{flex:1;font-size:13px;font-weight:700}
+.sp-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sp-field label{display:block;font-size:10px;font-weight:700;color:var(--txt2);margin-bottom:3px}
+.sp-field input,.sp-field select{width:100%;padding:8px 10px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:12px;font-weight:600;color:var(--pri-d);background:#FAFBFC}
+.sp-field input:focus,.sp-field select:focus{outline:none;border-color:var(--acc)}
+.sp-save-btn{margin-top:8px;padding:7px 14px;border:none;border-radius:8px;background:var(--ok);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;width:100%}
+.sp-save-btn:hover{background:var(--ok-d)}
+/* ── Progress report tab ── */
+.prg-level-badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700;background:var(--acc-l);color:var(--pri)}
 @media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
 </style>
 </head>
@@ -211,6 +234,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="top-t"><span>🏫</span><span id="topTitle">Home</span></div>
     <div class="top-a"><span class="ubadge" id="ub"></span><button class="top-b" onclick="doLogout()">🚪</button></div>
   </div>
+
+  <!-- Read-only banner for teachers on past dates -->
+  <div class="ro-bar" id="roBar">🔒 Past date — read only. Only today's attendance can be edited.</div>
 
   <!-- Unsaved changes banner (Attendance page) -->
   <div class="unsaved-bar" id="unsavedBar">
@@ -259,6 +285,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="rpt-tabs">
       <button class="rpt-tab on" id="rtab-daily" onclick="switchRptTab('daily')">📅 Daily</button>
       <button class="rpt-tab" id="rtab-monthly" onclick="switchRptTab('monthly')">📆 Monthly</button>
+      <button class="rpt-tab" id="rtab-progress" onclick="switchRptTab('progress')">📚 Progress</button>
     </div>
     <!-- DAILY REPORT SECTION -->
     <div id="rpt-daily-section">
@@ -275,6 +302,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">💜 Orphans Only</option><option value="nonorphans">👤 Non-Orphans Only</option><option value="teachers">Teachers</option></select></div>
       <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Monthly Report</button>
       <div id="ro"></div>
+    </div>
+    <!-- PROGRESS REPORT SECTION -->
+    <div id="rpt-progress-section" style="display:none">
+      <div class="rf" style="margin-bottom:10px">
+        <select id="rprm" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff"></select>
+        <select id="rprc" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff"><option value="all">All Classes</option></select>
+      </div>
+      <button class="btn btn-p" onclick="doProgressReport()" style="margin-bottom:14px">📚 Generate Progress Report</button>
+      <div id="rpro"></div>
     </div>
   </div>
 
@@ -315,6 +351,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
   </div>
 
+  <!-- STUDENT PROGRESS PAGE -->
+  <div class="pg" id="pgP">
+    <div class="st">📚 Student Progress</div>
+    <div class="sp-class-tabs" id="spClassTabs"></div>
+    <div id="spStudentList"></div>
+  </div>
+
   <div class="bnav" id="bnav"></div>
 </div>
 
@@ -322,6 +365,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div class="toast" id="tst"></div>
 
 <script>
+
+// ===== CONSTANTS =====
+const SURAHS=['1. Al-Fatiha','2. Al-Baqarah','3. Ali Imran','4. An-Nisa','5. Al-Maidah','6. Al-Anam','7. Al-Araf','8. Al-Anfal','9. At-Tawbah','10. Yunus','11. Hud','12. Yusuf','13. Ar-Rad','14. Ibrahim','15. Al-Hijr','16. An-Nahl','17. Al-Isra','18. Al-Kahf','19. Maryam','20. Ta-Ha','21. Al-Anbiya','22. Al-Hajj','23. Al-Muminun','24. An-Nur','25. Al-Furqan','26. Ash-Shuara','27. An-Naml','28. Al-Qasas','29. Al-Ankabut','30. Ar-Rum','31. Luqman','32. As-Sajdah','33. Al-Ahzab','34. Saba','35. Fatir','36. Ya-Sin','37. As-Saffat','38. Sad','39. Az-Zumar','40. Ghafir','41. Fussilat','42. Ash-Shura','43. Az-Zukhruf','44. Ad-Dukhan','45. Al-Jathiyah','46. Al-Ahqaf','47. Muhammad','48. Al-Fath','49. Al-Hujurat','50. Qaf','51. Adh-Dhariyat','52. At-Tur','53. An-Najm','54. Al-Qamar','55. Ar-Rahman','56. Al-Waqiah','57. Al-Hadid','58. Al-Mujadila','59. Al-Hashr','60. Al-Mumtahanah','61. As-Saf','62. Al-Jumuah','63. Al-Munafiqun','64. At-Taghabun','65. At-Talaq','66. At-Tahrim','67. Al-Mulk','68. Al-Qalam','69. Al-Haqqah','70. Al-Maarij','71. Nuh','72. Al-Jinn','73. Al-Muzzammil','74. Al-Muddaththir','75. Al-Qiyamah','76. Al-Insan','77. Al-Mursalat','78. An-Naba','79. An-Naziat','80. Abasa','81. At-Takwir','82. Al-Infitar','83. Al-Mutaffifin','84. Al-Inshiqaq','85. Al-Buruj','86. At-Tariq','87. Al-Ala','88. Al-Ghashiyah','89. Al-Fajr','90. Al-Balad','91. Ash-Shams','92. Al-Layl','93. Ad-Duhaa','94. Ash-Sharh','95. At-Tin','96. Al-Alaq','97. Al-Qadr','98. Al-Bayyinah','99. Az-Zalzalah','100. Al-Adiyat','101. Al-Qariah','102. At-Takathur','103. Al-Asr','104. Al-Humazah','105. Al-Fil','106. Quraysh','107. Al-Maun','108. Al-Kawthar','109. Al-Kafirun','110. An-Nasr','111. Al-Masad','112. Al-Ikhlas','113. Al-Falaq','114. An-Nas'];
+const C1_LEVELS=['Reading – Letters','Reading – Words','Reading – Sentences','Writing'];
 // ===== UTILS =====
 function parseAttDoc(raw){
   const out={};
@@ -530,11 +577,12 @@ function showApp(){
 // ===== NAV & HOME CARDS =====
 function buildNav(){
   const isAdmin=user.r==='admin';
-  // Teachers: Home, Attendance only
-  // Admins: Home, Attendance, Orphans, Reports, Log, Admin
+  // Teachers: Home, Attendance, Progress
+  // Admins: Home, Attendance, Progress, Orphans, Reports, Log, Admin
   let navItems=[
     {id:'H',ic:'🏠',lbl:'Home'},
     {id:'A',ic:'✅',lbl:'Attend'},
+    {id:'P',ic:'📚',lbl:'Progress'},
   ];
   if(isAdmin){
     navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
@@ -544,13 +592,14 @@ function buildNav(){
   }
   $('bnav').innerHTML=navItems.map((n,i)=>`<button class="ni${i===0?' on':''}" id="ni${n.id}" onclick="go('${n.id}',this)"><span class="ic">${n.ic}</span>${n.lbl}</button>`).join('');
 
-  // Build home portal cards — admin sees all, teacher sees only Attendance
+  // Build home portal cards
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
+    {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
   ];
   if(isAdmin){
     cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true});
-    cards.push({id:'R',ic:'📈',title:'Reports',desc:'Monthly attendance reports by class or student',badge:'',badgeNew:false});
+    cards.push({id:'R',ic:'📈',title:'Reports',desc:'Attendance & progress reports',badge:'',badgeNew:false});
     cards.push({id:'M',ic:'⚙️',title:'Admin',desc:'Manage students, teachers & passwords',badge:'',badgeNew:false});
   }
   $('hpCards').innerHTML=cards.map(c=>`<div class="hp-card${c.badgeNew?' new-badge':''}" onclick="go('${c.id}',null)">
@@ -576,13 +625,14 @@ function _go(pg,btn){
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
   // Update top title
-  const titles={H:'Home',A:'Attendance',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel'};
+  const titles={H:'Home',A:'Attendance',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
   if(pg==='R')initFilters();
   if(pg==='M')renderAdmin();
   if(pg==='L')refreshLog();
-  if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS()}
+  if(pg==='P')renderStudentProgress();
+  if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS();updateROBar()}
 }
 
 // ===== DASHBOARD =====
@@ -642,16 +692,38 @@ function updateOrphanCount(){
 
 // ===== ATTENDANCE =====
 function renderCS(){$('csel').innerHTML=classes.map(c=>`<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`).join('')}
-function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';$('svb').style.display='block'}
+function selClass(id){selCl=id;filt='all';renderCS();renderSF();renderSL();$('acon').style.display='block';if(!isReadOnly())$('svb').style.display='block';else $('svb').style.display='none';updateROBar()}
 function renderSF(){const c=classes.find(x=>x.id===selCl);if(!c)return;$('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`}
 function setF(m){filt=m;renderSF();renderSL()}
 
+function isReadOnly(){
+  // Teachers can only edit today; admins can edit any day
+  return user.r==='teacher' && $('ad').value!==today();
+}
+function updateROBar(){
+  const ro=isReadOnly();
+  $('roBar').classList.toggle('show', ro);
+  // Also hide/show save button
+  if($('svb').style.display!=='none'){
+    $('svbn').disabled=ro;
+    $('svbn').style.opacity=ro?'.5':'1';
+  }
+}
 function renderSL(){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
   const dt=$('ad').value,da=(att[dt]||{})[selCl]||{};
+  const ro=isReadOnly();
   let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
-  $('sl').innerHTML=st.map((s,i)=>{const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;
-    return`<div class="si2 ${s.o?'orp':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}</div><div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div></div>`}).join('')
+  $('sl').innerHTML=st.map((s,i)=>{
+    const v=da[s.id]||'';
+    const idx=c.students.indexOf(s)+1;
+    const missing=!v&&!ro;
+    const btns=ro
+      ?`<div class="abs"><button class="ab ${v==='present'?'p':''}" disabled style="opacity:.6;cursor:not-allowed">✓</button><button class="ab ${v==='absent'?'a':''}" disabled style="opacity:.6;cursor:not-allowed">✕</button></div>`
+      :`<div class="abs"><button class="ab ${v==='present'?'p':''}" onclick="setAt('${s.id}','present',this)">✓</button><button class="ab ${v==='absent'?'a':''}" onclick="setAt('${s.id}','absent',this)">✕</button></div>`;
+    return`<div class="si2 ${s.o?'orp':''}" style="${missing?'border-left:4px solid var(--warn)':''}"><div class="snum">${idx}</div><div class="sname">${s.o?'<span class="ob">💜</span> ':''}${s.name}${missing?'<span style="color:var(--warn);font-size:9px;margin-left:6px;font-weight:700">unmarked</span>':''}</div>${btns}</div>`;
+  }).join('');
+  updateROBar();
 }
 
 function setAt(sid,st,btn){
@@ -679,16 +751,24 @@ function setUnsaved(v){
 
 async function doSave(){
   if(!selCl)return;
-  const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Saving...';
-  const dt=$('ad').value;const cls=classes.find(x=>x.id===selCl);
+  if(isReadOnly()){toast('Past date — read only for teachers','er');return;}
+  const dt=$('ad').value;
+  const cls=classes.find(x=>x.id===selCl);
   const da=(att[dt]||{})[selCl]||{};
+  // Completion check — warn if any student is unmarked
+  const unmarked=cls.students.filter(s=>!da[s.id]);
+  if(unmarked.length>0){
+    toast(`⚠️ ${unmarked.length} student${unmarked.length>1?'s':''} still unmarked`,'er');
+    // Still allow save after warning — teacher may intentionally leave some
+  }
+  const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Saving...';
   const pc=Object.values(da).filter(v=>v==='present').length;
   const ac=Object.values(da).filter(v=>v==='absent').length;
   await fbSaveAtt(dt);
-  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}`);
+  await fbLog('attendance',`${cls?cls.name:selCl} | ${dt} | ✅${pc} ❌${ac}${unmarked.length>0?' ⚠️'+unmarked.length+'unmarked':''}`);
   btn.disabled=false;btn.innerHTML='💾 Saved ✅';
   setTimeout(()=>{btn.innerHTML='💾 Save Attendance'},2000);
-  setUnsaved(false); // FIX: clear unsaved state after successful save
+  setUnsaved(false);
   toast('Saved to server ✅','ok');refreshDash();
 }
 
@@ -696,8 +776,10 @@ async function doSave(){
 function switchRptTab(tab){
   $('rpt-daily-section').style.display=tab==='daily'?'block':'none';
   $('rpt-monthly-section').style.display=tab==='monthly'?'block':'none';
+  $('rpt-progress-section').style.display=tab==='progress'?'block':'none';
   document.querySelectorAll('.rpt-tab').forEach(b=>b.classList.remove('on'));
   $('rtab-'+tab).classList.add('on');
+  if(tab==='progress')initProgressReportFilters();
 }
 
 function initFilters(){
@@ -851,6 +933,109 @@ function rptT(y,mn,dm){
   $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
 }
 
+
+// ===== STUDENT PROGRESS =====
+let spSelClass=null;
+
+function getLevelOptions(classId, currentLevel){
+  const isC1=classId==='c1'||classes.find(c=>c.id===classId)?.name?.includes('1');
+  const opts=isC1?C1_LEVELS:SURAHS;
+  return opts.map(o=>`<option value="${o}" ${currentLevel===o?'selected':''}>${o}</option>`).join('');
+}
+
+function renderStudentProgress(){
+  // Build class tabs
+  $('spClassTabs').innerHTML=classes.map((c,i)=>`<button class="sp-class-tab ${(!spSelClass&&i===0)||spSelClass===c.id?'on':''}" onclick="spSelCl('${c.id}')">${c.name}</button>`).join('');
+  if(!spSelClass)spSelClass=classes[0]?.id;
+  renderSPList();
+}
+
+function spSelCl(cid){
+  spSelClass=cid;
+  document.querySelectorAll('.sp-class-tab').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`[onclick="spSelCl('${cid}')"]`)?.classList.add('on');
+  renderSPList();
+}
+
+function renderSPList(){
+  const c=classes.find(x=>x.id===spSelClass);if(!c){$('spStudentList').innerHTML='';return;}
+  const isC2=c.name.includes('2')||spSelClass==='c2';
+  $('spStudentList').innerHTML=c.students.map((s,i)=>{
+    const age=s.age||'';
+    const level=s.level||'';
+    const progress=s.progress||'';
+    const levelOpts=getLevelOptions(spSelClass,level);
+    return`<div class="sp-student-card ${s.o?'orp':''}" id="spc-${s.id}">
+      <div class="sp-student-header">
+        <div class="sp-student-num">${i+1}</div>
+        <div class="sp-student-name">${s.o?'💜 ':''}${s.name}</div>
+        ${level?`<span class="prg-level-badge">${level}</span>`:''}
+      </div>
+      <div class="sp-fields">
+        <div class="sp-field">
+          <label>Age</label>
+          <input type="number" min="4" max="25" id="sp-age-${s.id}" value="${age}" placeholder="—">
+        </div>
+        <div class="sp-field">
+          <label>${isC2?'Current Surah':'Level'}</label>
+          <select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select>
+        </div>
+        <div class="sp-field" style="grid-column:1/-1">
+          <label>Monthly Progress Note</label>
+          <input type="text" id="sp-prg-${s.id}" value="${progress}" placeholder="e.g. Improved fluency this month">
+        </div>
+      </div>
+      <button class="sp-save-btn" onclick="saveStudentProgress('${c.id}','${s.id}')">💾 Save</button>
+    </div>`;
+  }).join('');
+}
+
+async function saveStudentProgress(cid,sid){
+  const c=classes.find(x=>x.id===cid);
+  const s=c.students.find(x=>x.id===sid);
+  const age=$('sp-age-'+sid).value;
+  const level=$('sp-lvl-'+sid).value;
+  const progress=$('sp-prg-'+sid).value.trim();
+  s.age=age?Number(age):undefined;
+  s.level=level||undefined;
+  s.progress=progress||undefined;
+  await fbSaveMain();
+  toast('Progress saved ✅','ok');
+  // Refresh badge
+  renderSPList();
+}
+
+// ===== PROGRESS REPORT =====
+function initProgressReportFilters(){
+  const rprm=$('rprm');if(!rprm)return;
+  const now=new Date();rprm.innerHTML='';
+  for(let i=0;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');rprm.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`}
+  const rprc=$('rprc');rprc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rprc.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
+}
+
+function doProgressReport(){
+  const cf=$('rprc').value;
+  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
+  let rows=[];
+  cl.forEach(c=>{
+    c.students.forEach(s=>{
+      rows.push({name:s.name,cls:c.name,age:s.age||'—',level:s.level||'—',progress:s.progress||'—',o:s.o});
+    });
+  });
+  if(rows.length===0){$('rpro').innerHTML='<div class="card" style="text-align:center;padding:20px;color:var(--txt2)">No students found.</div>';return;}
+  $('rpro').innerHTML=`<div style="overflow-x:auto"><table class="rt">
+    <thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>Age</th><th style="text-align:left">Level / Surah</th><th style="text-align:left">Monthly Progress</th></tr></thead>
+    <tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}">
+      <td style="color:var(--txt2)">${i+1}</td>
+      <td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.name}</td>
+      <td style="font-size:10px">${r.cls}</td>
+      <td>${r.age}</td>
+      <td style="text-align:left"><span class="prg-level-badge">${r.level}</span></td>
+      <td style="text-align:left;font-size:11px;color:var(--txt2)">${r.progress}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
 // ===== ADMIN =====
 function doAdminSearch(val){adminSearchTerm=val.toLowerCase();renderAdmin()}
 
@@ -918,7 +1103,7 @@ async function svPW(un){
 }
 
 $('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
-$('ad').addEventListener('change',()=>{if(selCl)renderSL()});
+$('ad').addEventListener('change',()=>{if(selCl){renderSL();if(!isReadOnly()){$('svb').style.display='block';}else{$('svb').style.display='none';}updateROBar();}});
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 
 // ===== BOOT =====
