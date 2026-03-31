@@ -4,73 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Quran School Attendance</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--pri:#1B4965;--pri-l:#2D6A8F;--acc:#62B6CB;--ok:#2ECC71;--err:#E74C3C;--warn:#F39C12;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
-.app{min-height:100vh;padding-bottom:80px}
-.pg{display:none;padding:16px}.pg.on{display:block}
-.st{font-size:20px;font-weight:800;margin-bottom:20px;color:var(--pri)}
+:root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+.hide{display:none!important}
+.app{max-width:500px;margin:0 auto;min-height:100vh;position:relative;background:var(--bg)}
+.pg{display:none;padding:16px;animation:fadeIn 0.3s ease-out}.pg.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Header & Stats */
+.hd{padding:20px 16px;background:var(--pri);color:#fff;border-radius:0 0 24px 24px;margin-bottom:20px;box-shadow:var(--sh)}
+.st{font-size:20px;font-weight:800;margin-bottom:4px}
+.sub{font-size:13px;opacity:0.8}
+
+/* Home Portal Cards */
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
-.hp-card{background:#fff;border-radius:var(--r);padding:20px;text-align:center;box-shadow:var(--sh);cursor:pointer;transition:0.2s}
-.hp-card:active{transform:scale(0.95)}
-.hp-card-ic{font-size:30px;margin-bottom:8px}
-.hp-card-title{font-size:13px;font-weight:800}
-.ig{margin-bottom:15px}
-.ig label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--pri)}
-.ig input, .ig select{width:100%;padding:12px;border:2px solid #E8EDF2;border-radius:10px;font-family:inherit}
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:10px}
-.btn-p{background:var(--pri);color:#fff}
-.sl-item{background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
-.ab-group{display:flex;gap:6px}
-.ab{padding:8px 12px;border-radius:8px;border:none;font-weight:700;font-size:12px}
-.ab.p{background:#E8F8F0;color:var(--ok)}
-.ab.p.on{background:var(--ok);color:#fff}
-.ab.a{background:#FEECEC;color:var(--err)}
-.ab.a.on{background:var(--err);color:#fff}
-.mo{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+.hp-card{background:#fff;border-radius:var(--r);padding:20px;text-align:center;box-shadow:var(--sh);cursor:pointer;position:relative;overflow:hidden;transition:0.2s}
+.hp-card:active{transform:scale(0.96)}
+.hp-card-ic{font-size:32px;margin-bottom:10px;display:block}
+.hp-card-title{font-size:13px;font-weight:800;color:var(--pri)}
+
+/* Lists & Items */
+.li{background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between}
+.li-info{flex:1}
+.li-n{font-weight:700;font-size:15px;color:var(--pri)}
+.li-s{font-size:12px;color:var(--txt2)}
+
+/* Attendance Buttons */
+.ab-g{display:flex;gap:8px}
+.ab{width:42px;height:42px;border-radius:12px;border:2px solid #edf2f7;background:#fff;font-weight:800;font-size:14px;color:var(--txt2);cursor:pointer;transition:0.2s}
+.ab.p.on{background:var(--ok);color:#fff;border-color:var(--ok);box-shadow:0 4px 12px rgba(46,204,113,0.3)}
+.ab.a.on{background:var(--err);color:#fff;border-color:var(--err);box-shadow:0 4px 12px rgba(231,76,60,0.3)}
+.ab:disabled{opacity:0.5;cursor:not-allowed;filter:grayscale(1)}
+
+/* Modals */
+.mo{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,45,63,0.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .mo.on{display:flex}
-.md{background:#fff;width:90%;max-width:400px;padding:24px;border-radius:20px;max-height:80vh;overflow-y:auto}
-.st-photo-pre{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:10px auto;display:block;border:3px solid var(--acc);background:#eee}
+.md{background:#fff;width:100%;max-width:400px;border-radius:24px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto}
+.mt{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--pri)}
+.ig{margin-bottom:16px}
+.ig label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px}
+.ig input,.ig select{width:100%;padding:12px;border:2px solid #edf2f7;border-radius:12px;font-weight:600;color:var(--pri);outline:none;transition:0.2s}
+.ig input:focus{border-color:var(--acc)}
+
+/* Buttons */
+.btn{width:100%;padding:14px;border:none;border-radius:14px;font-weight:800;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p{background:var(--pri);color:#fff;box-shadow:0 4px 12px rgba(27,73,101,0.2)}
+.btn-s{background:#edf2f7;color:var(--pri)}
+.st-pre{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:10px auto;display:block;border:3px solid var(--acc)}
 </style>
 </head>
 <body>
 
-<div id="app" class="app">
-    <div class="pg on" id="pgH">
-        <div class="st">🏫 Quran School Portal</div>
-        <div class="hp-grid">
-            <div class="hp-card" onclick="showPg('pgA')">
-                <div class="hp-card-ic">📅</div>
-                <div class="hp-card-title">Attendance</div>
-            </div>
-            <div class="hp-card" onclick="showStudentDataModal()">
-                <div class="hp-card-ic">👤</div>
-                <div class="hp-card-title">Student Data</div>
-            </div>
-        </div>
-    </div>
+<div id="ld" style="position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--pri)">Loading...</div>
 
-    <div class="pg" id="pgA">
-        <div class="st" onclick="showPg('pgH')" style="cursor:pointer">⬅️ Attendance</div>
-        <div class="ig">
-            <label>Select Date</label>
-            <input type="date" id="ad" onchange="renderSL()">
-        </div>
-        <div class="ig">
-            <label>Select Class</label>
-            <select id="cl_sel" onchange="renderSL()">
-                <option value="c1">Class 1 (Basics)</option>
-                <option value="c2">Class 2 (Quran)</option>
-            </select>
-        </div>
-        <div id="sl"></div>
-        <button class="btn btn-p" id="saveBtn" onclick="doSave()">💾 Save Marks</button>
+<div id="app" class="app">
+  <div id="pgL" class="pg">
+    <div style="text-align:center;padding:40px 20px">
+      <div style="font-size:60px">🏫</div>
+      <h1 style="margin-top:20px;color:var(--pri)">Quran School</h1>
+      <p style="color:var(--txt2)">Sign in to continue</p>
     </div>
+    <div class="ig"><label>Username</label><input type="text" id="un" placeholder="Username"></div>
+    <div class="ig"><label>Password</label><input type="password" id="pw" placeholder="••••••••"></div>
+    <button class="btn btn-p" onclick="doL()">Login</button>
+  </div>
+
+  <div id="pgH" class="pg">
+    <div class="hd">
+      <div class="st" id="h_n">Welcome!</div>
+      <div class="sub" id="h_r">Role</div>
+    </div>
+    <div class="hp-grid">
+      <div class="hp-card" onclick="vPg('pgA')">
+        <span class="hp-card-ic">📅</span>
+        <div class="hp-card-title">Attendance</div>
+      </div>
+      <div class="hp-card" onclick="mSt()">
+        <span class="hp-card-ic">👤</span>
+        <div class="hp-card-title">Students Data</div>
+      </div>
+      <div class="hp-card" onclick="vPg('pgR')">
+        <span class="hp-card-ic">📊</span>
+        <div class="hp-card-title">Reports</div>
+      </div>
+      <div class="hp-card admin-only" onclick="vPg('pgAdm')">
+        <span class="hp-card-ic">⚙️</span>
+        <div class="hp-card-title">Admin</div>
+      </div>
+    </div>
+    <button class="btn btn-s" style="margin-top:20px" onclick="doOut()">Logout</button>
+  </div>
+
+  <div id="pgA" class="pg">
+    <div class="st">Daily Attendance</div>
+    <div class="ig"><label>Date</label><input type="date" id="ad" onchange="rSL()"></div>
+    <div class="ig"><label>Class</label><select id="as_c" onchange="rSL()"></select></div>
+    <div id="sl_l"></div>
+    <button class="btn btn-p" id="sv_btn" onclick="doSv()" style="margin-top:20px">Save Attendance</button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="vPg('pgH')">Back</button>
+  </div>
+
+  <div id="pgR" class="pg"><div class="st">Reports</div><div id="rep_l"></div><button class="btn btn-s" onclick="vPg('pgH')">Back</button></div>
+  <div id="pgAdm" class="pg"><div class="st">Admin Panel</div><div id="adm_l"></div><button class="btn btn-s" onclick="vPg('pgH')">Back</button></div>
 </div>
 
-<div class="mo" id="mov"><div class="md" id="moc"></div></div>
+<div id="mov" class="mo"><div class="md" id="moc"></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -78,161 +120,178 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);overfl
 
 <script>
 const $ = id => document.getElementById(id);
+const today = () => new Date().toISOString().split('T')[0];
 
-// ======= 1. FIREBASE CONFIG (PASTE YOUR KEYS HERE) =======
+// PLEASE: PASTE YOUR OWN FIREBASE CONFIG HERE
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
   storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_ID",
+  messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
 
-// Initialize
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// ======= 2. DATA & CONSTANTS =======
-let user = { r: 'teacher', n: 'Instructor' }; 
-let classes = [
-    { id: 'c1', name: 'Class 1', students: [{id:'s1', n:'Ahmad'}, {id:'s2', n:'Sara'}] },
-    { id: 'c2', name: 'Class 2', students: [{id:'s3', n:'Omar'}, {id:'s4', n:'Layla'}] }
-];
-let att = {}; // Attendance state
-const SURAHS = ["Al-Fatihah", "Al-Baqarah", "Al-Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha", "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan", "Ash-Shu'ara", "An-Naml", "Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah", "Al-Ahzab", "Saba", "Fatir", "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir", "Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid", "Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"];
+let user = null, classes = [], users = [], att = {}, selCl = null;
+const SURAHS = ["Al-Fatiha", "Al-Baqarah", "Al-Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha", "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan", "Ash-Shu'ara", "An-Naml", "Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajdah", "Al-Ahzab", "Saba", "Fatir", "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir", "Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid", "Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"];
 
-// ======= 3. NAVIGATION & UI =======
-function showPg(id) {
-    document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-    $(id).classList.add('on');
-    if(id === 'pgA') {
-        $('ad').value = new Date().toISOString().split('T')[0];
-        renderSL();
-    }
+async function init() {
+  const d = await db.collection('appData').doc('main').get();
+  if(d.exists){
+    const data = d.data();
+    classes = data.classes || [];
+    users = data.users || [];
+  }
+  const a = await db.collection('attendance').get();
+  a.forEach(doc => att[doc.id] = doc.data());
+  $('ld').classList.add('hide');
+  vPg('pgL');
 }
 
-function renderSL() {
-    const date = $('ad').value;
-    const cid = $('cl_sel').value;
-    const isToday = date === new Date().toISOString().split('T')[0];
-    const isTeacher = user.r === 'teacher';
-    const locked = isTeacher && !isToday;
-
-    const classObj = classes.find(c => c.id === cid);
-    let h = '';
-    
-    classObj.students.forEach(s => {
-        const mark = (att[date] && att[date][cid]) ? att[date][cid][s.id] : null;
-        h += `
-        <div class="sl-item">
-            <div style="font-weight:600">${s.n}</div>
-            <div class="ab-group">
-                <button class="ab p ${mark==='p'?'on':''}" ${locked?'disabled':''} onclick="setM('${s.id}','p')">P</button>
-                <button class="ab a ${mark==='a'?'on':''}" ${locked?'disabled':''} onclick="setM('${s.id}','a')">A</button>
-            </div>
-        </div>`;
-    });
-    $('sl').innerHTML = h;
-    if(locked) $('saveBtn').style.display = 'none';
-    else $('saveBtn').style.display = 'block';
+function vPg(id) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  $(id).classList.add('on');
+  if(id === 'pgH') {
+    $('h_n').innerText = user.n;
+    $('h_r').innerText = user.r.toUpperCase();
+    document.querySelectorAll('.admin-only').forEach(e => e.style.display = user.r==='admin'?'block':'none');
+  }
+  if(id === 'pgA') {
+    let h = '<option value="">Select Class</option>';
+    classes.forEach(c => h += `<option value="${c.id}">${c.name}</option>`);
+    $('as_c').innerHTML = h;
+    $('ad').value = today();
+  }
 }
 
-function setM(sid, m) {
-    const date = $('ad').value;
-    const cid = $('cl_sel').value;
-    if(!att[date]) att[date] = {};
-    if(!att[date][cid]) att[date][cid] = {};
-    att[date][cid][sid] = m;
-    renderSL();
+function doL() {
+  const u = $('un').value, p = $('pw').value;
+  const found = users.find(x => x.u === u && x.p === p);
+  if(found) { user = found; vPg('pgH'); } else alert('Invalid Login');
 }
 
-// ======= 4. ATTENDANCE SAVING (WITH VALIDATION) =======
-async function doSave() {
-    const date = $('ad').value;
-    const cid = $('cl_sel').value;
-    const classObj = classes.find(c => c.id === cid);
-    
-    const marks = att[date] ? att[date][cid] : null;
-    const count = marks ? Object.keys(marks).length : 0;
-
-    if (count < classObj.students.length) {
-        alert("⚠️ Please mark attendance for ALL students before saving.");
-        return;
-    }
-
-    try {
-        await db.collection('attendance').doc(date).set({ [cid]: marks }, { merge: true });
-        alert("Saved successfully! ✅");
-    } catch(e) { alert("Error saving: " + e.message); }
+function rSL() {
+  const cid = $('as_c').value, date = $('ad').value;
+  if(!cid) return;
+  const cls = classes.find(x => x.id === cid);
+  const isToday = date === today();
+  const readOnly = user.r === 'teacher' && !isToday;
+  
+  let h = '';
+  cls.students.forEach(s => {
+    const mark = (att[date] && att[date][cid]) ? att[date][cid][s.id] : '';
+    h += `<div class="li">
+      <div class="li-info"><div class="li-n">${s.n}</div></div>
+      <div class="ab-g">
+        <button class="ab p ${mark==='p'?'on':''}" ${readOnly?'disabled':''} onclick="setM('${cid}','${s.id}','p')">P</button>
+        <button class="ab a ${mark==='a'?'on':''}" ${readOnly?'disabled':''} onclick="setM('${cid}','${s.id}','a')">A</button>
+      </div>
+    </div>`;
+  });
+  $('sl_l').innerHTML = h;
+  $('sv_btn').disabled = readOnly;
 }
 
-// ======= 5. STUDENT DATA & PHOTOS (FIREBASE STORAGE) =======
-function showStudentDataModal() {
-    let opts = '';
-    classes.forEach(c => c.students.forEach(s => opts += `<option value="${s.id}">${s.n} (${c.name})</option>`));
-
-    const h = `
-        <div class="st">Student Profile</div>
-        <div class="ig"><label>Select Student</label><select id="st_id" onchange="loadLevelList()">${opts}</select></div>
-        <div class="ig"><label>Age</label><input type="number" id="st_age"></div>
-        <div class="ig"><label>Residence</label><input type="text" id="st_res"></div>
-        <div class="ig"><label>Level / Progress</label><select id="st_lvl"></select></div>
-        <div class="ig">
-            <label>Upload Photo</label>
-            <input type="file" id="st_file" accept="image/*" onchange="preImg(this)">
-            <img id="st_pre" class="st-photo-pre">
-        </div>
-        <button class="btn btn-p" onclick="saveProfile()">Save Profile</button>
-        <button class="btn" onclick="$('mov').classList.remove('on')">Cancel</button>
-    `;
-    $('moc').innerHTML = h;
-    $('mov').classList.add('on');
-    loadLevelList();
+function setM(cid, sid, m) {
+  const d = $('ad').value;
+  if(!att[d]) att[d] = {};
+  if(!att[d][cid]) att[d][cid] = {};
+  att[d][cid][sid] = m;
+  rSL();
 }
 
-function loadLevelList() {
-    const sid = $('st_id').value;
-    const isClass2 = sid.startsWith('s3') || sid.startsWith('s4'); // Simplified logic
-    let h = '';
-    if(isClass2) SURAHS.forEach(s => h += `<option value="${s}">${s}</option>`);
-    else h = `<option>Letters</option><option>Words</option><option>Sentences</option><option>Writing</option>`;
-    $('st_lvl').innerHTML = h;
+async function doSv() {
+  const d = $('ad').value, cid = $('as_c').value;
+  const cls = classes.find(x => x.id === cid);
+  const marks = att[d][cid] || {};
+  
+  if(Object.keys(marks).length < cls.students.length) {
+    alert('❌ Warning: Some students still do not have marks beside their names.');
+    return;
+  }
+
+  await db.collection('attendance').doc(d).set({ [cid]: marks }, { merge: true });
+  alert('Attendance Saved ✅');
+}
+
+// STUDENT DATA MANAGEMENT
+function mSt() {
+  let opts = '<option value="">Select Student</option>';
+  classes.forEach(c => c.students.forEach(s => opts += `<option value="${s.id}">${s.n} (${c.name})</option>`));
+  
+  showM(`
+    <div class="mt">Manage Student Data</div>
+    <div class="ig"><label>Student</label><select id="ms_s" onchange="uStF()">${opts}</select></div>
+    <div class="ig"><label>Age</label><input type="number" id="ms_a"></div>
+    <div class="ig"><label>Residence</label><input type="text" id="ms_res"></div>
+    <div class="ig"><label>Level</label><select id="ms_l"></select></div>
+    <div class="ig"><label>Progress/Notes</label><textarea id="ms_p" style="width:100%;border-radius:12px;padding:10px;border:2px solid #edf2f7"></textarea></div>
+    <div class="ig"><label>Photo</label><input type="file" id="ms_f" accept="image/*" onchange="preImg(this)"></div>
+    <img id="ms_pre" class="st-pre hide">
+    <button class="btn btn-p" onclick="svSt()">Update Data</button>
+    <button class="btn btn-s" style="margin-top:8px" onclick="hideM()">Cancel</button>
+  `);
+}
+
+function uStF() {
+  const sid = $('ms_s').value;
+  let s = null, cid = '';
+  classes.forEach(c => { const f = c.students.find(x => x.id === sid); if(f){s=f; cid=c.id;}});
+  if(!s) return;
+  
+  $('ms_a').value = s.age || '';
+  $('ms_res').value = s.res || '';
+  $('ms_p').value = s.prog || '';
+  
+  let h = '';
+  if(cid === 'class2') { // Assuming 'class2' is your ID for Quran class
+    SURAHS.forEach(x => h += `<option value="${x}">${x}</option>`);
+  } else {
+    h = `<option value="letters">Reading Letters</option><option value="words">Reading Words</option><option value="sentences">Reading Sentences</option><option value="writing">Writing</option>`;
+  }
+  $('ms_l').innerHTML = h;
+  $('ms_l').value = s.lvl || '';
+  if(s.img) { $('ms_pre').src = s.img; $('ms_pre').classList.remove('hide'); }
 }
 
 function preImg(input) {
-    if (input.files && input.files[0]) {
-        const r = new FileReader();
-        r.onload = e => $('st_pre').src = e.target.result;
-        r.readAsDataURL(input.files[0]);
-    }
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { $('ms_pre').src = e.target.result; $('ms_pre').classList.remove('hide'); };
+    r.readAsDataURL(input.files[0]);
+  }
 }
 
-async function saveProfile() {
-    const sid = $('st_id').value;
-    const file = $('st_file').files[0];
-    let url = "";
+async function svSt() {
+  const sid = $('ms_s').value, file = $('ms_f').files[0];
+  let s = null;
+  classes.forEach(c => { const f = c.students.find(x => x.id === sid); if(f) s=f; });
+  
+  s.age = $('ms_a').value;
+  s.res = $('ms_res').value;
+  s.lvl = $('ms_l').value;
+  s.prog = $('ms_p').value;
 
-    try {
-        if(file) {
-            const ref = storage.ref(`students/${sid}.jpg`);
-            const snap = await ref.put(file);
-            url = await snap.ref.getDownloadURL();
-        }
+  if(file) {
+    const ref = storage.ref(`students/${sid}`);
+    const snap = await ref.put(file);
+    s.img = await snap.ref.getDownloadURL();
+  }
 
-        const data = {
-            age: $('st_age').value,
-            res: $('st_res').value,
-            lvl: $('st_lvl').value,
-            photo: url || ""
-        };
-
-        // Note: You should update your specific student record in Firestore here
-        alert("Student data saved! ✅");
-        $('mov').classList.remove('on');
-    } catch(e) { alert("Error: " + e.message); }
+  await db.collection('appData').doc('main').set({ classes }, { merge: true });
+  alert('Student Data Updated ✅');
+  hideM();
 }
+
+function showM(h) { $('moc').innerHTML = h; $('mov').classList.add('on'); }
+function hideM() { $('mov').classList.remove('on'); }
+function doOut() { user = null; vPg('pgL'); }
+
+window.onload = init;
 </script>
 </body>
 </html>
