@@ -554,11 +554,15 @@ async function fbSaveStudentProgress(cid,sid,data){
   if(!DB)return;
   try{
     const docId=cid+'__'+sid;
-    const payload={cid,sid,updatedAt:new Date().toISOString()};
-    if(data.age!=null)payload.age=data.age;
-    if(data.level!=null)payload.level=data.level;
-    if(data.progress!=null)payload.progress=data.progress;
-    await DB.collection('studentProgress').doc(docId).set(payload,{merge:true});
+    // Use set (no merge) so null values actually clear old data
+    const payload={
+      cid,sid,
+      age:data.age!=null?data.age:null,
+      level:data.level||null,
+      progress:data.progress||null,
+      updatedAt:new Date().toISOString()
+    };
+    await DB.collection('studentProgress').doc(docId).set(payload);
   }catch(e){console.error(e)}
 }
 
@@ -570,9 +574,10 @@ async function loadStudentProgress(){
       const d=doc.data();
       const c=classes.find(x=>x.id===d.cid);if(!c)return;
       const s=c.students.find(x=>x.id===d.sid);if(!s)return;
-      if(d.age!=null)s.age=d.age;
-      if(d.level!=null)s.level=d.level;
-      if(d.progress!=null)s.progress=d.progress;
+      // Always apply — even null clears stale values from appData
+      s.age=d.age!=null?d.age:s.age||null;
+      s.level=d.level||s.level||null;
+      s.progress=d.progress||s.progress||null;
     });
   }catch(e){console.error(e)}
 }
@@ -1030,7 +1035,7 @@ function renderSPList(){
         <div class="sp-field"><label>${isC2?'Current Surah':'Level'}</label><select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select></div>
         <div class="sp-field" style="grid-column:1/-1"><label>Monthly Progress Note</label><input type="text" id="sp-prg-${s.id}" value="${progress}" placeholder="e.g. Improved fluency this month"></div>
       </div>
-      <button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">&#128222; Save</button>
+      <button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">&#128190; Save</button>
     </div>`;
   }).join('');
 }
@@ -1052,9 +1057,21 @@ async function saveStudentProgress(cid,sid){
       fbSaveMain()
     ]);
     toast('Progress saved ✅','ok');
-  }catch(e){toast('Save failed ❌','er');}
-  if(btn){btn.disabled=false;btn.textContent='📚 Save';}
-  renderSPList();
+    // Update badge in-place without re-rendering (preserves scroll & input state)
+    const card=document.getElementById('spc-'+sid);
+    if(card){
+      const badge=card.querySelector('.prg-level-badge');
+      if(s.level){
+        if(badge)badge.textContent=s.level;
+        else{const hdr=card.querySelector('.sp-student-name');if(hdr){const b=document.createElement('span');b.className='prg-level-badge';b.textContent=s.level;hdr.parentNode.appendChild(b);}}
+      } else if(badge){badge.remove();}
+    }
+    if(btn){btn.disabled=false;btn.textContent='✅ Saved';}
+    setTimeout(()=>{if(btn)btn.textContent='💾 Save';},2000);
+  }catch(e){
+    toast('Save failed ❌','er');
+    if(btn){btn.disabled=false;btn.textContent='💾 Save';}
+  }
 }
 
 // ===== PROGRESS REPORT =====
