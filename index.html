@@ -842,6 +842,8 @@ function initFilters(){
   const cs=$('rc');cs.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{cs.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
   // init daily selects
   const rdc=$('rdc');rdc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rdc.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
+  // init progress class filter
+  const rprc=document.getElementById('rprc');if(rprc){rprc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rprc.innerHTML+=`<option value="${c.id}">${c.name}</option>`;});}
   if(!$('rd').value)$('rd').value=today();
   $('rd').setAttribute('max',today());
 }
