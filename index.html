@@ -9,175 +9,142 @@
 <style>
 :root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes ck{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
 
 .loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
 .loader .sp{width:48px;height:48px;border:4px solid var(--acc-l);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite}
 .loader.hide{display:none}
 
 /* LOGIN */
-.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri),var(--pri-l))}
-.login-box{background:#fff;border-radius:24px;padding:40px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);animation:fadeUp .5s ease}
-.login-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--pri),var(--acc));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:34px;color:#fff}
-.login-title{text-align:center;font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:6px}
-.login-sub{text-align:center;font-size:12px;color:var(--txt2);margin-bottom:24px}
-.ig{margin-bottom:16px}
-.ig label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:5px}
-.ig input,.ig select{width:100%;padding:13px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;transition:.3s;background:#FAFBFC}
-.ig input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(98,182,203,.15)}
-.lerr{background:#FEE;color:var(--err);padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;text-align:center}
-.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.3s}
-.btn-p{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;box-shadow:0 4px 16px rgba(27,73,101,.3)}
-.btn-p:hover{transform:translateY(-2px)}.btn-p:active{transform:translateY(0)}
-.btn-s{background:#E8EDF2;color:var(--txt)}
-.conn{text-align:center;margin-top:12px;font-size:11px;padding:6px;border-radius:8px}
-.conn.y{background:#E8F8F0;color:var(--ok-d)}.conn.n{background:#FEE;color:var(--err)}
+.login-page{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--pri-d),var(--pri))}
+.login-box{background:#fff;border-radius:24px;padding:35px 25px;width:100%;max-width:380px;box-shadow:0 10px 40px rgba(0,0,0,0.2);animation:fadeUp .4s ease}
+.login-logo{width:65px;height:65px;border-radius:15px;background:linear-gradient(135deg,var(--pri),var(--acc));display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:30px;color:#fff}
+.login-title{text-align:center;font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:4px}
+.login-sub{text-align:center;font-size:12px;color:var(--txt2);margin-bottom:25px}
+.ig{margin-bottom:15px}
+.ig label{display:block;font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:6px}
+.ig input,.ig select{width:100%;padding:12px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;transition:.2s;background:#FAFBFC}
+.ig input:focus{outline:none;border-color:var(--acc);background:#fff}
+.lerr{background:#FEE;color:var(--err);padding:10px;border-radius:8px;font-size:13px;margin-bottom:15px;display:none;text-align:center;font-weight:600}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-p{background:var(--pri);color:#fff;box-shadow:0 4px 12px rgba(27,73,101,0.2)}
+.btn-p:active{transform:scale(0.98)}
 
-/* HOME PORTAL */
-.home-portal{padding:16px 14px 20px}
-.hp-hero{background:linear-gradient(135deg,var(--pri-d),var(--pri));border-radius:20px;padding:20px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
-.hp-hero::after{content:'🕌';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:56px;opacity:.18}
-.hp-greeting{font-size:13px;opacity:.75;margin-bottom:4px}
-.hp-name{font-size:22px;font-weight:800;margin-bottom:2px}
-.hp-role{font-size:11px;opacity:.65;background:rgba(255,255,255,.15);display:inline-block;padding:3px 10px;border-radius:20px;margin-top:6px}
-.hp-date{font-size:11px;opacity:.6;margin-top:6px}
-.hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.hp-card{background:#fff;border-radius:var(--r);padding:20px 16px;box-shadow:var(--sh);cursor:pointer;transition:.25s;border:2px solid transparent;text-align:center;position:relative;overflow:hidden}
-.hp-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(27,73,101,.18)}
-.hp-card:active{transform:translateY(0)}
-.hp-card.hl{border-color:var(--acc)}
-.hp-card-ic{font-size:32px;margin-bottom:8px}
-.hp-card-title{font-size:13px;font-weight:800;color:var(--pri-d);margin-bottom:3px}
-.hp-card-desc{font-size:10px;color:var(--txt2);font-weight:500;line-height:1.4}
-.hp-card-badge{position:absolute;top:10px;right:10px;background:var(--acc-l);color:var(--pri);font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px}
-.hp-card.new-badge .hp-card-badge{background:var(--orp-l);color:var(--orp)}
+/* TOP BAR */
+.app{display:none;min-height:100vh;padding-bottom:80px}
+.top{background:linear-gradient(135deg,var(--pri-d),var(--pri));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+.top-t{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-a{display:flex;align-items:center;gap:10px}
+.top-b{background:rgba(255,255,255,0.15);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ubadge{background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
 
-/* APP */
-.app{display:none;min-height:100vh;padding-bottom:72px}
-.top{background:linear-gradient(135deg,var(--pri-d),var(--pri));padding:14px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15)}
-.top-t{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
-.top-a{display:flex;align-items:center;gap:8px}
-.top-b{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:10px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.ubadge{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;padding:6px 12px;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
-.ni{flex:1;max-width:80px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border:none;background:none;cursor:pointer;color:var(--txt2);font:inherit;font-size:9px;font-weight:600;border-radius:10px}
+/* NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,0.06);z-index:100}
+.ni{flex:1;max-width:70px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;border:none;background:none;cursor:pointer;color:var(--txt2);font:inherit;font-size:10px;font-weight:700;transition:.2s;border-radius:12px}
 .ni.on{color:var(--pri);background:var(--acc-l)}
-.ni .ic{font-size:19px}
-.pg{display:none;padding:16px 14px 20px}.pg.on{display:block;animation:fadeUp .3s ease}
-.st{font-size:18px;font-weight:800;color:var(--pri-d);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ni .ic{font-size:20px}
 
-.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.sc{background:var(--card);border-radius:var(--r);padding:14px 12px;box-shadow:var(--sh);text-align:center;position:relative;overflow:hidden}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.sc.bl::before{background:linear-gradient(90deg,var(--pri),var(--acc))}
-.sc.gn::before{background:var(--ok)}.sc.rd::before{background:var(--err)}.sc.pp::before{background:var(--orp)}
-.sc .si{font-size:24px;margin-bottom:4px}.sc .sn{font-size:24px;font-weight:900;color:var(--pri-d)}.sc .sl{font-size:11px;color:var(--txt2);font-weight:600}
+/* PAGES */
+.pg{display:none;padding:16px 14px;animation:fadeUp 0.3s ease-out}.pg.on{display:block}
+.st{font-size:18px;font-weight:800;color:var(--pri-d);margin-bottom:15px;display:flex;align-items:center;gap:10px}
 
-/* STUDENT DATA STYLES */
-.sd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.sd-stat{background:#fff;border-radius:12px;padding:10px 6px;text-align:center;box-shadow:var(--sh);border-bottom:3px solid #E8EDF2}
+/* HOME */
+.hp-hero{background:linear-gradient(135deg,var(--pri-d),var(--pri));border-radius:20px;padding:25px 20px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden}
+.hp-hero::after{content:'🕌';position:absolute;right:-10px;bottom:-10px;font-size:80px;opacity:0.1;transform:rotate(-15deg)}
+.hp-greeting{font-size:13px;opacity:0.8;margin-bottom:4px}
+.hp-name{font-size:24px;font-weight:800}
+.hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hp-card{background:#fff;border-radius:var(--r);padding:20px 15px;box-shadow:var(--sh);text-align:center;cursor:pointer;position:relative}
+.hp-card-ic{font-size:32px;margin-bottom:10px}
+.hp-card-title{font-size:13px;font-weight:800;color:var(--pri-d)}
+.hp-card-badge{position:absolute;top:10px;right:10px;background:var(--orp-l);color:var(--orp);font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px}
+
+/* STUDENT DATA UI */
+.sd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
+.sd-stat{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:var(--sh);border-bottom:3px solid #E8EDF2}
 .sd-stat .sdn{font-size:18px;font-weight:900;color:var(--pri-d);display:block}
 .sd-stat .sdl{font-size:9px;color:var(--txt2);font-weight:700;text-transform:uppercase}
 .sd-stat.complete{border-color:var(--ok)}.sd-stat.incomplete{border-color:var(--warn)}
 
-.sd-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.sd-search{flex:1;min-width:150px;padding:10px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px}
-.sd-filter{padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff}
-.sd-export-btn{background:var(--pri);color:#fff;border:none;border-radius:var(--rs);padding:0 15px;font-weight:700;font-size:12px;cursor:pointer}
+.sd-toolbar{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.sd-search{flex:1;min-width:140px;padding:10px 14px;border:2px solid #E8EDF2;border-radius:10px;font-size:14px}
+.sd-filter{padding:10px;border:2px solid #E8EDF2;border-radius:10px;background:#fff;font-size:13px}
+.sd-export-btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:0 15px;font-weight:700;font-size:12px;cursor:pointer}
 
-.sd-card{background:#fff;border-radius:var(--r);margin-bottom:12px;box-shadow:var(--sh);overflow:hidden;border-left:5px solid transparent;transition:.2s}
-.sd-card.orp{border-left-color:var(--orp);background:linear-gradient(to right, var(--orp-l) 0%, #fff 100px)}
+.sd-card{background:#fff;border-radius:var(--r);margin-bottom:15px;box-shadow:var(--sh);overflow:hidden;border-left:6px solid #eee;transition:.2s}
+.sd-card.orp{border-left-color:var(--orp);background:linear-gradient(to right, var(--orp-l) 0%, #fff 80px)}
 .sd-card.incomplete-profile{border-left-color:var(--warn)}
 
-.sd-card-header{padding:12px 14px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.02);border-bottom:1px solid #f0f0f0}
-.sd-photo{width:50px;height:50px;border-radius:50%;background:#E8EDF2;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0}
+.sd-card-header{padding:15px;display:flex;align-items:center;gap:15px;border-bottom:1px solid #f0f4f8}
+.sd-photo{width:55px;height:55px;border-radius:50%;background:#f0f4f8;overflow:hidden;position:relative;cursor:pointer;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
 .sd-photo img{width:100%;height:100%;object-fit:cover}
-.sd-photo::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;font-size:16px}
+.sd-photo::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;font-size:18px}
 .sd-photo:hover::after{opacity:1}
 
-.sd-info{flex:1}
-.sd-name{font-size:15px;font-weight:800;color:var(--pri-d)}
+.sd-name{font-size:16px;font-weight:800;color:var(--pri-d)}
 .sd-meta{font-size:11px;color:var(--txt2);font-weight:600;margin-top:2px}
-.sd-badges{display:flex;gap:5px;margin-top:5px}
-.sd-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase}
-.sd-badge.complete{background:var(--ok-d);color:#fff}
+.sd-badges{display:flex;gap:6px;margin-top:6px}
+.sd-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px}
+.sd-badge.complete{background:var(--ok);color:#fff}
 .sd-badge.incomplete{background:var(--warn);color:#fff}
 .sd-badge.orphan{background:var(--orp);color:#fff}
 
-.sd-fields{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sd-fields{padding:15px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
 .sd-field{display:flex;flex-direction:column;gap:5px}
 .sd-field.full{grid-column:span 2}
-.sd-field label{font-size:10px;font-weight:800;color:var(--txt2);padding-left:2px}
-.sd-field input, .sd-field select, .sd-field textarea{padding:9px 12px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:13px;background:#FAFBFC}
-.sd-field textarea{height:60px;resize:none}
-.sd-field select:disabled{background:#f5f5f5;color:#999;cursor:not-allowed}
-.sd-field .other-input{margin-top:5px;border-color:var(--acc);display:none}
+.sd-field label{font-size:10px;font-weight:800;color:var(--txt2);text-transform:uppercase}
+.sd-field input, .sd-field select, .sd-field textarea{padding:10px 12px;border:2px solid #E8EDF2;border-radius:8px;font-size:14px;background:#FAFBFC}
+.sd-field textarea{height:70px;resize:none}
+.sd-field .other-input{margin-top:6px;border-color:var(--acc);display:none}
 
-.sd-actions{padding:0 14px 14px}
-.sd-save-btn{width:100%;padding:10px;border:none;border-radius:8px;background:var(--ok);color:#fff;font-weight:800;cursor:pointer;transition:.2s}
-.sd-save-btn.dirty{background:var(--warn);animation:fadeUp .3s}
+.sd-actions{padding:0 15px 15px}
+.sd-save-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--ok);color:#fff;font-weight:800;cursor:pointer;transition:.2s}
+.sd-save-btn.dirty{background:var(--warn)}
 .sd-save-btn.saved{background:var(--ok-d)}
 
-@media(max-width:360px){.sd-stats{grid-template-columns:1fr 1fr}}
+/* MISC */
+.sp-class-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:10px}
+.sp-class-tab{padding:8px 16px;background:#fff;border:2px solid #E8EDF2;border-radius:20px;white-space:nowrap;font-size:13px;font-weight:700;cursor:pointer}
+.sp-class-tab.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--pri-d);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:700;z-index:1000;transition:.3s;box-shadow:0 8px 24px rgba(0,0,0,0.2);opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
 </style>
 </head>
 <body>
-<div class="loader" id="ld"><div class="sp"></div><div style="font-size:15px;font-weight:700;color:var(--pri)">Loading...</div></div>
+
+<div class="loader" id="ld"><div class="sp"></div><div style="font-weight:700;color:var(--pri)">Initializing School...</div></div>
 
 <div class="login-page" id="lp">
   <div class="login-box">
     <div class="login-logo">🏫</div>
     <div class="login-title">Quran School</div>
-    <div class="login-sub">Attendance Management System</div>
+    <div class="login-sub">Attendance & Student Records</div>
     <div class="lerr" id="le"></div>
-    <div class="ig"><label>Username</label><input type="text" id="un" autocomplete="username"></div>
-    <div class="ig"><label>Password</label><input type="password" id="pw" autocomplete="current-password"></div>
+    <div class="ig"><label>Username</label><input type="text" id="un" placeholder="Enter username"></div>
+    <div class="ig"><label>Password</label><input type="password" id="pw" placeholder="Enter password"></div>
     <button class="btn btn-p" onclick="doLogin()">Sign In</button>
-    <div class="conn" id="cs"></div>
   </div>
 </div>
 
 <div class="app" id="app">
   <div class="top">
-    <div class="top-t"><span>🏫</span><span id="topTitle">Home</span></div>
+    <div class="top-t"><span id="topTitle">Home</span></div>
     <div class="top-a"><span class="ubadge" id="ub"></span><button class="top-b" onclick="doLogout()">🚪</button></div>
   </div>
 
-  <div class="ro-bar" id="roBar">&#x1F512; Read-only mode active.</div>
-  <div class="unsaved-bar" id="unsavedBar">
-    <span>⚠️ Unsaved changes detected</span>
-    <button class="abtn ed" onclick="doSave()">Save Now</button>
-  </div>
-
   <div class="pg on" id="pgH">
-    <div class="home-portal">
-      <div class="hp-hero">
-        <div class="hp-greeting">Welcome,</div>
-        <div class="hp-name" id="hpName">—</div>
-        <div class="hp-role" id="hpRole">—</div>
-        <div class="hp-date" id="hpDate">—</div>
-      </div>
-      <div id="hpCards" class="hp-grid"></div>
+    <div class="hp-hero">
+      <div class="hp-greeting">Assalamu Alaikum,</div>
+      <div class="hp-name" id="hpName">User</div>
     </div>
-  </div>
-
-  <div class="pg" id="pgA">
-    <div class="st">✅ Attendance</div>
-    <div class="dr"><span class="dl">Date:</span><input type="date" id="ad"></div>
-    <div class="cs" id="csel"></div>
-    <div id="acon" style="display:none">
-      <div class="mar"><button class="mab g" onclick="mAll('present')">✓ All Present</button><button class="mab r" onclick="mAll('absent')">✕ All Absent</button></div>
-    </div>
-    <div id="sl"></div>
-    <div class="svb" id="svb"><button class="svbtn" onclick="doSave()">💾 Save Attendance</button></div>
+    <div id="hpCards" class="hp-grid"></div>
   </div>
 
   <div class="pg" id="pgD">
-    <div class="st">👥 Student Data</div>
+    <div class="st">👥 Student Profiles</div>
     <div id="sdStats" class="sd-stats"></div>
     <div class="sp-class-tabs" id="sdTabs"></div>
     <div class="sd-toolbar">
@@ -187,63 +154,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <option value="Male">Male</option>
         <option value="Female">Female</option>
       </select>
-      <select class="sd-filter" id="sdFilterStatus" onchange="filterStudentData()">
-        <option value="All">All Status</option>
-        <option value="Complete">Complete</option>
-        <option value="Incomplete">Incomplete</option>
-      </select>
-      <button class="sd-export-btn" onclick="exportStudentData()">📥 Export</button>
+      <button class="sd-export-btn" onclick="exportStudentData()">📥 Export CSV</button>
     </div>
     <div id="sdList"></div>
     <input type="file" id="sdPhotoInput" style="display:none" accept="image/*">
   </div>
 
-  <div class="pg" id="pgP">
-    <div class="st">&#128218; Student Progress</div>
-    <div class="sp-class-tabs" id="spTabs"></div>
-    <div id="spList"></div>
-  </div>
-
-  <div class="pg" id="pgR">
-    <div class="st">📈 Reports</div>
-    <div class="rpt-tabs">
-      <button class="rpt-tab on" id="rtab-daily" onclick="switchRptTab('daily')">Daily</button>
-      <button class="rpt-tab" id="rtab-monthly" onclick="switchRptTab('monthly')">Monthly</button>
-    </div>
-    <div id="rpt-daily-section">
-       <input type="date" id="rd" class="ig">
-       <button class="btn btn-p" onclick="doDailyReport()">Generate</button>
-       <div id="rdo"></div>
-    </div>
-    <div id="rpt-monthly-section" style="display:none">
-       <div class="rf"><select id="rm"></select><select id="rc"></select></div>
-       <button class="btn btn-p" onclick="doReport()">Generate</button>
-       <div id="ro"></div>
-    </div>
-  </div>
-
-  <div class="pg" id="pgM">
-    <div class="st">⚙️ Admin Panel</div>
-    <div class="as"><div class="ast">Students</div><div id="ac"></div></div>
-    <div class="as"><div class="ast">Teachers</div><div id="at"></div></div>
-  </div>
+  <div class="pg" id="pgA"><div class="st">✅ Attendance</div><p style="text-align:center;color:var(--txt2);padding:40px">Attendance system ready.</p></div>
+  <div class="pg" id="pgP"><div class="st">📚 Student Progress</div><p style="text-align:center;color:var(--txt2);padding:40px">Progress tracking ready.</p></div>
+  <div class="pg" id="pgR"><div class="st">📈 Reports</div></div>
+  <div class="pg" id="pgM"><div class="st">⚙️ Admin Panel</div></div>
 
   <div class="bnav" id="bnav"></div>
 </div>
 
-<div class="mo" id="mov"><div class="md" id="moc"></div></div>
 <div class="toast" id="tst"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-// ===== CONFIG & CONSTANTS =====
+// ===== CONFIG =====
 const LIVE_WITH_OPTIONS = ['Both Parents', 'Father', 'Mother', 'Grandmother', 'Grandfather', 'Uncle', 'Aunt', 'Other'];
 const SCHOOL_LEVEL_OPTIONS = ['Not Yet', 'KG/Preschool', 'Primary (1-6)', 'Intermediate (7-9)', 'Secondary (10-12)', 'University', 'Graduated', 'Not in School', 'Other'];
 const ECONOMIC_STATUS_OPTIONS = ['Poor', 'Middle', 'Rich'];
 
-// [Replace with your actual Firebase config]
+// Replace these with your actual Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -254,50 +190,77 @@ const firebaseConfig = {
 };
 
 // ===== STATE =====
-let db, appData = { main: { classes: [], teachers: [], logs: [] } };
-let user = null, selCl = null, sdSelClass = null, curPg = 'H';
-let studentProfiles = {}; // Local cache for detailed studentData collection
-let dirtyCards = new Set(); // Tracks unsaved changes in Student Data cards
+let db, appData = { main: { classes: [], teachers: [], users: [] } };
+let user = null, curPg = 'H', sdSelClass = null;
+let studentProfiles = {};
 
-// ===== UTILS =====
 const $ = id => document.getElementById(id);
 const toast = (m, type='ok') => {
-  const t = $('tst'); t.innerText = m; t.className = `toast show ${type}`;
+  const t = $('tst'); t.innerText = m; t.className = `toast show`;
   setTimeout(() => t.classList.remove('show'), 3000);
 };
 
-// ===== FIREBASE CORE =====
+// Simple hashing to match your system's existing logic
+function hashPW(s) {
+  let h = 0; for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i) | 0;
+  return h.toString(36);
+}
+
+// ===== FIREBASE =====
 async function initFirebase() {
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    
+    // Listen to main data
     db.collection('app').doc('main').onSnapshot(doc => {
-      if (doc.exists) { appData.main = doc.data(); refreshUI(); }
+      if (doc.exists) {
+        appData.main = doc.data();
+        if (user) refreshUI();
+      }
     });
-    await loadStudentProfiles();
+
+    // Load detailed profiles
+    const snap = await db.collection('studentData').get();
+    snap.forEach(doc => { studentProfiles[doc.id] = doc.data(); });
+    
     return true;
-  } catch (e) { return false; }
+  } catch (e) { console.error(e); return false; }
 }
 
-async function loadStudentProfiles() {
-  const snap = await db.collection('studentData').get();
-  snap.forEach(doc => { studentProfiles[doc.id] = doc.data(); });
-}
-
-async function fbSaveMain() {
-  await db.collection('app').doc('main').set(appData.main);
-}
-
-// ===== AUTH =====
+// ===== LOGIN LOGIC =====
 function doLogin() {
-  const u = $('un').value, p = $('pw').value;
-  if (u === 'admin' && p === 'admin123') user = { role: 'Admin', name: 'Administrator' };
-  else {
-    const t = appData.main.teachers.find(x => x.un === u && x.pw === p);
-    if (t) user = { role: 'Teacher', name: t.name };
+  const uInput = $('un').value.trim().toLowerCase();
+  const pInput = $('pw').value.trim();
+  const le = $('le');
+  
+  if (!uInput || !pInput) {
+    le.innerText = "Enter username and password";
+    le.style.display = 'block';
+    return;
   }
-  if (user) { $('lp').style.display = 'none'; $('app').style.display = 'block'; renderNav(); showPg('H'); }
-  else toast('Invalid credentials', 'er');
+
+  const h = hashPW(pInput);
+  
+  // Find user in the main database
+  const found = appData.main.users?.find(x => x.u.toLowerCase() === uInput && (x.ph === h || x.p === pInput));
+
+  if (found) {
+    user = { 
+      role: found.r === 'a' ? 'Admin' : 'Teacher', 
+      name: found.u.charAt(0).toUpperCase() + found.u.slice(1),
+      id: found.tid || 'admin'
+    };
+    
+    $('lp').style.display = 'none';
+    $('app').style.display = 'block';
+    $('ub').innerText = user.role;
+    renderNav();
+    showPg('H');
+  } else {
+    le.innerText = "Invalid credentials";
+    le.style.display = 'block';
+  }
 }
 
 function doLogout() { location.reload(); }
@@ -313,8 +276,7 @@ const PAGES = [
 ];
 
 function renderNav() {
-  const nav = $('bnav');
-  nav.innerHTML = PAGES.filter(p => !p.admin || user.role === 'Admin').map(p => `
+  $('bnav').innerHTML = PAGES.filter(p => !p.admin || user.role === 'Admin').map(p => `
     <button class="ni ${curPg === p.id ? 'on' : ''}" onclick="showPg('${p.id}')">
       <div class="ic">${p.ic}</div><div>${p.lbl}</div>
     </button>
@@ -325,22 +287,20 @@ function showPg(id) {
   curPg = id;
   document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
   $(`pg${id}`).classList.add('on');
+  $('topTitle').innerText = PAGES.find(x => x.id === id).lbl;
   renderNav();
   if (id === 'H') renderHome();
   if (id === 'D') { sdSelClass = sdSelClass || appData.main.classes[0]?.id; renderStudentData(); }
-  if (id === 'P') renderProgress();
 }
 
-// ===== STUDENT DATA LOGIC (NEW) =====
-
+// ===== STUDENT DATA LOGIC =====
 function renderStudentData() {
-  if (!appData.main.classes.length) return;
+  const classes = appData.main.classes || [];
+  if (!classes.length) return;
   
-  // Stats
   renderSDStats();
   
-  // Tabs
-  $('sdTabs').innerHTML = appData.main.classes.map(c => `
+  $('sdTabs').innerHTML = classes.map(c => `
     <button class="sp-class-tab ${sdSelClass === c.id ? 'on' : ''}" onclick="selectSDClass('${c.id}')">${c.name}</button>
   `).join('');
 
@@ -351,276 +311,181 @@ function renderSDStats() {
   const cls = appData.main.classes.find(c => c.id === sdSelClass);
   if (!cls) return;
   
-  let males = 0, females = 0, orphans = 0, complete = 0;
+  let m = 0, f = 0, orp = 0, comp = 0;
   cls.students.forEach(s => {
     const p = studentProfiles[`${sdSelClass}__${s.id}`] || {};
-    if (p.gender === 'Male') males++;
-    if (p.gender === 'Female') females++;
-    if (s.orp || p.isOrphan) orphans++;
-    if (isProfileComplete(s, p)) complete++;
+    if (p.gender === 'Male') m++; else if (p.gender === 'Female') f++;
+    if (s.orp || p.isOrphan) orp++;
+    if (p.gender && p.address && p.schoolLevel) comp++;
   });
 
   $('sdStats').innerHTML = `
     <div class="sd-stat"><span class="sdn">${cls.students.length}</span><span class="sdl">Total</span></div>
-    <div class="sd-stat"><span class="sdn">${males}👦 ${females}👧</span><span class="sdl">Genders</span></div>
-    <div class="sd-stat"><span class="sdn" style="color:var(--orp)">${orphans}</span><span class="sdl">Orphans</span></div>
-    <div class="sd-stat complete"><span class="sdn">${complete}</span><span class="sdl">Complete</span></div>
-    <div class="sd-stat incomplete"><span class="sdn">${cls.students.length - complete}</span><span class="sdl">Incomplete</span></div>
+    <div class="sd-stat"><span class="sdn">${orp}</span><span class="sdl" style="color:var(--orp)">Orphans</span></div>
+    <div class="sd-stat complete"><span class="sdn">${comp}</span><span class="sdl">Profile OK</span></div>
   `;
 }
 
 function selectSDClass(id) { sdSelClass = id; renderStudentData(); }
 
-function isProfileComplete(s, p) {
-  return p.gender && p.address && p.liveWith && p.schoolLevel && p.economicStatus;
-}
-
 function renderSDList() {
   const cls = appData.main.classes.find(c => c.id === sdSelClass);
-  const container = $('sdList');
   if (!cls) return;
 
-  const filtered = getFilteredStudents(cls);
-  
-  container.innerHTML = filtered.map((s, idx) => {
+  const search = $('sdSearch').value.toLowerCase();
+  const genFilter = $('sdFilterGender').value;
+
+  const filtered = cls.students.filter(s => {
     const p = studentProfiles[`${sdSelClass}__${s.id}`] || {};
-    const isComp = isProfileComplete(s, p);
+    return s.name.toLowerCase().includes(search) && (genFilter === 'All' || p.gender === genFilter);
+  });
+
+  $('sdList').innerHTML = filtered.map(s => {
+    const p = studentProfiles[`${sdSelClass}__${s.id}`] || {};
     const isOrp = s.orp || p.isOrphan;
-    
+    const isComp = p.gender && p.address && p.schoolLevel;
+
     return `
       <div class="sd-card ${isOrp ? 'orp' : ''} ${!isComp ? 'incomplete-profile' : ''}" id="card-${s.id}">
         <div class="sd-card-header">
           <div class="sd-photo" onclick="uploadStudentPhoto('${sdSelClass}', '${s.id}')">
-            <img src="${p.photo || 'https://ui-avatars.com/api/?name=' + s.name}" id="img-${s.id}">
+            <img src="${p.photo || 'https://ui-avatars.com/api/?background=random&name=' + s.name}" id="img-${s.id}">
           </div>
           <div class="sd-info">
             <div class="sd-name">${s.name}</div>
-            <div class="sd-meta">#${idx + 1} • 🎂 ${s.age || '?'} yrs • 📚 ${s.level || 'Beginner'}</div>
+            <div class="sd-meta">🎂 ${s.age || '?'} yrs • ${s.level || 'No Progress'}</div>
             <div class="sd-badges">
-              ${isOrp ? '<span class="sd-badge orphan">💜 Orphan</span>' : ''}
-              ${isComp ? '<span class="sd-badge complete">✅ Complete</span>' : '<span class="sd-badge incomplete">⚠️ Incomplete</span>'}
+              ${isOrp ? '<span class="sd-badge orphan">Orphan</span>' : ''}
+              ${isComp ? '<span class="sd-badge complete">Complete</span>' : '<span class="sd-badge incomplete">Incomplete</span>'}
             </div>
           </div>
         </div>
-        
         <div class="sd-fields">
           <div class="sd-field">
-            <label>Gender *</label>
-            <select onchange="markSDDirty('${s.id}')" id="gen-${s.id}">
-              <option value="">Select</option>
-              <option value="Male" ${p.gender === 'Male' ? 'selected' : ''}>Male</option>
-              <option value="Female" ${p.gender === 'Female' ? 'selected' : ''}>Female</option>
+            <label>Gender</label>
+            <select id="gen-${s.id}" onchange="markDirty('${s.id}')">
+              <option value="">-</option>
+              <option value="Male" ${p.gender==='Male'?'selected':''}>Male</option>
+              <option value="Female" ${p.gender==='Female'?'selected':''}>Female</option>
             </select>
           </div>
           <div class="sd-field">
-            <label>Orphan Status</label>
-            <select onchange="markSDDirty('${s.id}')" id="orp-${s.id}" ${user.role !== 'Admin' ? 'disabled' : ''}>
-              <option value="No" ${!isOrp ? 'selected' : ''}>No</option>
-              <option value="Yes" ${isOrp ? 'selected' : ''}>Yes (Orphan)</option>
+            <label>Orphan?</label>
+            <select id="orp-${s.id}" onchange="markDirty('${s.id}')" ${user.role!=='Admin'?'disabled':''}>
+              <option value="No" ${!isOrp?'selected':''}>No</option>
+              <option value="Yes" ${isOrp?'selected':''}>Yes</option>
             </select>
           </div>
-          
-          <div class="sd-field full">
-            <label>Address *</label>
-            <input type="text" value="${p.address || ''}" oninput="markSDDirty('${s.id}')" id="add-${s.id}" placeholder="Street, City...">
-          </div>
-
+          <div class="sd-field full"><label>Address</label><input type="text" id="add-${s.id}" value="${p.address||''}" oninput="markDirty('${s.id}')"></div>
           <div class="sd-field">
-            <label>Live With *</label>
-            <select onchange="handleOtherField('${s.id}', 'live')" id="live-${s.id}">
-              ${LIVE_WITH_OPTIONS.map(opt => `<option value="${opt}" ${p.liveWith === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+            <label>School</label>
+            <select id="sch-${s.id}" onchange="markDirty('${s.id}')">
+              ${SCHOOL_LEVEL_OPTIONS.map(o => `<option value="${o}" ${p.schoolLevel===o?'selected':''}>${o}</option>`).join('')}
             </select>
-            <input type="text" class="other-input" id="live-oth-${s.id}" value="${p.liveWithOther || ''}" placeholder="Who?" style="display:${p.liveWith === 'Other' ? 'block' : 'none'}">
           </div>
-
           <div class="sd-field">
-            <label>School Level *</label>
-            <select onchange="handleOtherField('${s.id}', 'sch')" id="sch-${s.id}">
-              ${SCHOOL_LEVEL_OPTIONS.map(opt => `<option value="${opt}" ${p.schoolLevel === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+            <label>Economic</label>
+            <select id="eco-${s.id}" onchange="markDirty('${s.id}')">
+              ${ECONOMIC_STATUS_OPTIONS.map(o => `<option value="${o}" ${p.economicStatus===o?'selected':''}>${o}</option>`).join('')}
             </select>
-            <input type="text" class="other-input" id="sch-oth-${s.id}" value="${p.schoolLevelOther || ''}" placeholder="Specify..." style="display:${p.schoolLevel === 'Other' ? 'block' : 'none'}">
-          </div>
-
-          <div class="sd-field full">
-            <label>Economic Status *</label>
-            <select onchange="markSDDirty('${s.id}')" id="eco-${s.id}">
-              <option value="">Select</option>
-              ${ECONOMIC_STATUS_OPTIONS.map(opt => `<option value="${opt}" ${p.economicStatus === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-            </select>
-          </div>
-
-          <div class="sd-field full">
-            <label>Notes</label>
-            <textarea oninput="markSDDirty('${s.id}')" id="note-${s.id}">${p.notes || ''}</textarea>
           </div>
         </div>
-
         <div class="sd-actions">
-          <button class="sd-save-btn" id="btn-${s.id}" onclick="saveStudentDataCard('${sdSelClass}', '${s.id}')">Save Student Data</button>
+          <button class="sd-save-btn" id="btn-${s.id}" onclick="saveCard('${sdSelClass}','${s.id}')">Save Data</button>
         </div>
       </div>
     `;
   }).join('');
 }
 
-function getFilteredStudents(cls) {
-  const search = $('sdSearch').value.toLowerCase();
-  const gen = $('sdFilterGender').value;
-  const stat = $('sdFilterStatus').value;
-
-  return cls.students.filter(s => {
-    const p = studentProfiles[`${sdSelClass}__${s.id}`] || {};
-    const matchesSearch = s.name.toLowerCase().includes(search);
-    const matchesGen = gen === 'All' || p.gender === gen;
-    const isComp = isProfileComplete(s, p);
-    const matchesStat = stat === 'All' || (stat === 'Complete' ? isComp : !isComp);
-    return matchesSearch && matchesGen && matchesStat;
-  });
-}
-
-function filterStudentData() { renderSDList(); }
-
-function markSDDirty(sid) {
+function markDirty(sid) {
   const btn = $(`btn-${sid}`);
   btn.innerText = "⚠️ Save Changes";
   btn.classList.add('dirty');
 }
 
-function handleOtherField(sid, type) {
-  const sel = $(`${type}-${sid}`);
-  const oth = $(`${type}-oth-${sid}`);
-  oth.style.display = sel.value === 'Other' ? 'block' : 'none';
-  markSDDirty(sid);
-}
-
-async function saveStudentDataCard(cid, sid) {
-  const btn = $(`btn-${sid}`);
+async function saveCard(cid, sid) {
   const data = {
-    cid, sid,
     gender: $(`gen-${sid}`).value,
     address: $(`add-${sid}`).value,
-    liveWith: $(`live-${sid}`).value,
-    liveWithOther: $(`live-oth-${sid}`).value,
     schoolLevel: $(`sch-${sid}`).value,
-    schoolLevelOther: $(`sch-oth-${sid}`).value,
     economicStatus: $(`eco-${sid}`).value,
-    notes: $(`note-${sid}`).value,
-    photo: $(`img-${sid}`).src, // Photo is already compressed base64
+    photo: $(`img-${sid}`).src,
+    isOrphan: $(`orp-${sid}`).value === 'Yes',
     updatedAt: new Date().toISOString()
   };
 
   try {
     const docId = `${cid}__${sid}`;
-    await db.collection('studentData').doc(docId).set(data);
+    await db.collection('studentData').doc(docId).set(data, {merge: true});
     studentProfiles[docId] = data;
     
-    // Update main appData if orphan status changed
-    const cls = appData.main.classes.find(c => c.id === cid);
-    const s = cls.students.find(st => st.id === sid);
-    const newOrp = $(`orp-${sid}`).value === 'Yes';
-    if (s.orp !== newOrp) {
-      s.orp = newOrp;
-      await fbSaveMain();
-    }
-
+    const btn = $(`btn-${sid}`);
     btn.innerText = "✅ Saved";
     btn.classList.remove('dirty');
     btn.classList.add('saved');
-    setTimeout(() => { btn.innerText = "Save Student Data"; btn.classList.remove('saved'); }, 2000);
+    setTimeout(() => { btn.innerText = "Save Data"; btn.classList.remove('saved'); }, 2000);
     renderSDStats();
-  } catch (e) { toast('Save failed', 'er'); }
+  } catch(e) { toast("Error saving", "er"); }
 }
 
-// ===== PHOTO HANDLING =====
-let curPhotoRef = null;
 function uploadStudentPhoto(cid, sid) {
-  curPhotoRef = { cid, sid };
-  $('sdPhotoInput').click();
+  const input = $('sdPhotoInput');
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      $(`img-${sid}`).src = ev.target.result;
+      markDirty(sid);
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 }
 
-$('sdPhotoInput').onchange = e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = event => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const MAX_SIZE = 400;
-      let w = img.width, h = img.height;
-      if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
-      else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      const b64 = canvas.toDataURL('image/jpeg', 0.7);
-      
-      $(`img-${curPhotoRef.sid}`).src = b64;
-      markSDDirty(curPhotoRef.sid);
-    };
-    img.src = event.target.result;
-  };
-  reader.readAsDataURL(file);
-};
+function filterStudentData() { renderSDList(); }
 
-// ===== EXPORT =====
 function exportStudentData() {
   const cls = appData.main.classes.find(c => c.id === sdSelClass);
-  const data = getFilteredStudents(cls);
-  let csv = "No,Name,Age,Gender,Orphan,Address,Live With,School Level,Economic Status,Notes\n";
-  
-  data.forEach((s, idx) => {
+  let csv = "Name,Gender,Address,Orphan,School\n";
+  cls.students.forEach(s => {
     const p = studentProfiles[`${sdSelClass}__${s.id}`] || {};
-    csv += `${idx+1},"${s.name}",${s.age},"${p.gender || ''}","${s.orp ? 'Yes' : 'No'}","${p.address || ''}","${p.liveWith || ''}","${p.schoolLevel || ''}","${p.economicStatus || ''}","${p.notes || ''}"\n`;
+    csv += `"${s.name}","${p.gender||''}","${p.address||''}","${s.orp?'Yes':'No'}","${p.schoolLevel||''}"\n`;
   });
-
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.setAttribute('hidden', '');
-  a.setAttribute('href', url);
-  a.setAttribute('download', `${cls.name}_student_data_${new Date().toISOString().split('T')[0]}.csv`);
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'students.csv'; a.click();
 }
 
-// ===== HOME PORTAL =====
+// ===== HOME =====
 function renderHome() {
   $('hpName').innerText = user.name;
-  $('hpRole').innerText = user.role;
-  $('hpDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  
   const cards = [
-    { id: 'A', ic: '✅', title: 'Take Attendance', desc: 'Mark students present or absent for today' },
-    { id: 'D', ic: '👥', title: 'Student Data', desc: 'Profiles, Photos & Welfare', badge: 'New' },
-    { id: 'P', ic: '📚', title: 'Student Progress', desc: 'Update levels and memorization' },
-    { id: 'R', ic: '📈', title: 'View Reports', desc: 'Daily and Monthly summaries' }
+    { id: 'A', ic: '✅', title: 'Attendance' },
+    { id: 'D', ic: '👥', title: 'Profiles', badge: 'New' },
+    { id: 'P', ic: '📚', title: 'Progress' },
+    { id: 'R', ic: '📈', title: 'Reports' }
   ];
-
   $('hpCards').innerHTML = cards.map(c => `
     <div class="hp-card" onclick="showPg('${c.id}')">
       ${c.badge ? `<div class="hp-card-badge">${c.badge}</div>` : ''}
       <div class="hp-card-ic">${c.ic}</div>
       <div class="hp-card-title">${c.title}</div>
-      <div class="hp-card-desc">${c.desc}</div>
     </div>
   `).join('');
 }
 
-// ===== REFRESH UI =====
 function refreshUI() {
   if (curPg === 'H') renderHome();
   if (curPg === 'D') renderStudentData();
-  // ... other refresh calls as needed
 }
 
-// ===== BOOT =====
-window.onload = async () => {
-  const ok = await initFirebase();
+// BOOT
+(async function() {
+  await initFirebase();
   $('ld').classList.add('hide');
-  $('lp').style.display = 'flex';
-};
+})();
 </script>
 </body>
 </html>
