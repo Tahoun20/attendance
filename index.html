@@ -202,6 +202,20 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sp-save-btn{margin-top:8px;padding:8px 14px;border:none;border-radius:8px;background:var(--ok);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;width:100%}
 .sp-save-btn:hover{background:var(--ok-d)}.sp-save-btn:disabled{opacity:.6;cursor:not-allowed}
 .prg-level-badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700;background:var(--acc-l);color:var(--pri)}
+
+/* Admin Levels Management Styles */
+.levels-section{margin-top:10px}
+.levels-class-tabs{display:flex;gap:6px;margin-bottom:12px}
+.levels-class-tab{padding:8px 16px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:var(--txt2)}
+.levels-class-tab.on{border-color:var(--acc);background:var(--acc);color:#fff}
+.level-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-radius:var(--rs);margin-bottom:6px;box-shadow:0 2px 6px rgba(0,0,0,.04);border-left:3px solid var(--acc)}
+.level-item .level-num{width:24px;height:24px;border-radius:6px;background:var(--acc-l);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.level-item .level-name{flex:1;font-size:12px;font-weight:600;word-break:break-word}
+.level-item .level-actions{display:flex;gap:4px}
+.level-move-btn{width:26px;height:26px;border:none;border-radius:6px;background:#E8EDF2;color:var(--txt2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.level-move-btn:hover{background:var(--acc-l);color:var(--pri)}
+.level-move-btn:disabled{opacity:.3;cursor:not-allowed}
+
 @media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
 </style>
 </head>
@@ -342,6 +356,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
     <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
     <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
+    <!-- NEW: Progress Levels Management -->
+    <div class="as">
+      <div class="ast">📚 Progress Levels</div>
+      <div class="card">
+        <div class="levels-class-tabs" id="levelsClassTabs"></div>
+        <div id="levelsListContainer"></div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="abtn ad" onclick="mAddLevel()" style="flex:1">+ Add Level</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- STUDENT PROGRESS PAGE -->
@@ -359,8 +384,23 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 // ===== CONSTANTS =====
-const SURAHS=['1. Al-Fatiha','2. Al-Baqarah','3. Ali Imran','4. An-Nisa','5. Al-Maidah','6. Al-Anam','7. Al-Araf','8. Al-Anfal','9. At-Tawbah','10. Yunus','11. Hud','12. Yusuf','13. Ar-Rad','14. Ibrahim','15. Al-Hijr','16. An-Nahl','17. Al-Isra','18. Al-Kahf','19. Maryam','20. Ta-Ha','21. Al-Anbiya','22. Al-Hajj','23. Al-Muminun','24. An-Nur','25. Al-Furqan','26. Ash-Shuara','27. An-Naml','28. Al-Qasas','29. Al-Ankabut','30. Ar-Rum','31. Luqman','32. As-Sajdah','33. Al-Ahzab','34. Saba','35. Fatir','36. Ya-Sin','37. As-Saffat','38. Sad','39. Az-Zumar','40. Ghafir','41. Fussilat','42. Ash-Shura','43. Az-Zukhruf','44. Ad-Dukhan','45. Al-Jathiyah','46. Al-Ahqaf','47. Muhammad','48. Al-Fath','49. Al-Hujurat','50. Qaf','51. Adh-Dhariyat','52. At-Tur','53. An-Najm','54. Al-Qamar','55. Ar-Rahman','56. Al-Waqiah','57. Al-Hadid','58. Al-Mujadila','59. Al-Hashr','60. Al-Mumtahanah','61. As-Saf','62. Al-Jumuah','63. Al-Munafiqun','64. At-Taghabun','65. At-Talaq','66. At-Tahrim','67. Al-Mulk','68. Al-Qalam','69. Al-Haqqah','70. Al-Maarij','71. Nuh','72. Al-Jinn','73. Al-Muzzammil','74. Al-Muddaththir','75. Al-Qiyamah','76. Al-Insan','77. Al-Mursalat','78. An-Naba','79. An-Naziat','80. Abasa','81. At-Takwir','82. Al-Infitar','83. Al-Mutaffifin','84. Al-Inshiqaq','85. Al-Buruj','86. At-Tariq','87. Al-Ala','88. Al-Ghashiyah','89. Al-Fajr','90. Al-Balad','91. Ash-Shams','92. Al-Layl','93. Ad-Duhaa','94. Ash-Sharh','95. At-Tin','96. Al-Alaq','97. Al-Qadr','98. Al-Bayyinah','99. Az-Zalzalah','100. Al-Adiyat','101. Al-Qariah','102. At-Takathur','103. Al-Asr','104. Al-Humazah','105. Al-Fil','106. Quraysh','107. Al-Maun','108. Al-Kawthar','109. Al-Kafirun','110. An-Nasr','111. Al-Masad','112. Al-Ikhlas','113. Al-Falaq','114. An-Nas'];
-const C1_LEVELS=['Reading – Letters','Reading – Words','Reading – Sentences','Writing'];
+// Default Surahs — will be overridden by Firebase if customized
+const DEFAULT_SURAHS=['1. Al-Fatiha','2. Al-Baqarah','3. Ali Imran','4. An-Nisa','5. Al-Maidah','6. Al-Anam','7. Al-Araf','8. Al-Anfal','9. At-Tawbah','10. Yunus','11. Hud','12. Yusuf','13. Ar-Rad','14. Ibrahim','15. Al-Hijr','16. An-Nahl','17. Al-Isra','18. Al-Kahf','19. Maryam','20. Ta-Ha','21. Al-Anbiya','22. Al-Hajj','23. Al-Muminun','24. An-Nur','25. Al-Furqan','26. Ash-Shuara','27. An-Naml','28. Al-Qasas','29. Al-Ankabut','30. Ar-Rum','31. Luqman','32. As-Sajdah','33. Al-Ahzab','34. Saba','35. Fatir','36. Ya-Sin','37. As-Saffat','38. Sad','39. Az-Zumar','40. Ghafir','41. Fussilat','42. Ash-Shura','43. Az-Zukhruf','44. Ad-Dukhan','45. Al-Jathiyah','46. Al-Ahqaf','47. Muhammad','48. Al-Fath','49. Al-Hujurat','50. Qaf','51. Adh-Dhariyat','52. At-Tur','53. An-Najm','54. Al-Qamar','55. Ar-Rahman','56. Al-Waqiah','57. Al-Hadid','58. Al-Mujadila','59. Al-Hashr','60. Al-Mumtahanah','61. As-Saf','62. Al-Jumuah','63. Al-Munafiqun','64. At-Taghabun','65. At-Talaq','66. At-Tahrim','67. Al-Mulk','68. Al-Qalam','69. Al-Haqqah','70. Al-Maarij','71. Nuh','72. Al-Jinn','73. Al-Muzzammil','74. Al-Muddaththir','75. Al-Qiyamah','76. Al-Insan','77. Al-Mursalat','78. An-Naba','79. An-Naziat','80. Abasa','81. At-Takwir','82. Al-Infitar','83. Al-Mutaffifin','84. Al-Inshiqaq','85. Al-Buruj','86. At-Tariq','87. Al-Ala','88. Al-Ghashiyah','89. Al-Fajr','90. Al-Balad','91. Ash-Shams','92. Al-Layl','93. Ad-Duhaa','94. Ash-Sharh','95. At-Tin','96. Al-Alaq','97. Al-Qadr','98. Al-Bayyinah','99. Az-Zalzalah','100. Al-Adiyat','101. Al-Qariah','102. At-Takathur','103. Al-Asr','104. Al-Humazah','105. Al-Fil','106. Quraysh','107. Al-Maun','108. Al-Kawthar','109. Al-Kafirun','110. An-Nasr','111. Al-Masad','112. Al-Ikhlas','113. Al-Falaq','114. An-Nas'];
+const DEFAULT_C1_LEVELS=['Reading – Letters','Reading – Words','Reading – Sentences','Writing'];
+
+// ===== DYNAMIC LEVELS — loaded from Firebase, fallback to defaults =====
+let classLevels = {
+  c1: [...DEFAULT_C1_LEVELS],
+  c2: [...DEFAULT_SURAHS]
+};
+
+// Helper to get levels for a class
+function getLevelsForClass(classId) {
+  // If specific levels exist for this class, use them
+  if (classLevels[classId]) return classLevels[classId];
+  // Otherwise, if it's a new class, default to empty or a simple default
+  return ['Level 1'];
+}
 
 // ===== UTILS =====
 function parseAttDoc(raw){
@@ -378,13 +418,10 @@ function parseAttDoc(raw){
       if(!out[k])out[k]={};
       Object.keys(v).forEach(sid=>{if(typeof v[sid]==='string')out[k][sid]=v[sid]});
     }
-    // FIX: plain string top-level values silently dropped before — now handled via __ and . paths above
   });
   return out;
 }
 
-// Simple hash (djb2) — passwords hashed client-side before storing
-// NOTE: For production use a proper backend auth solution. This is a step up from plaintext.
 function hashPW(str){let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h)+str.charCodeAt(i);return(h>>>0).toString(16)}
 
 let DB=null,firebaseReady=false;
@@ -397,7 +434,6 @@ const CLASSES=[
 {id:'s42',name:'Musa Kamara',o:1},{id:'s43',name:'Foday A. Kamara',o:1},{id:'s44',name:'Andrew T. Bangura',o:0},{id:'s45',name:'Foday M. Bangura',o:1},{id:'s46',name:'Osman A. Kargbo',o:0},{id:'s47',name:'Mohamed A. Kamara',o:1},{id:'s48',name:'Abibatu M. Bangura',o:1},{id:'s49',name:'Rugiatu F. Bangura',o:1},{id:'s50',name:'Lamin L. Sesay',o:1},{id:'s51',name:'Alimamy T. Bangura',o:0},{id:'s52',name:'Ramatu G. Jalloh',o:1},{id:'s53',name:'Josef O. Kamara',o:1},{id:'s54',name:'Kadiatu B. Kamara',o:1},{id:'s55',name:'Isatu M. Bangura',o:1},{id:'s56',name:'Moulayah Turay',o:1},{id:'s57',name:'Ibrahim Sesay',o:0},{id:'s58',name:'Fouad A. Bangura',o:0},{id:'s59',name:'Ibrahim Sorie Bangura',o:0},{id:'s60',name:'Idrisa I. Kamara',o:1},{id:'s61',name:'Ibrahim M. Bangura',o:0}
 ]}];
 
-// Passwords stored as hashes. Legacy plaintext passwords are compared by also checking hash.
 const USERS=[
 {u:'admin',ph:hashPW('admin123'),r:'admin',n:'Admin'},
 {u:'shuaib',ph:hashPW('shuaib123'),r:'teacher',n:'Sh. Shuaib',tid:'t1'},
@@ -407,21 +443,22 @@ const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohama
 
 let user=null,att={},tatt={},logs=[],selCl=null,filt='all',adminSearchTerm='';
 let classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
-let hasUnsaved=false; // FIX: track unsaved changes
+let hasUnsaved=false;
+
+// Admin levels management state
+let levelsSelClass='c1';
 
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dim(y,m){return new Date(y,m,0).getDate()}
 function toast(m,t='ok'){const e=$('tst');e.textContent=m;e.className='toast '+t;requestAnimationFrame(()=>e.classList.add('show'));setTimeout(()=>e.classList.remove('show'),3000)}
 function $(id){return document.getElementById(id)}
 
-// ===== SESSION — store only u/r/n/tid, no password =====
 function saveSession(){try{sessionStorage.setItem('qs_user',JSON.stringify({u:user.u,r:user.r,n:user.n,tid:user.tid||null}))}catch{}}
 function loadSession(){
   try{
     const s=sessionStorage.getItem('qs_user');
     if(!s)return null;
     const saved=JSON.parse(s);
-    // Re-validate against current users list
     const match=users.find(x=>x.u===saved.u&&x.r===saved.r);
     return match||null;
   }catch{return null}
@@ -431,7 +468,6 @@ function clearSession(){try{sessionStorage.removeItem('qs_user')}catch{}}
 // ===== FIREBASE =====
 function loadScript(src){
   return new Promise((res,rej)=>{
-    // reuse if already loaded
     if(document.querySelector(`script[src="${src}"]`)){res();return;}
     const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
   });
@@ -439,18 +475,14 @@ function loadScript(src){
 
 async function initFirebase(){
   try{
-    // Load both SDK scripts IN PARALLEL — cuts wait time in half
     await Promise.all([
       loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'),
       loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js')
     ]);
-    // Firestore needs app first — safe because Promise.all waits for both
     firebase.initializeApp({apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",authDomain:"quranschool26-c77e0.firebaseapp.com",projectId:"quranschool26-c77e0",storageBucket:"quranschool26-c77e0.firebasestorage.app",messagingSenderId:"600563978552",appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"});
     DB=firebase.firestore();
-    // Enable offline persistence — app works even on flaky connections
     try{await DB.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('Persistence:',e.code)}
     firebaseReady=true;
-    // Start data load — we await it so att/classes are ready before login
     await loadAllData();
     return true;
   }catch(e){console.error('Firebase init:',e);return false}
@@ -458,18 +490,20 @@ async function initFirebase(){
 
 async function loadAllData(){
   try{
-    // Load appData first (users/classes/teachers) — needed before login works
     const mainDoc=await DB.collection('appData').doc('main').get();
     if(mainDoc.exists){
       const d=mainDoc.data();
       if(d.users)users=d.users;
       if(d.classes)classes=d.classes;
       if(d.teachers)teachers=d.teachers;
+      // Load custom levels if they exist
+      if(d.classLevels){
+        classLevels=d.classLevels;
+      }
     } else {
-      await DB.collection('appData').doc('main').set({classes,teachers,users});
+      await DB.collection('appData').doc('main').set({classes,teachers,users,classLevels});
     }
 
-    // Load attendance collections in parallel
     const [aSnap,tSnap,lSnap]=await Promise.all([
       DB.collection('attendance').get(),
       DB.collection('teacherAttendance').get(),
@@ -479,13 +513,11 @@ async function loadAllData(){
     tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
     logs=[];lSnap.forEach(d=>logs.push(d.data()));
 
-    // Load student progress — source of truth, AFTER classes loaded
     await loadStudentProgress();
 
     if(user){refreshDash();refreshLog();}
 
     DB.collection('attendance').onSnapshot(snap=>{
-      // Merge incoming docs into att — don't wipe unsaved in-memory marks
       snap.docChanges().forEach(change=>{
         if(change.type==='added'||change.type==='modified'){
           att[change.doc.id]=parseAttDoc(change.doc.data());
@@ -507,8 +539,11 @@ async function loadAllData(){
         const d=doc.data();
         if(d.users)users=d.users;
         if(d.teachers)teachers=d.teachers;
+        // Update classLevels from Firebase
+        if(d.classLevels){
+          classLevels=d.classLevels;
+        }
         if(d.classes){
-          // Merge carefully — never overwrite in-memory progress with stale Firestore data
           d.classes.forEach(fc=>{
             const lc=classes.find(c=>c.id===fc.id);
             if(lc){
@@ -527,7 +562,6 @@ async function loadAllData(){
         }
       }
     });
-    // Real-time listener for studentProgress — keeps progress live across devices
     DB.collection('studentProgress').onSnapshot(snap=>{
       snap.docChanges().forEach(ch=>{
         if(ch.type==='added'||ch.type==='modified'){
@@ -553,7 +587,7 @@ async function fbSaveMain(){
       if(s.progress!=null)cl.progress=s.progress;
       return cl;
     })}));
-    await DB.collection('appData').doc('main').set({classes:cleanClasses,teachers,users});
+    await DB.collection('appData').doc('main').set({classes:cleanClasses,teachers,users,classLevels});
   }catch(e){console.error(e)}
 }
 
@@ -561,7 +595,6 @@ async function fbSaveStudentProgress(cid,sid,data){
   if(!DB)return;
   try{
     const docId=cid+'__'+sid;
-    // Use set (no merge) so null values actually clear old data
     const payload={
       cid,sid,
       age:data.age!=null?data.age:null,
@@ -581,17 +614,16 @@ async function loadStudentProgress(){
       const d=doc.data();
       const c=classes.find(x=>x.id===d.cid);if(!c)return;
       const s=c.students.find(x=>x.id===d.sid);if(!s)return;
-      // Always apply — even null clears stale values from appData
       s.age=d.age!=null?d.age:s.age||null;
       s.level=d.level||s.level||null;
       s.progress=d.progress||s.progress||null;
     });
   }catch(e){console.error(e)}
 }
+
 async function fbSaveAtt(date){
   if(!DB)return;
   try{
-    // Always attempt write — att[date] is set in memory by setAt() before doSave() is called
     const flat={};
     if(att[date]){
       Object.keys(att[date]).forEach(cid=>{
@@ -601,21 +633,19 @@ async function fbSaveAtt(date){
         }
       });
     }
-    // Write even if flat is empty (clears a previously saved record)
     await DB.collection('attendance').doc(date).set(flat);
     if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
   }catch(e){console.error('fbSaveAtt error:',e);throw e;}
 }
+
 async function fbLog(action,detail){if(!DB)return;try{await DB.collection('activityLog').add({user:user?user.n:'?',username:user?user.u:'?',role:user?user.r:'?',action,detail,ts:new Date().toISOString()})}catch(e){console.error(e)}}
 
 // ===== AUTH =====
 function doLogin(){
   const u=$('un').value.trim().toLowerCase(),p=$('pw').value.trim();
-  // FIX: support both hashed passwords (new) and legacy plaintext (migration)
   const found=users.find(x=>x.u===u&&(x.ph===hashPW(p)||(x.p&&x.p===p)));
   if(!found){$('le').style.display='block';$('le').textContent='Invalid username or password';return}
   user=found;saveSession();
-  // FIX: mark teacher attendance AFTER data is loaded (we're past initFirebase at this point)
   if(user.r==='teacher'&&user.tid){
     const td=today();
     if(!tatt[td])tatt[td]={};
@@ -627,7 +657,6 @@ function doLogin(){
 }
 
 function doLogout(){
-  // FIX: warn about unsaved changes before logout
   if(hasUnsaved){
     showConfirm('⚠️ Unsaved Changes','You have unsaved attendance. Leave anyway?',()=>{_doLogout()});
     return;
@@ -644,15 +673,13 @@ function _doLogout(){
 
 function showApp(){
   $('lp').style.display='none';$('app').style.display='block';$('ub').textContent=user.n;
-  // Set hero
   $('hpName').textContent=user.n;
   $('hpRole').textContent=user.r==='admin'?'Administrator':'Teacher';
   const now=new Date();
   $('hpDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  // Build nav and home cards based on role
   buildNav();
   $('ad').value=today();
-  $('ad').setAttribute('max',today()); // FIX: prevent future date selection
+  $('ad').setAttribute('max',today());
   renderCS();refreshDash();initFilters();
   if(user.r==='admin')renderAdmin();
   updateOrphanCount();
@@ -661,9 +688,6 @@ function showApp(){
 // ===== NAV & HOME CARDS =====
 function buildNav(){
   const isAdmin=user.r==='admin';
-  // Teachers: Home, Attendance only
-  // Admins: Home, Attendance, Orphans, Reports, Log, Admin
-  // Progress added for all roles
   let navItems=[
     {id:'H',ic:'🏠',lbl:'Home'},
     {id:'A',ic:'✅',lbl:'Attend'},
@@ -677,7 +701,6 @@ function buildNav(){
   }
   $('bnav').innerHTML=navItems.map((n,i)=>`<button class="ni${i===0?' on':''}" id="ni${n.id}" onclick="go('${n.id}',this)"><span class="ic">${n.ic}</span>${n.lbl}</button>`).join('');
 
-  // Build home portal cards — admin sees all, teacher sees only Attendance
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
     {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
@@ -696,7 +719,6 @@ function buildNav(){
 }
 
 function go(pg,btn){
-  // FIX: warn if navigating away from attendance with unsaved changes
   if(pg!=='A'&&hasUnsaved){
     showConfirm('⚠️ Unsaved Changes','You have unsaved attendance changes. Leave without saving?',()=>{_go(pg,btn)});
     return;
@@ -709,7 +731,6 @@ function _go(pg,btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
-  // Update top title
   const titles={H:'Home',A:'Attendance',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
@@ -729,7 +750,6 @@ function refreshDash(){
   const selDate=isAdmin&&$('dashDate')?$('dashDate').value||td:td;
   const isToday=selDate===td;
 
-  // show/hide date picker for admin
   if(isAdmin&&$('dashDateBar')){
     $('dashDateBar').style.display='block';
     if(!$('dashDate').value)$('dashDate').value=td;
@@ -742,7 +762,6 @@ function refreshDash(){
   let pr=0,ab=0,opr=0,oab=0,marked=0;
   classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++}else if(v==='absent'){ab++;marked++;if(s.o)oab++}})});
 
-  // date context tag
   const tagEl=$('dashDateTag');
   if(tagEl&&isAdmin){
     const hasData=marked>0;
@@ -809,7 +828,6 @@ function setAt(sid,st,btn){
   if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
   if(att[dt][selCl][sid]===st){delete att[dt][selCl][sid];btn.className='ab'}
   else{att[dt][selCl][sid]=st;btn.parentElement.querySelectorAll('.ab').forEach(b=>b.className='ab');btn.classList.add(st==='present'?'p':'a')}
-  // FIX: mark unsaved
   setUnsaved(true);
 }
 
@@ -819,7 +837,7 @@ function mAll(st){
   let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);
   ss.forEach(s=>{att[dt][selCl][s.id]=st});
   renderSL();
-  setUnsaved(true); // FIX
+  setUnsaved(true);
 }
 
 function setUnsaved(v){
@@ -861,13 +879,10 @@ function switchRptTab(tab){
 }
 
 function initFilters(){
-  // init monthly selects
   const ms=$('rm'),now=new Date();ms.innerHTML='';
   for(let i=0;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');ms.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`}
   const cs=$('rc');cs.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{cs.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
-  // init daily selects
   const rdc=$('rdc');rdc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rdc.innerHTML+=`<option value="${c.id}">${c.name}</option>`});
-  // init progress class filter
   const rprc=document.getElementById('rprc');if(rprc){rprc.innerHTML='<option value="all">All Classes</option>';classes.forEach(c=>{rprc.innerHTML+=`<option value="${c.id}">${c.name}</option>`;});}
   if(!$('rd').value)$('rd').value=today();
   $('rd').setAttribute('max',today());
@@ -898,7 +913,6 @@ function doDailyReport(){
     });
     const ctt=cp+ca;
     const cpc=ctt>0?Math.round(cp/ctt*100):null;
-    // student detail rows
     const studentRows=c.students.map((s,i)=>{
       const v=cd[s.id]||'';
       const statusIcon=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';
@@ -950,10 +964,9 @@ function rptS(y,mn,dm,cf,tp){
       for(let d=1;d<=dm;d++){
         const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
         const dy=new Date(y,mn-1,d).getDay();
-        if(dy===5||dy===6)continue; // skip weekends
-        if(new Date(ds)>new Date())continue; // skip future
+        if(dy===5||dy===6)continue;
+        if(new Date(ds)>new Date())continue;
         const dayData=att[ds];
-        // FIX: only count days where a record was actually saved for this class
         if(!dayData||!dayData[c.id])continue;
         recordedDays++;
         const val=(dayData[c.id]||{})[s.id];
@@ -961,7 +974,6 @@ function rptS(y,mn,dm,cf,tp){
         else if(val==='absent')a++;
       }
       const tt=p+a;
-      // FIX: pc based on recorded days only — unmarked within a recorded session count as absent
       const pc=recordedDays>0?Math.round(p/Math.max(tt,1)*100):null;
       rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o,recordedDays});
     });
@@ -992,7 +1004,6 @@ function rptS(y,mn,dm,cf,tp){
 }
 
 function rptT(y,mn,dm){
-  // FIX: only count days where teacher attendance was actually recorded, not all past weekdays
   let rows=[];
   teachers.forEach(t=>{
     let p=0,a=0;
@@ -1002,10 +1013,10 @@ function rptT(y,mn,dm){
       if(dy===5||dy===6)continue;
       if(new Date(ds)>=new Date(today()))continue;
       const dayRec=tatt[ds];
-      if(!dayRec)continue; // FIX: skip days with no record at all
+      if(!dayRec)continue;
       const x=dayRec[t.id];
       if(x==='present')p++;
-      else a++; // present in the record but not marked = counted absent only if record exists
+      else a++;
     }
     const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;
     rows.push({n:t.name,p,a,pc});
@@ -1017,9 +1028,8 @@ function rptT(y,mn,dm){
 let spSelClass=null;
 
 function getLevelOptions(classId,currentLevel){
-  const isC1=classId==='c1';
-  const opts=isC1?C1_LEVELS:SURAHS;
-  return opts.map(o=>`<option value="${o}" ${currentLevel===o?'selected':''}>${o}</option>`).join('');
+  const levels = getLevelsForClass(classId);
+  return levels.map(o=>`<option value="${o}" ${currentLevel===o?'selected':''}>${o}</option>`).join('');
 }
 
 function renderStudentProgress(){
@@ -1038,7 +1048,7 @@ function spSelCl(cid){
 
 function renderSPList(){
   const c=classes.find(x=>x.id===spSelClass);if(!c){$('spStudentList').innerHTML='';return;}
-  const isC2=spSelClass==='c2'||c.id==='c2';
+  const isC1=spSelClass==='c1';
   $('spStudentList').innerHTML=c.students.map((s,i)=>{
     const age=s.age||'';
     const level=s.level||'';
@@ -1052,7 +1062,7 @@ function renderSPList(){
       </div>
       <div class="sp-fields">
         <div class="sp-field"><label>Age</label><input type="number" min="4" max="25" id="sp-age-${s.id}" value="${age}" placeholder="—"></div>
-        <div class="sp-field"><label>${isC2?'Current Surah':'Level'}</label><select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select></div>
+        <div class="sp-field"><label>${isC1?'Level':'Current Surah'}</label><select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select></div>
         <div class="sp-field" style="grid-column:1/-1"><label>Monthly Progress Note</label><input type="text" id="sp-prg-${s.id}" value="${progress}" placeholder="e.g. Improved fluency this month"></div>
       </div>
       <button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">&#128190; Save</button>
@@ -1077,7 +1087,6 @@ async function saveStudentProgress(cid,sid){
       fbSaveMain()
     ]);
     toast('Progress saved ✅','ok');
-    // Update badge in-place without re-rendering (preserves scroll & input state)
     const card=document.getElementById('spc-'+sid);
     if(card){
       const badge=card.querySelector('.prg-level-badge');
@@ -1140,14 +1149,174 @@ function renderAdmin(){
   h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
   $('ac').innerHTML=h;
   $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
-  $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('')
+  $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('');
+  
+  // Render levels management section
+  renderLevelsAdmin();
 }
 
+// ===== LEVELS MANAGEMENT (NEW) =====
+function renderLevelsAdmin(){
+  // Build class tabs for levels
+  $('levelsClassTabs').innerHTML = classes.map(c => 
+    `<button class="levels-class-tab ${levelsSelClass===c.id?'on':''}" onclick="selectLevelsClass('${c.id}')">${c.name}</button>`
+  ).join('');
+  
+  renderLevelsList();
+}
+
+function selectLevelsClass(cid){
+  levelsSelClass = cid;
+  renderLevelsAdmin();
+}
+
+function renderLevelsList(){
+  const levels = getLevelsForClass(levelsSelClass);
+  const cls = classes.find(c=>c.id===levelsSelClass);
+  const isC1 = levelsSelClass === 'c1';
+  
+  if(!levels || levels.length === 0){
+    $('levelsListContainer').innerHTML = `<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">No levels defined for ${cls?.name || 'this class'}. Add one below.</div>`;
+    return;
+  }
+  
+  $('levelsListContainer').innerHTML = `
+    <div style="font-size:11px;color:var(--txt2);margin-bottom:8px;font-weight:600">${isC1?'Progress Levels':'Surahs'} for ${cls?.name} (${levels.length} items)</div>
+    <div style="max-height:300px;overflow-y:auto">
+      ${levels.map((lvl,i) => `
+        <div class="level-item">
+          <div class="level-num">${i+1}</div>
+          <div class="level-name">${lvl}</div>
+          <div class="level-actions">
+            <button class="level-move-btn" onclick="moveLevelUp('${levelsSelClass}',${i})" ${i===0?'disabled':''}title="Move up">↑</button>
+            <button class="level-move-btn" onclick="moveLevelDown('${levelsSelClass}',${i})" ${i===levels.length-1?'disabled':''} title="Move down">↓</button>
+            <button class="abtn ed" onclick="mEditLevel('${levelsSelClass}',${i})" title="Edit">✏️</button>
+            <button class="abtn dl" onclick="deleteLevel('${levelsSelClass}',${i})" title="Delete">🗑️</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function mAddLevel(){
+  const cls = classes.find(c=>c.id===levelsSelClass);
+  const isC1 = levelsSelClass === 'c1';
+  const labelType = isC1 ? 'Level' : 'Surah';
+  
+  showM(`
+    <div class="mt">Add New ${labelType}</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name || 'selected class'}</div>
+    <div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" placeholder="e.g. ${isC1?'Reading – Fluency':'115. New Surah'}"></div>
+    <div class="mb">
+      <button class="btn btn-p" onclick="addLevel()">Add ${labelType}</button>
+      <button class="btn btn-s" onclick="hideM()">Cancel</button>
+    </div>
+  `);
+}
+
+async function addLevel(){
+  const name = $('_lvlName').value.trim();
+  if(!name){toast('Please enter a name','er');return;}
+  
+  // Initialize levels array for this class if needed
+  if(!classLevels[levelsSelClass]){
+    classLevels[levelsSelClass] = [];
+  }
+  
+  // Check for duplicate
+  if(classLevels[levelsSelClass].includes(name)){
+    toast('This level already exists','er');
+    return;
+  }
+  
+  classLevels[levelsSelClass].push(name);
+  
+  hideM();
+  toast('Level added ✅','ok');
+  renderLevelsList();
+  
+  // Save to Firebase
+  await fbSaveMain();
+  await fbLog('levels','Added level: '+name+' to '+levelsSelClass);
+}
+
+function mEditLevel(cid, idx){
+  const levels = classLevels[cid] || [];
+  const currentName = levels[idx];
+  const cls = classes.find(c=>c.id===cid);
+  const isC1 = cid === 'c1';
+  const labelType = isC1 ? 'Level' : 'Surah';
+  
+  showM(`
+    <div class="mt">Edit ${labelType}</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name || 'selected class'}</div>
+    <div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" value="${currentName}"></div>
+    <div class="mb">
+      <button class="btn btn-p" onclick="saveEditLevel('${cid}',${idx})">Save</button>
+      <button class="btn btn-s" onclick="hideM()">Cancel</button>
+    </div>
+  `);
+}
+
+async function saveEditLevel(cid, idx){
+  const name = $('_lvlName').value.trim();
+  if(!name){toast('Please enter a name','er');return;}
+  
+  const oldName = classLevels[cid][idx];
+  
+  // Check for duplicate (excluding current)
+  const otherLevels = classLevels[cid].filter((_,i)=>i!==idx);
+  if(otherLevels.includes(name)){
+    toast('This level already exists','er');
+    return;
+  }
+  
+  classLevels[cid][idx] = name;
+  
+  hideM();
+  toast('Level updated ✅','ok');
+  renderLevelsList();
+  
+  // Save to Firebase
+  await fbSaveMain();
+  await fbLog('levels','Renamed level: '+oldName+' → '+name+' in '+cid);
+}
+
+function deleteLevel(cid, idx){
+  const levels = classLevels[cid] || [];
+  const levelName = levels[idx];
+  
+  showConfirm('Delete Level','Are you sure you want to delete "'+levelName+'"? Students using this level will keep their current value but won\'t see it in the dropdown.',async()=>{
+    classLevels[cid].splice(idx, 1);
+    toast('Level deleted','ok');
+    renderLevelsList();
+    await fbSaveMain();
+    await fbLog('levels','Deleted level: '+levelName+' from '+cid);
+  });
+}
+
+async function moveLevelUp(cid, idx){
+  if(idx === 0) return;
+  const levels = classLevels[cid];
+  [levels[idx-1], levels[idx]] = [levels[idx], levels[idx-1]];
+  renderLevelsList();
+  await fbSaveMain();
+}
+
+async function moveLevelDown(cid, idx){
+  const levels = classLevels[cid];
+  if(idx >= levels.length - 1) return;
+  [levels[idx], levels[idx+1]] = [levels[idx+1], levels[idx]];
+  renderLevelsList();
+  await fbSaveMain();
+}
+
+// ===== REST OF ADMIN FUNCTIONS =====
 async function tgO(ci,si){const c=classes.find(x=>x.id===ci),s=c.students.find(x=>x.id===si);s.o=s.o?0:1;await fbSaveMain();renderAdmin();updateOrphanCount();toast(s.o?'💜 Marked as orphan':'Unmarked')}
 function showM(c){$('moc').innerHTML=c;$('mov').classList.add('sh')}
 function hideM(){$('mov').classList.remove('sh')}
 
-// FIX: replaced confirm() with custom modal
 let _confirmCb=null;
 function showConfirm(title,msg,onYes){
   _confirmCb=onYes;
@@ -1159,21 +1328,27 @@ async function aS(ci){const n=$('_n').value.trim();if(!n)return;classes.find(c=>
 function mEdS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);showM(`<div class="mt">Edit Student</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${s.name}"></div><div class="cg"><input type="checkbox" id="_o" ${s.o?'checked':''}><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="svS('${ci}','${si}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
 async function svS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);const n=$('_n').value.trim();if(n)s.name=n;s.o=$('_o').checked?1:0;await fbSaveMain();hideM();renderAdmin();updateOrphanCount();toast('Updated ✅')}
 
-// FIX: delete uses custom confirm modal instead of confirm()
 function dS(ci,si){
   showConfirm('Delete Student','Are you sure you want to delete this student? This cannot be undone.',async()=>{
     const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();updateOrphanCount();toast('Deleted');
   });
 }
 function mAddC(){showM(`<div class="mt">Add Class</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="mb"><button class="btn btn-p" onclick="aC()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
-async function aC(){const n=$('_n').value.trim();if(!n)return;classes.push({id:'c_'+Date.now(),name:n,students:[]});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
+async function aC(){
+  const n=$('_n').value.trim();if(!n)return;
+  const newId='c_'+Date.now();
+  classes.push({id:newId,name:n,students:[]});
+  // Initialize empty levels for new class
+  classLevels[newId] = [];
+  await fbSaveMain();hideM();renderAdmin();toast('Added ✅');
+}
 function mAddT(){showM(`<div class="mt">Add Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="ig"><label>Username</label><input type="text" id="_u"></div><div class="ig"><label>Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="aT()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
 async function aT(){
   const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();
   if(!u||!p)return;
   const id='t_'+Date.now();
   teachers.push({id,name:n||u,u});
-  users.push({u,ph:hashPW(p),r:'teacher',n:n||u,tid:id}); // FIX: store hashed
+  users.push({u,ph:hashPW(p),r:'teacher',n:n||u,tid:id});
   await fbSaveMain();hideM();renderAdmin();toast('Added ✅')
 }
 function mEdT(ti){const t=teachers.find(x=>x.id===ti);showM(`<div class="mt">Edit Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${t.name}"></div><div class="mb"><button class="btn btn-p" onclick="svT('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
@@ -1187,7 +1362,7 @@ function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><la
 async function svPW(un){
   const p=$('_p').value.trim();if(!p)return;
   const u=users.find(x=>x.u===un);
-  u.ph=hashPW(p);delete u.p; // FIX: hash new pw, remove any legacy plaintext
+  u.ph=hashPW(p);delete u.p;
   await fbSaveMain();hideM();toast('Password changed ✅')
 }
 
@@ -1199,16 +1374,13 @@ $('pw').addEventListener('input',()=>$('le').style.display='none');
 
 // ===== BOOT =====
 (async function(){
-  // Step 1: load Firebase SDKs (fast — parallel, ~300-600ms)
   const ok=await initFirebase();
 
-  // Step 2: hide loader and show UI immediately — don't wait for Firestore data
   $('ld').classList.add('hide');
   const cs=$('cs');
   if(ok){cs.className='conn y';cs.textContent='🟢 Connected to server'}
   else{cs.className='conn n';cs.textContent='🔴 Offline – cached data shown'}
 
-  // Step 3: restore session or show login — app is usable right away
   const saved=loadSession();
   if(saved){user=saved;showApp()}
   else{$('lp').style.display='flex'}
