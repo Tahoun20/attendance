@@ -257,6 +257,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sd-save-btn:disabled{opacity:.6;cursor:not-allowed}
 
 @media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
+
+/* ORPHANS ENHANCEMENTS */
+.orp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.orp-stat{background:#fff;border-radius:var(--r);padding:12px;text-align:center;box-shadow:var(--sh);border-top:3px solid var(--orp)}
+.orp-stat-num{font-size:22px;font-weight:900;color:var(--orp);margin-bottom:4px}
+.orp-stat-label{font-size:10px;color:var(--txt2);font-weight:600}
+.orp-class-filter{display:flex;gap:8px;margin-bottom:12px}
+.orp-class-btn{flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:var(--txt2)}
+.orp-class-btn.on{border-color:var(--orp);background:var(--orp);color:#fff}
+.orp-export-bar{background:#fff;border-radius:var(--r);padding:12px;margin-bottom:16px;box-shadow:var(--sh)}
+.orp-export-title{font-size:12px;font-weight:700;color:var(--pri-d);margin-bottom:8px}
+.orp-date-inputs{display:flex;gap:8px;margin-bottom:8px}
+.orp-date-inputs input{flex:1;padding:8px;border:1px solid #E8EDF2;border-radius:6px;font:inherit;font-size:12px}
+.orp-export-btns{display:flex;gap:8px}
+.orp-export-btns button{flex:1;padding:8px;border:none;border-radius:6px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.orp-export-btns .btn-att{background:var(--ok);color:#fff}
+.orp-export-btns .btn-prog{background:var(--acc);color:#fff}
+.prog-item{background:#fff;border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,.04);border-left:4px solid var(--acc)}
+.prog-item.orp{border-left-color:var(--orp);background:var(--orp-l)}
+.prog-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-name{font-size:13px;font-weight:700;color:var(--pri-d)}
+.prog-level{font-size:11px;color:var(--txt2);background:#F5F7FA;padding:3px 10px;border-radius:20px}
+.prog-detail{font-size:12px;color:var(--txt2);line-height:1.6}
+.prog-detail strong{color:var(--pri);font-weight:600}
 </style>
 </head>
 <body>
@@ -377,24 +401,46 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <!-- ORPHANS PAGE -->
   <div class="pg" id="pgO">
-    <div class="st">💜 Orphans</div>
-    <div class="coming-soon">
-      <div class="cs-ic">💜</div>
-      <h2>Orphan Records</h2>
-      <p>This section will contain detailed profiles, sponsorship tracking, welfare notes, and progress records for all orphaned students.</p>
-      <div class="cs-pills">
-        <span class="cs-pill">👤 Student Profiles</span>
-        <span class="cs-pill">📋 Welfare Notes</span>
-        <span class="cs-pill">💰 Sponsorship</span>
-        <span class="cs-pill">📊 Progress Tracking</span>
-        <span class="cs-pill">📞 Guardian Contact</span>
+    <div class="st">💜 Orphans Management</div>
+    
+    <div class="orp-stats">
+      <div class="orp-stat">
+        <div class="orp-stat-num" id="orp-total">0</div>
+        <div class="orp-stat-label">Total</div>
       </div>
-      <div style="margin-top:24px;background:var(--orp-l);border-radius:var(--r);padding:16px;width:100%;max-width:320px">
-        <div style="font-size:13px;font-weight:700;color:var(--orp);margin-bottom:8px">Current Orphan Count</div>
-        <div id="orphanCountDisplay" style="font-size:32px;font-weight:900;color:var(--pri-d)">—</div>
-        <div style="font-size:11px;color:var(--txt2);margin-top:4px">across all classes</div>
+      <div class="orp-stat">
+        <div class="orp-stat-num" id="orp-class1">0</div>
+        <div class="orp-stat-label" id="orp-c1-name">Class 1</div>
+      </div>
+      <div class="orp-stat">
+        <div class="orp-stat-num" id="orp-class2">0</div>
+        <div class="orp-stat-label" id="orp-c2-name">Class 2</div>
       </div>
     </div>
+
+    <div class="orp-class-filter">
+      <button class="orp-class-btn on" onclick="filterOrphanClass('all')">All Classes</button>
+      <button class="orp-class-btn" onclick="filterOrphanClass('c1')" id="orp-f-c1">Class 1</button>
+      <button class="orp-class-btn" onclick="filterOrphanClass('c2')" id="orp-f-c2">Class 2</button>
+    </div>
+
+    <div class="orp-export-bar">
+      <div class="orp-export-title">📥 Export Data (CSV)</div>
+      <div class="orp-date-inputs">
+        <input type="date" id="orp-from" placeholder="From">
+        <input type="date" id="orp-to" placeholder="To">
+      </div>
+      <div class="orp-export-btns">
+        <button class="btn-att" onclick="exportOrphanAttendance()">Attendance</button>
+        <button class="btn-prog" onclick="exportOrphanProgress()">Progress</button>
+      </div>
+    </div>
+
+    <div class="st" style="font-size:16px;margin-top:8px">📋 Today's Attendance</div>
+    <div id="orp-att-list"></div>
+
+    <div class="st" style="font-size:16px;margin-top:16px">📈 Progress Overview</div>
+    <div id="orp-prog-list"></div>
   </div>
 
   <!-- ACTIVITY LOG PAGE -->
@@ -856,6 +902,7 @@ function _go(pg,btn){
   if(pg==='D')renderStudentData();
   if(pg==='M'){adminSearchTerm='';const asr=document.getElementById('adminSearch');if(asr)asr.value='';renderAdmin();}
   if(pg==='L')refreshLog();
+  if(pg==='O')renderOrphansPage();
   if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS();updateROBar();}
 }
 
@@ -1711,6 +1758,168 @@ async function svPW(un){
   const u=users.find(x=>x.u===un);
   u.ph=hashPW(p);delete u.p;
   await fbSaveMain();hideM();toast('Password changed ✅')
+}
+
+// ===== ORPHANS ENHANCEMENTS =====
+let orphanClassFilter='all';
+
+function filterOrphanClass(filter){
+  orphanClassFilter=filter;
+  document.querySelectorAll('.orp-class-btn').forEach(b=>b.classList.remove('on'));
+  event.target.classList.add('on');
+  renderOrphansPage();
+}
+
+function renderOrphansPage(){
+  if(user.r!=='admin')return;
+  
+  const c1=classes[0]||{};
+  const c2=classes[1]||{};
+  const c1Orphans=(c1.students||[]).filter(s=>s.o).length;
+  const c2Orphans=(c2.students||[]).filter(s=>s.o).length;
+  
+  $('orp-total').textContent=orphanCount;
+  $('orp-class1').textContent=c1Orphans;
+  $('orp-class2').textContent=c2Orphans;
+  $('orp-c1-name').textContent=c1.name||'Class 1';
+  $('orp-c2-name').textContent=c2.name||'Class 2';
+  $('orp-f-c1').textContent=c1.name||'Class 1';
+  $('orp-f-c2').textContent=c2.name||'Class 2';
+  
+  if(!$('orp-from').value)$('orp-from').value=today();
+  if(!$('orp-to').value)$('orp-to').value=today();
+  
+  renderOrphanAttendance();
+  renderOrphanProgress();
+}
+
+function renderOrphanAttendance(){
+  let orphans=[];
+  
+  classes.forEach(c=>{
+    if(orphanClassFilter==='all'||(orphanClassFilter==='c1'&&c.id===classes[0].id)||(orphanClassFilter==='c2'&&c.id===classes[1].id)){
+      c.students.filter(s=>s.o).forEach(s=>{
+        orphans.push({...s,className:c.name,classId:c.id});
+      });
+    }
+  });
+  
+  if(orphans.length===0){
+    $('orp-att-list').innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--txt2)"><div style="font-size:48px;opacity:.5;margin-bottom:12px">💜</div><div style="font-size:14px;font-weight:600">No orphan students found</div></div>';
+    return;
+  }
+  
+  const td=today();
+  
+  $('orp-att-list').innerHTML=orphans.map(s=>{
+    const attRec=(att[td]||{})[s.classId]||{};
+    const status=attRec[s.id]||'Not marked';
+    const statusText=status==='present'?'✅ Present':status==='absent'?'❌ Absent':status==='late'?'⏰ Late':'⚪ Not marked';
+    
+    return `
+      <div class="si2 orp">
+        <div class="snum">💜</div>
+        <div class="sname">${s.name}<br><small style="opacity:.7">${s.className}</small></div>
+        <div style="font-size:11px;font-weight:700;color:var(--orp)">${statusText}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderOrphanProgress(){
+  let orphans=[];
+  
+  classes.forEach(c=>{
+    if(orphanClassFilter==='all'||(orphanClassFilter==='c1'&&c.id===classes[0].id)||(orphanClassFilter==='c2'&&c.id===classes[1].id)){
+      c.students.filter(s=>s.o).forEach(s=>{
+        orphans.push({...s,className:c.name,classId:c.id});
+      });
+    }
+  });
+  
+  if(orphans.length===0){
+    $('orp-prog-list').innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--txt2)"><div style="font-size:48px;opacity:.5;margin-bottom:12px">📈</div><div style="font-size:14px;font-weight:600">No orphan students found</div></div>';
+    return;
+  }
+  
+  $('orp-prog-list').innerHTML=orphans.map(s=>{
+    const level=s.level||'Not set';
+    const progress=s.progress||'Not set';
+    
+    return `
+      <div class="prog-item orp">
+        <div class="prog-hdr">
+          <div class="prog-name">💜 ${s.name}</div>
+          <div class="prog-level">${level}</div>
+        </div>
+        <div class="prog-detail">
+          <strong>Class:</strong> ${s.className}<br>
+          <strong>Progress:</strong> ${progress}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function exportOrphanAttendance(){
+  const from=$('orp-from').value;
+  const to=$('orp-to').value;
+  
+  if(!from||!to){
+    toast('Please select date range','err');
+    return;
+  }
+  
+  let csv='Class,Student Name,Date,Status\n';
+  
+  classes.forEach(c=>{
+    const orphans=c.students.filter(s=>s.o);
+    if(orphans.length===0)return;
+    
+    const fromD=new Date(from+'T00:00:00');
+    const toD=new Date(to+'T00:00:00');
+    
+    for(let d=new Date(fromD);d<=toD;d.setDate(d.getDate()+1)){
+      const date=d.toISOString().split('T')[0];
+      const attRec=(att[date]||{})[c.id]||{};
+      
+      orphans.forEach(s=>{
+        const st=attRec[s.id];
+        if(st){
+          const status=st==='present'?'Present':st==='absent'?'Absent':'Late';
+          csv+=`"${c.name}","${s.name}","${date}","${status}"\n`;
+        }
+      });
+    }
+  });
+  
+  downloadCSV('orphan_attendance_'+from+'_to_'+to+'.csv',csv);
+  toast('✅ Orphan attendance exported','ok');
+}
+
+function exportOrphanProgress(){
+  let csv='Class,Student Name,Age,Level,Progress\n';
+  
+  classes.forEach(c=>{
+    c.students.filter(s=>s.o).forEach(s=>{
+      const age=s.age||'';
+      const level=s.level||'';
+      const progress=(s.progress||'').replace(/"/g,'""');
+      
+      csv+=`"${c.name}","${s.name}","${age}","${level}","${progress}"\n`;
+    });
+  });
+  
+  downloadCSV('orphan_progress_'+today()+'.csv',csv);
+  toast('✅ Orphan progress exported','ok');
+}
+
+function downloadCSV(filename,content){
+  const blob=new Blob([content],{type:'text/csv;charset=utf-8;'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download=filename;
+  link.click();
 }
 
 $('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
