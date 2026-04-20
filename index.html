@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Quran School Attendance</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--fri:#C0392B;--fri-l:#FADBD8;--fri-m:#E67E22;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -287,7 +287,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 /* Lecture body — formatted sections */
 .flc-section{margin-bottom:14px}
-.flc-section-heading{font-size:13px;font-weight:800;color:var(--fri);margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid var(--fri-l);display:flex;align-items:center;gap:6px}
+.flc-section-heading{font-size:14px;font-weight:800;color:var(--fri);margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid var(--fri-l);display:flex;align-items:center;gap:6px}
+.flc-sub-heading{font-size:13px;font-weight:700;color:var(--pri);margin-bottom:5px;margin-top:4px;padding-left:8px;border-left:3px solid var(--acc)}
+
+@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}.fri-form-grid{grid-template-columns:1fr}}
+.fri-preview-wrap{margin-top:12px;border:2px solid var(--fri-l);border-radius:var(--rs);overflow:hidden;display:none}
+.fri-preview-wrap.show{display:block}
+.fri-preview-label{background:var(--fri-l);color:var(--fri);font-size:10px;font-weight:800;padding:5px 12px;display:flex;align-items:center;gap:6px}
+.fri-preview-body{padding:14px 16px;background:#fff;min-height:60px;font-size:13px;line-height:1.75;color:var(--txt)}
+
+/* Formatting toolbar */
+.fri-toolbar{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.fri-tb-btn{padding:5px 11px;border:2px solid #E8EDF2;border-radius:7px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:var(--txt2);transition:.15s}
+.fri-tb-btn:hover{border-color:var(--fri);color:var(--fri);background:var(--fri-l)}
 .flc-bullet-list{margin:0;padding-left:18px}
 .flc-bullet-list li{font-size:12px;color:var(--txt);margin-bottom:4px;line-height:1.6}
 .flc-plain-text{font-size:13px;line-height:1.75;color:var(--txt);white-space:pre-wrap}
@@ -319,7 +331,62 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .fri-topic-btn{padding:6px 13px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:11px;font-weight:700;color:var(--txt2);transition:.2s}
 .fri-topic-btn.on{border-color:var(--fri);background:var(--fri);color:#fff}
 
-@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}.fri-form-grid{grid-template-columns:1fr}}
+/* Arabic RTL support for lecture content */
+.flc-body-content, .flc-plain-text, .flc-bullet-list,
+.flc-section-heading, .flc-sub-heading {
+  font-family: 'Noto Naskh Arabic', 'Inter', system-ui, sans-serif;
+}
+.fri-arabic {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Naskh Arabic', Georgia, serif;
+  font-size: 15px;
+  line-height: 2;
+}
+.fri-arabic .flc-section-heading {
+  font-size: 16px;
+  line-height: 1.8;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+.fri-arabic .flc-sub-heading {
+  font-size: 14px;
+  border-left: none;
+  border-right: 3px solid var(--acc);
+  padding-left: 0;
+  padding-right: 8px;
+  text-align: right;
+}
+.fri-arabic .flc-bullet-list {
+  padding-left: 0;
+  padding-right: 20px;
+  text-align: right;
+}
+.fri-arabic .flc-bullet-list li {
+  font-size: 14px;
+  line-height: 2;
+}
+.fri-arabic .flc-plain-text {
+  font-size: 15px;
+  line-height: 2;
+  text-align: right;
+}
+/* Arabic textarea */
+#friContent, #_fc {
+  font-family: 'Noto Naskh Arabic', 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.9;
+  direction: rtl;
+  text-align: right;
+}
+/* Preview RTL */
+.fri-preview-body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Naskh Arabic', 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 2;
+}
 </style>
 </head>
 <body>
@@ -488,57 +555,68 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <!-- ===== FRIDAY LECTURES PAGE ===== -->
   <div class="pg" id="pgF">
-    <div class="st">🕌 Friday Lectures</div>
+    <div class="st">🕌 محاضرات الجمعة</div>
 
     <!-- Hero Banner -->
     <div class="fri-hero">
-      <div class="fri-hero-title">Friday Lectures 🕌</div>
-      <div class="fri-hero-sub">Weekly Islamic knowledge & teachings</div>
+      <div class="fri-hero-title">محاضرات الجمعة 🕌</div>
+      <div class="fri-hero-sub">العلم الشرعي الأسبوعي</div>
       <div class="fri-hero-stats">
-        <div class="fri-hero-stat"><span id="friTotalCount">0</span>Lectures</div>
-        <div class="fri-hero-stat"><span id="friTopicCount">0</span>Topics</div>
+        <div class="fri-hero-stat"><span id="friTotalCount">0</span>محاضرة</div>
+        <div class="fri-hero-stat"><span id="friTopicCount">0</span>موضوع</div>
       </div>
     </div>
 
     <!-- Admin: Add New Lecture Form -->
     <div id="friAdminForm" style="display:none">
       <div class="fri-add-card">
-        <div class="fri-add-title">➕ Add New Lecture</div>
+        <div class="fri-add-title">➕ إضافة محاضرة جديدة</div>
         <div class="fri-form-grid">
           <div class="fri-form-field">
-            <label>Lecture Title *</label>
-            <input type="text" id="friTitle" placeholder="e.g. The Importance of Prayer">
+            <label>عنوان المحاضرة *</label>
+            <input type="text" id="friTitle" placeholder="مثال: أهمية الصلاة" style="direction:rtl;text-align:right">
           </div>
           <div class="fri-form-field">
-            <label>Date *</label>
+            <label>التاريخ *</label>
             <input type="date" id="friDate">
           </div>
           <div class="fri-form-field">
-            <label>Topic / Category</label>
-            <input type="text" id="friTopic" placeholder="e.g. Fiqh, Aqeedah, Seerah...">
+            <label>الموضوع / التصنيف</label>
+            <input type="text" id="friTopic" placeholder="مثال: فقه، عقيدة، سيرة..." style="direction:rtl;text-align:right">
           </div>
           <div class="fri-form-field">
-            <label>Speaker (optional)</label>
-            <input type="text" id="friSpeaker" placeholder="e.g. Sh. Shuaib">
+            <label>المحاضر (اختياري)</label>
+            <input type="text" id="friSpeaker" placeholder="مثال: الشيخ شعيب" style="direction:rtl;text-align:right">
           </div>
           <div class="fri-form-field full">
-            <label>Lecture Content *</label>
-            <textarea id="friContent" placeholder="Write the lecture content here...
+            <label>محتوى المحاضرة *</label>
+            <div class="fri-toolbar">
+              <button type="button" class="fri-tb-btn" onclick="friInsert('# ','')">H1 عنوان</button>
+              <button type="button" class="fri-tb-btn" onclick="friInsert('## ','')">H2 فرعي</button>
+              <button type="button" class="fri-tb-btn" onclick="friInsert('**','**')"><b>بولد</b></button>
+              <button type="button" class="fri-tb-btn" onclick="friInsert('• ','')">• نقطة</button>
+            </div>
+            <textarea id="friContent" placeholder="اكتب محتوى المحاضرة هنا...
 
-You can use:
-# Heading  →  for section headings
-• point     →  for bullet points
-Normal text for regular paragraphs"></textarea>
-            <div class="fri-form-hint">💡 Use # for headings, • for bullet points, or just plain text.</div>
+# عنوان رئيسي
+## عنوان فرعي
+**نص بولد**
+• نقطة
+فقرة نصية عادية" oninput="updateFriPreview()"></textarea>
+            <div class="fri-form-hint" style="direction:rtl;text-align:right">💡 &nbsp;<b>#</b> عنوان رئيسي &nbsp;|&nbsp; <b>##</b> عنوان فرعي &nbsp;|&nbsp; <b>**نص**</b> بولد &nbsp;|&nbsp; <b>•</b> نقطة</div>
+            <div class="fri-preview-wrap" id="friPreviewWrap">
+              <div class="fri-preview-label">👁 معاينة مباشرة</div>
+              <div class="fri-preview-body fri-arabic" id="friPreviewBody"></div>
+            </div>
           </div>
         </div>
-        <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 Publish Lecture</button>
+        <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 نشر المحاضرة</button>
       </div>
     </div>
 
     <!-- Search & Filter -->
     <div class="fri-search-bar">
-      <input type="text" id="friSearch" placeholder="🔍 Search lectures..." oninput="renderFriLectures()">
+      <input type="text" id="friSearch" placeholder="🔍 ابحث في المحاضرات..." oninput="renderFriLectures()" style="direction:rtl;text-align:right">
     </div>
     <div class="fri-topics-filter" id="friTopicsFilter"></div>
 
@@ -793,6 +871,13 @@ async function fbDeleteFriLecture(id){
 }
 
 // ===== FRIDAY LECTURES — RENDER =====
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Apply inline bold: **text** → <strong>text</strong>
+function applyInline(text){
+  return escHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--pri-d)">$1</strong>');
+}
+
 function parseLectureContent(text) {
   if (!text) return '';
   const lines = text.split('\n');
@@ -803,33 +888,38 @@ function parseLectureContent(text) {
     const trimmed = line.trim();
     if (!trimmed) {
       if (inBulletList) { html += '</ul>'; inBulletList = false; }
-      html += '<div style="height:6px"></div>';
+      html += '<div style="height:8px"></div>';
       return;
     }
-    // Heading: starts with #
-    if (trimmed.startsWith('#')) {
+    // H1: starts with ## (check before single #)
+    if (trimmed.startsWith('## ')) {
+      if (inBulletList) { html += '</ul>'; inBulletList = false; }
+      const headingText = trimmed.replace(/^##\s*/, '');
+      html += `<div class="flc-sub-heading">${applyInline(headingText)}</div>`;
+      return;
+    }
+    // H1: starts with #
+    if (trimmed.startsWith('# ') || trimmed.startsWith('#')) {
       if (inBulletList) { html += '</ul>'; inBulletList = false; }
       const headingText = trimmed.replace(/^#+\s*/, '');
-      html += `<div class="flc-section-heading">📖 ${escHtml(headingText)}</div>`;
+      html += `<div class="flc-section-heading">📖 ${applyInline(headingText)}</div>`;
       return;
     }
-    // Bullet: starts with •, -, or *
-    if (/^[•\-\*]\s/.test(trimmed)) {
+    // Bullet: starts with •, -, or leading *text* that isn't **bold**
+    if (/^[•\-]\s/.test(trimmed) || /^\*\s/.test(trimmed)) {
       if (!inBulletList) { html += '<ul class="flc-bullet-list">'; inBulletList = true; }
       const bulletText = trimmed.replace(/^[•\-\*]\s+/, '');
-      html += `<li>${escHtml(bulletText)}</li>`;
+      html += `<li>${applyInline(bulletText)}</li>`;
       return;
     }
-    // Normal line
+    // Normal paragraph line
     if (inBulletList) { html += '</ul>'; inBulletList = false; }
-    html += `<div class="flc-plain-text">${escHtml(trimmed)}</div>`;
+    html += `<div class="flc-plain-text">${applyInline(trimmed)}</div>`;
   });
 
   if (inBulletList) html += '</ul>';
   return html;
 }
-
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function updateFriStats(){
   const total = friLectures.length;
@@ -844,13 +934,42 @@ function buildTopicsFilter(){
   const container = $('friTopicsFilter');
   if(!container) return;
   container.innerHTML = topics.map(t =>
-    `<button class="fri-topic-btn ${friTopicFilter===t?'on':''}" onclick="setFriTopicFilter('${escHtml(t)}')">${t==='all'?'📋 All':t}</button>`
+    `<button class="fri-topic-btn ${friTopicFilter===t?'on':''}" onclick="setFriTopicFilter('${escHtml(t)}')">${t==='all'?'📋 الكل':t}</button>`
   ).join('');
 }
 
 function setFriTopicFilter(t){
   friTopicFilter = t;
   renderFriLectures();
+}
+
+// Toolbar: insert formatting around selection or at cursor
+function friInsert(before, after){
+  const ta = $('friContent');
+  if(!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.slice(start, end);
+  const replacement = before + (selected || '') + after;
+  ta.value = ta.value.slice(0, start) + replacement + ta.value.slice(end);
+  // Place cursor after insertion
+  const newPos = start + before.length + (selected ? selected.length : 0) + after.length;
+  ta.setSelectionRange(newPos, newPos);
+  ta.focus();
+  updateFriPreview();
+}
+
+// Live preview as admin types
+function updateFriPreview(){
+  const content = $('friContent')?.value || '';
+  const wrap = $('friPreviewWrap');
+  const body = $('friPreviewBody');
+  if(!wrap || !body) return;
+  if(content.trim()){
+    wrap.classList.add('show');
+    body.innerHTML = parseLectureContent(content);
+  } else {
+    wrap.classList.remove('show');
+  }
 }
 
 function renderFriLectures(){
@@ -869,7 +988,7 @@ function renderFriLectures(){
   if(!container) return;
 
   if(filtered.length === 0){
-    container.innerHTML = `<div class="fri-empty"><div class="fe-ic">🕌</div><h3>${friLectures.length===0?'No lectures yet':'No results found'}</h3><p>${friLectures.length===0?'The admin will publish Friday lectures here for everyone to read.':'Try a different search or filter.'}</p></div>`;
+    container.innerHTML = `<div class="fri-empty"><div class="fe-ic">🕌</div><h3>${friLectures.length===0?'لا توجد محاضرات بعد':'لا توجد نتائج'}</h3><p>${friLectures.length===0?'سيقوم الأدمن بنشر محاضرات الجمعة هنا للجميع.':'جرّب بحثاً أو تصنيفاً مختلفاً.'}</p></div>`;
     return;
   }
 
@@ -893,11 +1012,11 @@ function renderFriLectures(){
         <div class="flc-toggle-ic" id="flic-${lec.id}">▼</div>
       </div>
       <div class="flc-body" id="flbody-${lec.id}">
-        ${lec.speaker?`<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span>👨‍🏫 Speaker:</span><strong style="color:var(--pri)">${escHtml(lec.speaker)}</strong></div>`:''}
-        <div class="flc-body-content">${contentHtml}</div>
+        ${lec.speaker?`<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px;direction:rtl"><span>👨‍🏫 المحاضر:</span><strong style="color:var(--pri)">${escHtml(lec.speaker)}</strong></div>`:''}
+        <div class="flc-body-content fri-arabic">${contentHtml}</div>
         <div class="flc-footer">
-          <span>Published by ${escHtml(lec.createdBy||'Admin')}</span>
-          <span>${lec.createdAt ? new Date(lec.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : ''}</span>
+          <span>نشره ${escHtml(lec.createdBy||'Admin')}</span>
+          <span>${lec.createdAt ? new Date(lec.createdAt).toLocaleDateString('ar-SA',{month:'short',day:'numeric',year:'numeric'}) : ''}</span>
         </div>
       </div>
     </div>`;
@@ -919,13 +1038,13 @@ async function saveFriLecture(){
   const speaker = ($('friSpeaker')?.value || '').trim();
   const content = ($('friContent')?.value || '').trim();
 
-  if(!title){ toast('Please enter a title','er'); return; }
-  if(!date){ toast('Please select a date','er'); return; }
-  if(!content){ toast('Please enter lecture content','er'); return; }
+  if(!title){ toast('يرجى إدخال العنوان','er'); return; }
+  if(!date){ toast('يرجى اختيار التاريخ','er'); return; }
+  if(!content){ toast('يرجى إدخال محتوى المحاضرة','er'); return; }
 
   const btn = $('friSaveBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Publishing...';
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
 
   try{
     const lecture = {title, date, topic, speaker, content};
@@ -934,15 +1053,15 @@ async function saveFriLecture(){
 
     // Reset form
     $('friTitle').value='';$('friDate').value='';$('friTopic').value='';$('friSpeaker').value='';$('friContent').value='';
-    toast('Lecture published ✅', 'ok');
+    toast('تم نشر المحاضرة ✅', 'ok');
     btn.disabled = false;
-    btn.innerHTML = '🕌 Publish Lecture';
+    btn.innerHTML = '🕌 نشر المحاضرة';
     // Scroll to top of list
     $('friLecturesList').scrollIntoView({behavior:'smooth', block:'start'});
   } catch(e){
-    toast('Failed to publish ❌', 'er');
+    toast('فشل النشر ❌', 'er');
     btn.disabled = false;
-    btn.innerHTML = '🕌 Publish Lecture';
+    btn.innerHTML = '🕌 نشر المحاضرة';
   }
 }
 
@@ -950,42 +1069,42 @@ function editFriLecture(id){
   const lec = friLectures.find(l=>l.id===id);
   if(!lec) return;
   showM(`
-    <div class="mt">✏️ Edit Lecture</div>
-    <div class="ig"><label>Title</label><input type="text" id="_ft" value="${escHtml(lec.title||'')}"></div>
-    <div class="ig"><label>Date</label><input type="date" id="_fd" value="${lec.date||''}"></div>
-    <div class="ig"><label>Topic</label><input type="text" id="_fto" value="${escHtml(lec.topic||'')}"></div>
-    <div class="ig"><label>Speaker</label><input type="text" id="_fsp" value="${escHtml(lec.speaker||'')}"></div>
-    <div class="ig"><label>Content</label><textarea id="_fc" style="width:100%;min-height:140px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:13px;resize:vertical">${escHtml(lec.content||'')}</textarea></div>
+    <div class="mt">✏️ تعديل المحاضرة</div>
+    <div class="ig"><label>العنوان</label><input type="text" id="_ft" value="${escHtml(lec.title||'')}" style="direction:rtl;text-align:right"></div>
+    <div class="ig"><label>التاريخ</label><input type="date" id="_fd" value="${lec.date||''}"></div>
+    <div class="ig"><label>الموضوع</label><input type="text" id="_fto" value="${escHtml(lec.topic||'')}" style="direction:rtl;text-align:right"></div>
+    <div class="ig"><label>المحاضر</label><input type="text" id="_fsp" value="${escHtml(lec.speaker||'')}" style="direction:rtl;text-align:right"></div>
+    <div class="ig"><label>المحتوى <span style="font-size:10px;color:var(--txt2);font-weight:400">(# عنوان | ## فرعي | **بولد** | • نقطة)</span></label><textarea id="_fc" style="width:100%;min-height:160px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:14px;resize:vertical;line-height:1.9;direction:rtl;text-align:right">${escHtml(lec.content||'')}</textarea></div>
     <div class="mb">
-      <button class="btn btn-p" onclick="saveEditFriLecture('${id}')">💾 Save</button>
-      <button class="btn btn-s" onclick="hideM()">Cancel</button>
+      <button class="btn btn-p" onclick="saveEditFriLecture('${id}')">💾 حفظ</button>
+      <button class="btn btn-s" onclick="hideM()">إلغاء</button>
     </div>
   `);
 }
 
 async function saveEditFriLecture(id){
-  const title = ($('_ft')?.value||'').trim();
-  const date = $('_fd')?.value||'';
-  const topic = ($('_fto')?.value||'').trim();
-  const speaker = ($('_fsp')?.value||'').trim();
-  const content = ($('_fc')?.value||'').trim();
-  if(!title||!date||!content){toast('Title, date and content are required','er');return;}
+    const title = ($('_ft')?.value||'').trim();
+    const date = $('_fd')?.value||'';
+    const topic = ($('_fto')?.value||'').trim();
+    const speaker = ($('_fsp')?.value||'').trim();
+    const content = ($('_fc')?.value||'').trim();
+  if(!title||!date||!content){toast('العنوان والتاريخ والمحتوى مطلوبة','er');return;}
   try{
     await fbUpdateFriLecture(id,{title,date,topic,speaker,content});
     await fbLog('friday_lecture','Edited: '+title);
     hideM();
-    toast('Lecture updated ✅','ok');
-  } catch(e){toast('Update failed ❌','er');}
+    toast('تم تحديث المحاضرة ✅','ok');
+  } catch(e){toast('فشل التحديث ❌','er');}
 }
 
 function deleteFriLecture(id){
   const lec = friLectures.find(l=>l.id===id);
-  showConfirm('Delete Lecture', `Delete "${lec?.title||'this lecture'}"? This cannot be undone.`, async()=>{
+  showConfirm('حذف المحاضرة', `هل تريد حذف "${lec?.title||'هذه المحاضرة'}"؟ لا يمكن التراجع.`, async()=>{
     try{
       await fbDeleteFriLecture(id);
       await fbLog('friday_lecture','Deleted: '+(lec?.title||id));
-      toast('Lecture deleted','ok');
-    } catch(e){ toast('Delete failed ❌','er'); }
+      toast('تم حذف المحاضرة','ok');
+    } catch(e){ toast('فشل الحذف ❌','er'); }
   });
 }
 
@@ -1103,7 +1222,7 @@ function buildNav(){
     {id:'A',ic:'✅',lbl:'Attend'},
     {id:'D',ic:'👥',lbl:'Data'},
     {id:'P',ic:'📚',lbl:'Progress'},
-    {id:'F',ic:'🕌',lbl:'Lectures'},
+    {id:'F',ic:'🕌',lbl:'محاضرات'},
   ];
   if(isAdmin){
     navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
@@ -1115,7 +1234,7 @@ function buildNav(){
 
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
-    {id:'F',ic:'🕌',title:'Friday Lectures',desc:'Weekly Islamic lectures & teachings',badge:'New',badgeNew:true},
+    {id:'F',ic:'🕌',title:'محاضرات الجمعة',desc:'محاضرات إسلامية أسبوعية للمطالعة',badge:'جديد',badgeNew:true},
     {id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false},
     {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
   ];
@@ -1142,7 +1261,7 @@ function _go(pg,btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
-  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'Friday Lectures'};
+  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'محاضرات الجمعة'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
   if(pg==='R')initFilters();
