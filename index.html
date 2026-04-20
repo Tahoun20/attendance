@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
+:root{--pri:#1B4965;--pri-l:#2D6A8F;--pri-d:#0F2D3F;--acc:#62B6CB;--acc-l:#BEE9E8;--ok:#2ECC71;--ok-d:#27AE60;--err:#E74C3C;--warn:#F39C12;--orp:#9B59B6;--orp-l:#F4ECF7;--fri:#C0392B;--fri-l:#FADBD8;--fri-m:#E67E22;--bg:#F0F4F8;--card:#FFF;--txt:#1a1a2e;--txt2:#6B7B8D;--sh:0 4px 24px rgba(27,73,101,.1);--r:16px;--rs:10px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -36,7 +36,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .conn{text-align:center;margin-top:12px;font-size:11px;padding:6px;border-radius:8px}
 .conn.y{background:#E8F8F0;color:var(--ok-d)}.conn.n{background:#FEE;color:var(--err)}
 
-/* HOME PORTAL — new landing after login */
+/* HOME PORTAL */
 .home-portal{padding:16px 14px 20px}
 .hp-hero{background:linear-gradient(135deg,var(--pri-d),var(--pri));border-radius:20px;padding:20px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
 .hp-hero::after{content:'🕌';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:56px;opacity:.18}
@@ -110,7 +110,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .mab{flex:1;padding:9px;border:2px solid #E8EDF2;border-radius:9px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
 .mab:hover{border-color:var(--acc)}.mab.g{color:var(--ok)}.mab.r{color:var(--err)}
 
-/* Unsaved changes banner */
 .unsaved-bar{display:none;position:sticky;top:62px;z-index:90;background:#FFF3CD;border-bottom:2px solid var(--warn);padding:8px 14px;font-size:12px;font-weight:700;color:#856404;align-items:center;gap:8px}
 .unsaved-bar.show{display:flex}
 .unsaved-bar span{flex:1}
@@ -156,7 +155,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cg input[type=checkbox]{width:20px;height:20px;accent-color:var(--orp);cursor:pointer}
 .cg label{font-size:13px;font-weight:600;color:var(--orp);cursor:pointer}
 
-/* Confirm modal */
 .conf-modal .conf-ic{font-size:48px;text-align:center;margin-bottom:10px}
 .conf-modal .conf-msg{font-size:14px;color:var(--txt2);text-align:center;margin-bottom:4px;line-height:1.5}
 
@@ -164,7 +162,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .toast.ok{background:var(--ok-d)}.toast.er{background:var(--err)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Report accuracy note */
 .report-note{background:#EEF7FF;border-left:3px solid var(--acc);padding:10px 12px;border-radius:8px;font-size:11px;color:var(--pri);margin-bottom:12px;line-height:1.5}
 
 .dash-date-bar{display:flex;align-items:center;gap:8px;background:#fff;border-radius:var(--r);padding:10px 14px;box-shadow:var(--sh);margin-bottom:14px}
@@ -216,7 +213,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .level-move-btn:hover{background:var(--acc-l);color:var(--pri)}
 .level-move-btn:disabled{opacity:.3;cursor:not-allowed}
 
-/* ===== STUDENT DATA SECTION ===== */
+/* STUDENT DATA SECTION */
 .sd-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin-bottom:14px}
 .sd-stat{background:#fff;border-radius:12px;padding:10px 6px;text-align:center;box-shadow:var(--sh)}
 .sd-stat .sdn{font-size:18px;font-weight:900;color:var(--pri-d)}
@@ -256,7 +253,73 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sd-save-btn:hover{background:var(--ok-d)}
 .sd-save-btn:disabled{opacity:.6;cursor:not-allowed}
 
-@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}}
+/* ===== FRIDAY LECTURES STYLES ===== */
+.fri-hero{background:linear-gradient(135deg,#7B2D00,var(--fri),var(--fri-m));border-radius:20px;padding:20px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.fri-hero::after{content:'🕌';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.2}
+.fri-hero-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.fri-hero-sub{font-size:12px;opacity:.75;margin-bottom:10px}
+.fri-hero-stats{display:flex;gap:12px}
+.fri-hero-stat{background:rgba(255,255,255,.18);border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;text-align:center}
+.fri-hero-stat span{display:block;font-size:18px;font-weight:900;margin-bottom:1px}
+
+.fri-search-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.fri-search-bar input{flex:1;padding:10px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff}
+.fri-search-bar input:focus{outline:none;border-color:var(--fri)}
+
+/* Lecture cards */
+.fri-lecture-card{background:#fff;border-radius:var(--r);padding:0;margin-bottom:14px;box-shadow:var(--sh);overflow:hidden;animation:fadeUp .3s ease}
+.fri-lecture-card .flc-header{padding:14px 16px;background:linear-gradient(135deg,rgba(192,57,43,.06),rgba(230,126,34,.04));border-bottom:1px solid #F5E6E4;cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+.fri-lecture-card .flc-header:hover{background:linear-gradient(135deg,rgba(192,57,43,.1),rgba(230,126,34,.06))}
+.flc-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--fri),var(--fri-m));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.flc-meta{flex:1;min-width:0}
+.flc-title{font-size:14px;font-weight:800;color:var(--pri-d);margin-bottom:4px;line-height:1.3}
+.flc-date-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flc-date-badge{background:var(--fri-l);color:var(--fri);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.flc-topic-badge{background:var(--acc-l);color:var(--pri);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.flc-toggle-ic{font-size:14px;color:var(--txt2);transition:.3s;flex-shrink:0;margin-left:4px}
+.flc-toggle-ic.open{transform:rotate(180deg)}
+.flc-admin-btns{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
+
+/* Lecture body (collapsible) */
+.flc-body{display:none;padding:16px}
+.flc-body.open{display:block;animation:fadeUp .25s ease}
+.flc-body-content{font-size:13px;line-height:1.75;color:var(--txt);white-space:pre-wrap;word-break:break-word}
+
+/* Lecture body — formatted sections */
+.flc-section{margin-bottom:14px}
+.flc-section-heading{font-size:13px;font-weight:800;color:var(--fri);margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid var(--fri-l);display:flex;align-items:center;gap:6px}
+.flc-bullet-list{margin:0;padding-left:18px}
+.flc-bullet-list li{font-size:12px;color:var(--txt);margin-bottom:4px;line-height:1.6}
+.flc-plain-text{font-size:13px;line-height:1.75;color:var(--txt);white-space:pre-wrap}
+
+.flc-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#FAFBFC;border-top:1px solid #F0F0F0;font-size:11px;color:var(--txt2)}
+
+/* Admin add lecture form */
+.fri-add-card{background:linear-gradient(135deg,#fff,var(--fri-l));border:2px dashed #E8C5C1;border-radius:var(--r);padding:16px;margin-bottom:14px}
+.fri-add-card .fri-add-title{font-size:14px;font-weight:800;color:var(--fri);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fri-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fri-form-field{display:flex;flex-direction:column;gap:4px}
+.fri-form-field.full{grid-column:1/-1}
+.fri-form-field label{font-size:11px;font-weight:700;color:var(--txt2)}
+.fri-form-field input,.fri-form-field select,.fri-form-field textarea{padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;color:var(--pri-d);background:#fff}
+.fri-form-field input:focus,.fri-form-field select:focus,.fri-form-field textarea:focus{outline:none;border-color:var(--fri)}
+.fri-form-field textarea{resize:vertical;min-height:120px;line-height:1.6}
+.fri-form-hint{font-size:10px;color:var(--txt2);margin-top:2px;line-height:1.5}
+.fri-save-btn{padding:12px 20px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--fri),var(--fri-m));color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;justify-content:center}
+.fri-save-btn:hover{opacity:.9}.fri-save-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Empty state */
+.fri-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;text-align:center}
+.fri-empty .fe-ic{font-size:56px;margin-bottom:12px;opacity:.6}
+.fri-empty h3{font-size:16px;font-weight:700;color:var(--pri-d);margin-bottom:6px}
+.fri-empty p{font-size:12px;color:var(--txt2);max-width:240px;line-height:1.6}
+
+/* Topics filter */
+.fri-topics-filter{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.fri-topic-btn{padding:6px 13px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:11px;font-weight:700;color:var(--txt2);transition:.2s}
+.fri-topic-btn.on{border-color:var(--fri);background:var(--fri);color:#fff}
+
+@media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}.fri-form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -283,10 +346,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="top-a"><span class="ubadge" id="ub"></span><button class="top-b" onclick="doLogout()">🚪</button></div>
   </div>
 
-  <!-- Read-only lock for teachers on past dates -->
   <div class="ro-bar" id="roBar">&#x1F512; Past date &#8212; read only. Only today's attendance can be edited.</div>
-
-  <!-- Unsaved changes banner (Attendance page) -->
   <div class="unsaved-bar" id="unsavedBar">
     <span>⚠️ You have unsaved attendance changes</span>
     <button class="abtn ed" onclick="doSave()">Save Now</button>
@@ -349,7 +409,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <button class="rpt-tab" id="rtab-monthly" onclick="switchRptTab('monthly')">📆 Monthly</button>
       <button class="rpt-tab" id="rtab-progress" onclick="switchRptTab('progress')">📚 Progress</button>
     </div>
-    <!-- DAILY REPORT SECTION -->
     <div id="rpt-daily-section">
       <div class="rf" style="margin-bottom:10px">
         <input type="date" id="rd" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff;color:var(--pri-d)">
@@ -358,14 +417,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <button class="btn btn-p" onclick="doDailyReport()" style="margin-bottom:14px">📊 Generate Daily Report</button>
       <div id="rdo"></div>
     </div>
-    <!-- MONTHLY REPORT SECTION -->
     <div id="rpt-monthly-section" style="display:none">
-      <div class="report-note">ℹ️ Attendance % is calculated only over days where records were actually saved. Days with no saved record are excluded from totals.</div>
+      <div class="report-note">ℹ️ Attendance % is calculated only over days where records were actually saved.</div>
       <div class="rf"><select id="rm"></select><select id="rc"></select><select id="rtp"><option value="students">All Students</option><option value="orphans">💜 Orphans Only</option><option value="nonorphans">👤 Non-Orphans Only</option><option value="teachers">Teachers</option></select></div>
       <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Monthly Report</button>
       <div id="ro"></div>
     </div>
-    <!-- PROGRESS REPORT SECTION -->
     <div id="rpt-progress-section" style="display:none">
       <div class="rf" style="margin-bottom:10px">
         <select id="rprc" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff"><option value="all">All Classes</option></select>
@@ -410,7 +467,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="as"><div class="ast">👨‍🎓 Classes & Students</div><div id="ac"></div></div>
     <div class="as"><div class="ast">👨‍🏫 Teachers</div><div id="at"></div><button class="abtn ad" onclick="mAddT()" style="margin-top:6px">+ Add Teacher</button></div>
     <div class="as"><div class="ast">🔐 Passwords</div><div id="ap"></div></div>
-    <!-- NEW: Progress Levels Management -->
     <div class="as">
       <div class="ast">📚 Progress Levels</div>
       <div class="card">
@@ -430,6 +486,66 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div id="spStudentList"></div>
   </div>
 
+  <!-- ===== FRIDAY LECTURES PAGE ===== -->
+  <div class="pg" id="pgF">
+    <div class="st">🕌 Friday Lectures</div>
+
+    <!-- Hero Banner -->
+    <div class="fri-hero">
+      <div class="fri-hero-title">Friday Lectures 🕌</div>
+      <div class="fri-hero-sub">Weekly Islamic knowledge & teachings</div>
+      <div class="fri-hero-stats">
+        <div class="fri-hero-stat"><span id="friTotalCount">0</span>Lectures</div>
+        <div class="fri-hero-stat"><span id="friTopicCount">0</span>Topics</div>
+      </div>
+    </div>
+
+    <!-- Admin: Add New Lecture Form -->
+    <div id="friAdminForm" style="display:none">
+      <div class="fri-add-card">
+        <div class="fri-add-title">➕ Add New Lecture</div>
+        <div class="fri-form-grid">
+          <div class="fri-form-field">
+            <label>Lecture Title *</label>
+            <input type="text" id="friTitle" placeholder="e.g. The Importance of Prayer">
+          </div>
+          <div class="fri-form-field">
+            <label>Date *</label>
+            <input type="date" id="friDate">
+          </div>
+          <div class="fri-form-field">
+            <label>Topic / Category</label>
+            <input type="text" id="friTopic" placeholder="e.g. Fiqh, Aqeedah, Seerah...">
+          </div>
+          <div class="fri-form-field">
+            <label>Speaker (optional)</label>
+            <input type="text" id="friSpeaker" placeholder="e.g. Sh. Shuaib">
+          </div>
+          <div class="fri-form-field full">
+            <label>Lecture Content *</label>
+            <textarea id="friContent" placeholder="Write the lecture content here...
+
+You can use:
+# Heading  →  for section headings
+• point     →  for bullet points
+Normal text for regular paragraphs"></textarea>
+            <div class="fri-form-hint">💡 Use # for headings, • for bullet points, or just plain text.</div>
+          </div>
+        </div>
+        <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 Publish Lecture</button>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="fri-search-bar">
+      <input type="text" id="friSearch" placeholder="🔍 Search lectures..." oninput="renderFriLectures()">
+    </div>
+    <div class="fri-topics-filter" id="friTopicsFilter"></div>
+
+    <!-- Lectures List -->
+    <div id="friLecturesList"></div>
+  </div>
+
   <div class="bnav" id="bnav"></div>
 </div>
 
@@ -438,27 +554,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 // ===== CONSTANTS =====
-// Default Surahs — will be overridden by Firebase if customized
 const DEFAULT_SURAHS=['1. Al-Fatiha','2. Al-Baqarah','3. Ali Imran','4. An-Nisa','5. Al-Maidah','6. Al-Anam','7. Al-Araf','8. Al-Anfal','9. At-Tawbah','10. Yunus','11. Hud','12. Yusuf','13. Ar-Rad','14. Ibrahim','15. Al-Hijr','16. An-Nahl','17. Al-Isra','18. Al-Kahf','19. Maryam','20. Ta-Ha','21. Al-Anbiya','22. Al-Hajj','23. Al-Muminun','24. An-Nur','25. Al-Furqan','26. Ash-Shuara','27. An-Naml','28. Al-Qasas','29. Al-Ankabut','30. Ar-Rum','31. Luqman','32. As-Sajdah','33. Al-Ahzab','34. Saba','35. Fatir','36. Ya-Sin','37. As-Saffat','38. Sad','39. Az-Zumar','40. Ghafir','41. Fussilat','42. Ash-Shura','43. Az-Zukhruf','44. Ad-Dukhan','45. Al-Jathiyah','46. Al-Ahqaf','47. Muhammad','48. Al-Fath','49. Al-Hujurat','50. Qaf','51. Adh-Dhariyat','52. At-Tur','53. An-Najm','54. Al-Qamar','55. Ar-Rahman','56. Al-Waqiah','57. Al-Hadid','58. Al-Mujadila','59. Al-Hashr','60. Al-Mumtahanah','61. As-Saf','62. Al-Jumuah','63. Al-Munafiqun','64. At-Taghabun','65. At-Talaq','66. At-Tahrim','67. Al-Mulk','68. Al-Qalam','69. Al-Haqqah','70. Al-Maarij','71. Nuh','72. Al-Jinn','73. Al-Muzzammil','74. Al-Muddaththir','75. Al-Qiyamah','76. Al-Insan','77. Al-Mursalat','78. An-Naba','79. An-Naziat','80. Abasa','81. At-Takwir','82. Al-Infitar','83. Al-Mutaffifin','84. Al-Inshiqaq','85. Al-Buruj','86. At-Tariq','87. Al-Ala','88. Al-Ghashiyah','89. Al-Fajr','90. Al-Balad','91. Ash-Shams','92. Al-Layl','93. Ad-Duhaa','94. Ash-Sharh','95. At-Tin','96. Al-Alaq','97. Al-Qadr','98. Al-Bayyinah','99. Az-Zalzalah','100. Al-Adiyat','101. Al-Qariah','102. At-Takathur','103. Al-Asr','104. Al-Humazah','105. Al-Fil','106. Quraysh','107. Al-Maun','108. Al-Kawthar','109. Al-Kafirun','110. An-Nasr','111. Al-Masad','112. Al-Ikhlas','113. Al-Falaq','114. An-Nas'];
 const DEFAULT_C1_LEVELS=['Reading – Letters','Reading – Words','Reading – Sentences','Writing'];
 
-// ===== DYNAMIC LEVELS — loaded from Firebase, fallback to defaults =====
 let classLevels = {
   c1: [...DEFAULT_C1_LEVELS],
   c2: [...DEFAULT_SURAHS]
 };
 
-// Student Data Options
 const LIVE_WITH_OPTIONS=['Both Parents','Father','Mother','Grandmother','Grandfather','Uncle','Aunt','Other'];
 const SCHOOL_LEVEL_OPTIONS=['Not Yet','KG/Preschool','Primary (1-6)','Intermediate (7-9)','Secondary (10-12)','University','Graduated','Not in School','Other'];
 const ECONOMIC_STATUS_OPTIONS=['Poor','Middle','Rich'];
 const GENDER_OPTIONS=['Male','Female'];
 
-// Helper to get levels for a class
 function getLevelsForClass(classId) {
-  // If specific levels exist for this class, use them
   if (classLevels[classId]) return classLevels[classId];
-  // Otherwise, if it's a new class, default to empty or a simple default
   return ['Level 1'];
 }
 
@@ -504,10 +614,12 @@ const TEACHERS=[{id:'t1',name:'Sh. Shuaib',u:'shuaib'},{id:'t2',name:'Sh. Mohama
 let user=null,att={},tatt={},logs=[],selCl=null,filt='all',adminSearchTerm='';
 let classes=JSON.parse(JSON.stringify(CLASSES)),teachers=JSON.parse(JSON.stringify(TEACHERS)),users=JSON.parse(JSON.stringify(USERS));
 let hasUnsaved=false;
-
-// Admin levels management state
 let levelsSelClass='c1';
 let sdSelClass='c1';
+
+// ===== FRIDAY LECTURES STATE =====
+let friLectures = [];       // Array of lecture objects
+let friTopicFilter = 'all'; // Active topic filter
 
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dim(y,m){return new Date(y,m,0).getDate()}
@@ -557,10 +669,7 @@ async function loadAllData(){
       if(d.users)users=d.users;
       if(d.classes)classes=d.classes;
       if(d.teachers)teachers=d.teachers;
-      // Load custom levels if they exist
-      if(d.classLevels){
-        classLevels=d.classLevels;
-      }
+      if(d.classLevels){classLevels=d.classLevels;}
     } else {
       await DB.collection('appData').doc('main').set({classes,teachers,users,classLevels});
     }
@@ -574,6 +683,9 @@ async function loadAllData(){
     tatt={};tSnap.forEach(d=>{tatt[d.id]=d.data()});
     logs=[];lSnap.forEach(d=>logs.push(d.data()));
 
+    // Load Friday Lectures
+    await loadFriLectures();
+
     await loadStudentProgress();
     await loadStudentData();
 
@@ -581,17 +693,12 @@ async function loadAllData(){
 
     DB.collection('attendance').onSnapshot(snap=>{
       snap.docChanges().forEach(change=>{
-        if(change.type==='added'||change.type==='modified'){
-          att[change.doc.id]=parseAttDoc(change.doc.data());
-        } else if(change.type==='removed'){
-          delete att[change.doc.id];
-        }
+        if(change.type==='added'||change.type==='modified'){att[change.doc.id]=parseAttDoc(change.doc.data());}
+        else if(change.type==='removed'){delete att[change.doc.id];}
       });
       if(user)refreshDash();
     });
-    DB.collection('teacherAttendance').onSnapshot(snap=>{
-      tatt={};snap.forEach(d=>{tatt[d.id]=d.data()});
-    });
+    DB.collection('teacherAttendance').onSnapshot(snap=>{tatt={};snap.forEach(d=>{tatt[d.id]=d.data()});});
     DB.collection('activityLog').orderBy('ts','desc').limit(30).onSnapshot(snap=>{
       logs=[];snap.forEach(d=>logs.push(d.data()));
       if(user)refreshLog();
@@ -601,10 +708,7 @@ async function loadAllData(){
         const d=doc.data();
         if(d.users)users=d.users;
         if(d.teachers)teachers=d.teachers;
-        // Update classLevels from Firebase
-        if(d.classLevels){
-          classLevels=d.classLevels;
-        }
+        if(d.classLevels){classLevels=d.classLevels;}
         if(d.classes){
           d.classes.forEach(fc=>{
             const lc=classes.find(c=>c.id===fc.id);
@@ -612,18 +716,23 @@ async function loadAllData(){
               lc.name=fc.name;
               fc.students.forEach(fs=>{
                 const ls=lc.students.find(s=>s.id===fs.id);
-                if(ls){
-                  ls.name=fs.name;ls.o=fs.o;
-                  if(fs.age!=null&&ls.age==null)ls.age=fs.age;
-                  if(fs.level!=null&&ls.level==null)ls.level=fs.level;
-                  if(fs.progress!=null&&ls.progress==null)ls.progress=fs.progress;
-                } else {lc.students.push(fs);}
+                if(ls){ls.name=fs.name;ls.o=fs.o;if(fs.age!=null&&ls.age==null)ls.age=fs.age;if(fs.level!=null&&ls.level==null)ls.level=fs.level;if(fs.progress!=null&&ls.progress==null)ls.progress=fs.progress;}
+                else{lc.students.push(fs);}
               });
             } else {classes.push(fc);}
           });
         }
       }
     });
+
+    // Real-time listener for Friday Lectures
+    DB.collection('fridayLectures').orderBy('date','desc').onSnapshot(snap=>{
+      friLectures=[];
+      snap.forEach(d=>friLectures.push({id:d.id,...d.data()}));
+      if(user && $('pgF').classList.contains('on')) renderFriLectures();
+      updateFriStats();
+    });
+
     DB.collection('studentProgress').onSnapshot(snap=>{
       snap.docChanges().forEach(ch=>{
         if(ch.type==='added'||ch.type==='modified'){
@@ -642,36 +751,252 @@ async function loadAllData(){
           const d=ch.doc.data();
           const c=classes.find(x=>x.id===d.cid);if(!c)return;
           const s=c.students.find(x=>x.id===d.sid);if(!s)return;
-          if(d.gender!=null)s.gender=d.gender;
-          if(d.address!=null)s.address=d.address;
-          if(d.liveWith!=null)s.liveWith=d.liveWith;
-          if(d.liveWithOther!=null)s.liveWithOther=d.liveWithOther;
-          if(d.schoolLevel!=null)s.schoolLevel=d.schoolLevel;
-          if(d.schoolLevelOther!=null)s.schoolLevelOther=d.schoolLevelOther;
-          if(d.economicStatus!=null)s.economicStatus=d.economicStatus;
-          if(d.notes!=null)s.notes=d.notes;
+          if(d.gender!=null)s.gender=d.gender;if(d.address!=null)s.address=d.address;if(d.liveWith!=null)s.liveWith=d.liveWith;if(d.liveWithOther!=null)s.liveWithOther=d.liveWithOther;if(d.schoolLevel!=null)s.schoolLevel=d.schoolLevel;if(d.schoolLevelOther!=null)s.schoolLevelOther=d.schoolLevelOther;if(d.economicStatus!=null)s.economicStatus=d.economicStatus;if(d.notes!=null)s.notes=d.notes;
         }
       });
     });
   }catch(e){console.error('LoadAllData:',e)}
 }
 
+// ===== FRIDAY LECTURES — FIREBASE =====
+async function loadFriLectures(){
+  if(!DB)return;
+  try{
+    const snap = await DB.collection('fridayLectures').orderBy('date','desc').get();
+    friLectures = [];
+    snap.forEach(d => friLectures.push({id: d.id, ...d.data()}));
+  } catch(e){ console.error('loadFriLectures:', e); }
+}
+
+async function fbSaveFriLecture(lecture){
+  if(!DB) return null;
+  try{
+    const docRef = await DB.collection('fridayLectures').add({
+      ...lecture,
+      createdAt: new Date().toISOString(),
+      createdBy: user ? user.n : 'Admin'
+    });
+    return docRef.id;
+  } catch(e){ console.error('fbSaveFriLecture:', e); throw e; }
+}
+
+async function fbUpdateFriLecture(id, data){
+  if(!DB) return;
+  try{ await DB.collection('fridayLectures').doc(id).update({...data, updatedAt: new Date().toISOString()}); }
+  catch(e){ console.error('fbUpdateFriLecture:', e); throw e; }
+}
+
+async function fbDeleteFriLecture(id){
+  if(!DB) return;
+  try{ await DB.collection('fridayLectures').doc(id).delete(); }
+  catch(e){ console.error('fbDeleteFriLecture:', e); throw e; }
+}
+
+// ===== FRIDAY LECTURES — RENDER =====
+function parseLectureContent(text) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let html = '';
+  let inBulletList = false;
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (inBulletList) { html += '</ul>'; inBulletList = false; }
+      html += '<div style="height:6px"></div>';
+      return;
+    }
+    // Heading: starts with #
+    if (trimmed.startsWith('#')) {
+      if (inBulletList) { html += '</ul>'; inBulletList = false; }
+      const headingText = trimmed.replace(/^#+\s*/, '');
+      html += `<div class="flc-section-heading">📖 ${escHtml(headingText)}</div>`;
+      return;
+    }
+    // Bullet: starts with •, -, or *
+    if (/^[•\-\*]\s/.test(trimmed)) {
+      if (!inBulletList) { html += '<ul class="flc-bullet-list">'; inBulletList = true; }
+      const bulletText = trimmed.replace(/^[•\-\*]\s+/, '');
+      html += `<li>${escHtml(bulletText)}</li>`;
+      return;
+    }
+    // Normal line
+    if (inBulletList) { html += '</ul>'; inBulletList = false; }
+    html += `<div class="flc-plain-text">${escHtml(trimmed)}</div>`;
+  });
+
+  if (inBulletList) html += '</ul>';
+  return html;
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateFriStats(){
+  const total = friLectures.length;
+  const topics = new Set(friLectures.map(l=>l.topic).filter(Boolean));
+  const el1 = $('friTotalCount'), el2 = $('friTopicCount');
+  if(el1) el1.textContent = total;
+  if(el2) el2.textContent = topics.size;
+}
+
+function buildTopicsFilter(){
+  const topics = ['all', ...new Set(friLectures.map(l=>l.topic).filter(Boolean))];
+  const container = $('friTopicsFilter');
+  if(!container) return;
+  container.innerHTML = topics.map(t =>
+    `<button class="fri-topic-btn ${friTopicFilter===t?'on':''}" onclick="setFriTopicFilter('${escHtml(t)}')">${t==='all'?'📋 All':t}</button>`
+  ).join('');
+}
+
+function setFriTopicFilter(t){
+  friTopicFilter = t;
+  renderFriLectures();
+}
+
+function renderFriLectures(){
+  buildTopicsFilter();
+  updateFriStats();
+  const isAdmin = user && user.r === 'admin';
+  const search = ($('friSearch')?.value || '').toLowerCase();
+
+  let filtered = friLectures.filter(l => {
+    if(friTopicFilter !== 'all' && l.topic !== friTopicFilter) return false;
+    if(search && !l.title.toLowerCase().includes(search) && !(l.content||'').toLowerCase().includes(search) && !(l.topic||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const container = $('friLecturesList');
+  if(!container) return;
+
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="fri-empty"><div class="fe-ic">🕌</div><h3>${friLectures.length===0?'No lectures yet':'No results found'}</h3><p>${friLectures.length===0?'The admin will publish Friday lectures here for everyone to read.':'Try a different search or filter.'}</p></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map((lec, idx) => {
+    const dateLabel = lec.date ? new Date(lec.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '—';
+    const contentHtml = parseLectureContent(lec.content || '');
+    const adminBtns = isAdmin
+      ? `<div class="flc-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editFriLecture('${lec.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteFriLecture('${lec.id}')">🗑️</button></div>`
+      : '';
+    return `<div class="fri-lecture-card" id="flcard-${lec.id}">
+      <div class="flc-header" onclick="toggleFriCard('${lec.id}')">
+        <div class="flc-num">${filtered.length - idx}</div>
+        <div class="flc-meta">
+          <div class="flc-title">${escHtml(lec.title||'Untitled')}</div>
+          <div class="flc-date-row">
+            <span class="flc-date-badge">📅 ${dateLabel}</span>
+            ${lec.topic?`<span class="flc-topic-badge">${escHtml(lec.topic)}</span>`:''}
+          </div>
+        </div>
+        ${adminBtns}
+        <div class="flc-toggle-ic" id="flic-${lec.id}">▼</div>
+      </div>
+      <div class="flc-body" id="flbody-${lec.id}">
+        ${lec.speaker?`<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span>👨‍🏫 Speaker:</span><strong style="color:var(--pri)">${escHtml(lec.speaker)}</strong></div>`:''}
+        <div class="flc-body-content">${contentHtml}</div>
+        <div class="flc-footer">
+          <span>Published by ${escHtml(lec.createdBy||'Admin')}</span>
+          <span>${lec.createdAt ? new Date(lec.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : ''}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFriCard(id){
+  const body = $('flbody-'+id);
+  const icon = $('flic-'+id);
+  if(!body) return;
+  const isOpen = body.classList.toggle('open');
+  if(icon) icon.classList.toggle('open', isOpen);
+}
+
+async function saveFriLecture(){
+  const title = ($('friTitle')?.value || '').trim();
+  const date = $('friDate')?.value || '';
+  const topic = ($('friTopic')?.value || '').trim();
+  const speaker = ($('friSpeaker')?.value || '').trim();
+  const content = ($('friContent')?.value || '').trim();
+
+  if(!title){ toast('Please enter a title','er'); return; }
+  if(!date){ toast('Please select a date','er'); return; }
+  if(!content){ toast('Please enter lecture content','er'); return; }
+
+  const btn = $('friSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Publishing...';
+
+  try{
+    const lecture = {title, date, topic, speaker, content};
+    await fbSaveFriLecture(lecture);
+    await fbLog('friday_lecture', 'Published: ' + title);
+
+    // Reset form
+    $('friTitle').value='';$('friDate').value='';$('friTopic').value='';$('friSpeaker').value='';$('friContent').value='';
+    toast('Lecture published ✅', 'ok');
+    btn.disabled = false;
+    btn.innerHTML = '🕌 Publish Lecture';
+    // Scroll to top of list
+    $('friLecturesList').scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e){
+    toast('Failed to publish ❌', 'er');
+    btn.disabled = false;
+    btn.innerHTML = '🕌 Publish Lecture';
+  }
+}
+
+function editFriLecture(id){
+  const lec = friLectures.find(l=>l.id===id);
+  if(!lec) return;
+  showM(`
+    <div class="mt">✏️ Edit Lecture</div>
+    <div class="ig"><label>Title</label><input type="text" id="_ft" value="${escHtml(lec.title||'')}"></div>
+    <div class="ig"><label>Date</label><input type="date" id="_fd" value="${lec.date||''}"></div>
+    <div class="ig"><label>Topic</label><input type="text" id="_fto" value="${escHtml(lec.topic||'')}"></div>
+    <div class="ig"><label>Speaker</label><input type="text" id="_fsp" value="${escHtml(lec.speaker||'')}"></div>
+    <div class="ig"><label>Content</label><textarea id="_fc" style="width:100%;min-height:140px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:13px;resize:vertical">${escHtml(lec.content||'')}</textarea></div>
+    <div class="mb">
+      <button class="btn btn-p" onclick="saveEditFriLecture('${id}')">💾 Save</button>
+      <button class="btn btn-s" onclick="hideM()">Cancel</button>
+    </div>
+  `);
+}
+
+async function saveEditFriLecture(id){
+  const title = ($('_ft')?.value||'').trim();
+  const date = $('_fd')?.value||'';
+  const topic = ($('_fto')?.value||'').trim();
+  const speaker = ($('_fsp')?.value||'').trim();
+  const content = ($('_fc')?.value||'').trim();
+  if(!title||!date||!content){toast('Title, date and content are required','er');return;}
+  try{
+    await fbUpdateFriLecture(id,{title,date,topic,speaker,content});
+    await fbLog('friday_lecture','Edited: '+title);
+    hideM();
+    toast('Lecture updated ✅','ok');
+  } catch(e){toast('Update failed ❌','er');}
+}
+
+function deleteFriLecture(id){
+  const lec = friLectures.find(l=>l.id===id);
+  showConfirm('Delete Lecture', `Delete "${lec?.title||'this lecture'}"? This cannot be undone.`, async()=>{
+    try{
+      await fbDeleteFriLecture(id);
+      await fbLog('friday_lecture','Deleted: '+(lec?.title||id));
+      toast('Lecture deleted','ok');
+    } catch(e){ toast('Delete failed ❌','er'); }
+  });
+}
+
+// ===== FIREBASE SAVE FUNCTIONS =====
 async function fbSaveMain(){
   if(!DB)return;
   try{
     const cleanClasses=classes.map(c=>({...c,students:c.students.map(s=>{
       const cl={id:s.id,name:s.name,o:s.o||0};
-      if(s.age!=null)cl.age=s.age;
-      if(s.level!=null)cl.level=s.level;
-      if(s.progress!=null)cl.progress=s.progress;
-      if(s.gender!=null)cl.gender=s.gender;
-      if(s.address!=null)cl.address=s.address;
-      if(s.liveWith!=null)cl.liveWith=s.liveWith;
-      if(s.liveWithOther!=null)cl.liveWithOther=s.liveWithOther;
-      if(s.schoolLevel!=null)cl.schoolLevel=s.schoolLevel;
-      if(s.schoolLevelOther!=null)cl.schoolLevelOther=s.schoolLevelOther;
-      if(s.economicStatus!=null)cl.economicStatus=s.economicStatus;
-      if(s.notes!=null)cl.notes=s.notes;
+      if(s.age!=null)cl.age=s.age;if(s.level!=null)cl.level=s.level;if(s.progress!=null)cl.progress=s.progress;
+      if(s.gender!=null)cl.gender=s.gender;if(s.address!=null)cl.address=s.address;if(s.liveWith!=null)cl.liveWith=s.liveWith;if(s.liveWithOther!=null)cl.liveWithOther=s.liveWithOther;if(s.schoolLevel!=null)cl.schoolLevel=s.schoolLevel;if(s.schoolLevelOther!=null)cl.schoolLevelOther=s.schoolLevelOther;if(s.economicStatus!=null)cl.economicStatus=s.economicStatus;if(s.notes!=null)cl.notes=s.notes;
       return cl;
     })}));
     await DB.collection('appData').doc('main').set({classes:cleanClasses,teachers,users,classLevels});
@@ -682,14 +1007,7 @@ async function fbSaveStudentProgress(cid,sid,data){
   if(!DB)return;
   try{
     const docId=cid+'__'+sid;
-    const payload={
-      cid,sid,
-      age:data.age!=null?data.age:null,
-      level:data.level||null,
-      progress:data.progress||null,
-      updatedAt:new Date().toISOString()
-    };
-    await DB.collection('studentProgress').doc(docId).set(payload);
+    await DB.collection('studentProgress').doc(docId).set({cid,sid,age:data.age!=null?data.age:null,level:data.level||null,progress:data.progress||null,updatedAt:new Date().toISOString()});
   }catch(e){console.error(e)}
 }
 
@@ -701,9 +1019,7 @@ async function loadStudentProgress(){
       const d=doc.data();
       const c=classes.find(x=>x.id===d.cid);if(!c)return;
       const s=c.students.find(x=>x.id===d.sid);if(!s)return;
-      s.age=d.age!=null?d.age:s.age||null;
-      s.level=d.level||s.level||null;
-      s.progress=d.progress||s.progress||null;
+      s.age=d.age!=null?d.age:s.age||null;s.level=d.level||s.level||null;s.progress=d.progress||s.progress||null;
     });
   }catch(e){console.error(e)}
 }
@@ -724,14 +1040,7 @@ async function loadStudentData(){
       const d=doc.data();
       const c=classes.find(x=>x.id===d.cid);if(!c)return;
       const s=c.students.find(x=>x.id===d.sid);if(!s)return;
-      if(d.gender!=null)s.gender=d.gender;
-      if(d.address!=null)s.address=d.address;
-      if(d.liveWith!=null)s.liveWith=d.liveWith;
-      if(d.liveWithOther!=null)s.liveWithOther=d.liveWithOther;
-      if(d.schoolLevel!=null)s.schoolLevel=d.schoolLevel;
-      if(d.schoolLevelOther!=null)s.schoolLevelOther=d.schoolLevelOther;
-      if(d.economicStatus!=null)s.economicStatus=d.economicStatus;
-      if(d.notes!=null)s.notes=d.notes;
+      if(d.gender!=null)s.gender=d.gender;if(d.address!=null)s.address=d.address;if(d.liveWith!=null)s.liveWith=d.liveWith;if(d.liveWithOther!=null)s.liveWithOther=d.liveWithOther;if(d.schoolLevel!=null)s.schoolLevel=d.schoolLevel;if(d.schoolLevelOther!=null)s.schoolLevelOther=d.schoolLevelOther;if(d.economicStatus!=null)s.economicStatus=d.economicStatus;if(d.notes!=null)s.notes=d.notes;
     });
   }catch(e){console.error(e)}
 }
@@ -740,14 +1049,7 @@ async function fbSaveAtt(date){
   if(!DB)return;
   try{
     const flat={};
-    if(att[date]){
-      Object.keys(att[date]).forEach(cid=>{
-        const cv=att[date][cid];
-        if(cv&&typeof cv==='object'){
-          Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]});
-        }
-      });
-    }
+    if(att[date]){Object.keys(att[date]).forEach(cid=>{const cv=att[date][cid];if(cv&&typeof cv==='object'){Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]});}})}
     await DB.collection('attendance').doc(date).set(flat);
     if(tatt[date])await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
   }catch(e){console.error('fbSaveAtt error:',e);throw e;}
@@ -761,21 +1063,13 @@ function doLogin(){
   const found=users.find(x=>x.u===u&&(x.ph===hashPW(p)||(x.p&&x.p===p)));
   if(!found){$('le').style.display='block';$('le').textContent='Invalid username or password';return}
   user=found;saveSession();
-  if(user.r==='teacher'&&user.tid){
-    const td=today();
-    if(!tatt[td])tatt[td]={};
-    tatt[td][user.tid]='present';
-    fbSaveAtt(td);
-  }
+  if(user.r==='teacher'&&user.tid){const td=today();if(!tatt[td])tatt[td]={};tatt[td][user.tid]='present';fbSaveAtt(td);}
   fbLog('login','Logged in');
   showApp();
 }
 
 function doLogout(){
-  if(hasUnsaved){
-    showConfirm('⚠️ Unsaved Changes','You have unsaved attendance. Leave anyway?',()=>{_doLogout()});
-    return;
-  }
+  if(hasUnsaved){showConfirm('⚠️ Unsaved Changes','You have unsaved attendance. Leave anyway?',()=>{_doLogout()});return;}
   _doLogout();
 }
 function _doLogout(){
@@ -798,6 +1092,7 @@ function showApp(){
   renderCS();refreshDash();initFilters();
   if(user.r==='admin')renderAdmin();
   updateOrphanCount();
+  updateFriStats();
 }
 
 // ===== NAV & HOME CARDS =====
@@ -808,6 +1103,7 @@ function buildNav(){
     {id:'A',ic:'✅',lbl:'Attend'},
     {id:'D',ic:'👥',lbl:'Data'},
     {id:'P',ic:'📚',lbl:'Progress'},
+    {id:'F',ic:'🕌',lbl:'Lectures'},
   ];
   if(isAdmin){
     navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
@@ -819,7 +1115,8 @@ function buildNav(){
 
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
-    {id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'New',badgeNew:true},
+    {id:'F',ic:'🕌',title:'Friday Lectures',desc:'Weekly Islamic lectures & teachings',badge:'New',badgeNew:true},
+    {id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false},
     {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
   ];
   if(isAdmin){
@@ -836,10 +1133,7 @@ function buildNav(){
 }
 
 function go(pg,btn){
-  if(pg!=='A'&&hasUnsaved){
-    showConfirm('⚠️ Unsaved Changes','You have unsaved attendance changes. Leave without saving?',()=>{_go(pg,btn)});
-    return;
-  }
+  if(pg!=='A'&&hasUnsaved){showConfirm('⚠️ Unsaved Changes','You have unsaved attendance changes. Leave without saving?',()=>{_go(pg,btn)});return;}
   _go(pg,btn);
 }
 function _go(pg,btn){
@@ -848,7 +1142,7 @@ function _go(pg,btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
-  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel'};
+  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'Friday Lectures'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
   if(pg==='R')initFilters();
@@ -857,6 +1151,15 @@ function _go(pg,btn){
   if(pg==='M'){adminSearchTerm='';const asr=document.getElementById('adminSearch');if(asr)asr.value='';renderAdmin();}
   if(pg==='L')refreshLog();
   if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS();updateROBar();}
+  if(pg==='F'){
+    // Show admin add form only for admin
+    const isAdmin = user && user.r === 'admin';
+    const adminForm = $('friAdminForm');
+    if(adminForm) adminForm.style.display = isAdmin ? 'block' : 'none';
+    if(isAdmin && $('friDate') && !$('friDate').value) $('friDate').value = today();
+    friTopicFilter = 'all';
+    renderFriLectures();
+  }
 }
 
 // ===== DASHBOARD =====
@@ -954,14 +1257,10 @@ function mAll(st){
   const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
   let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);
   ss.forEach(s=>{att[dt][selCl][s.id]=st});
-  renderSL();
-  setUnsaved(true);
+  renderSL();setUnsaved(true);
 }
 
-function setUnsaved(v){
-  hasUnsaved=v;
-  $('unsavedBar').classList.toggle('show',v);
-}
+function setUnsaved(v){hasUnsaved=v;$('unsavedBar').classList.toggle('show',v);}
 
 async function doSave(){
   if(!selCl)return;
@@ -983,7 +1282,6 @@ async function doSave(){
   }catch(e){
     btn.disabled=false;btn.innerHTML='💾 Save Attendance';
     toast('❌ Save failed — check connection','er');
-    console.error('doSave failed:',e);
   }
 }
 
@@ -1007,146 +1305,43 @@ function initFilters(){
 }
 
 function doDailyReport(){
-  const dt=$('rd').value;
-  const cf=$('rdc').value;
+  const dt=$('rd').value;const cf=$('rdc').value;
   if(!dt){toast('Pick a date first','er');return;}
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
   const ta=att[dt]||{};
   const dayName=new Date(dt+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const hasRecord=Object.keys(ta).length>0;
-
-  let totalS=0,totalP=0,totalA=0,totalO=0,totalOP=0,totalOA=0;
-  let classRows='';
-
+  let totalS=0,totalP=0,totalA=0,totalO=0,totalOP=0,totalOA=0;let classRows='';
   cl.forEach(c=>{
-    const cd=ta[c.id]||{};
-    const classHasRecord=Object.keys(cd).length>0;
-    let cp=0,ca=0,cu=0;
-    c.students.forEach(s=>{
-      const v=cd[s.id];
-      if(v==='present'){cp++;totalP++;if(s.o){totalOP++;}}
-      else if(v==='absent'){ca++;totalA++;if(s.o){totalOA++;}}
-      else cu++;
-      totalS++;if(s.o)totalO++;
-    });
-    const ctt=cp+ca;
-    const cpc=ctt>0?Math.round(cp/ctt*100):null;
-    const studentRows=c.students.map((s,i)=>{
-      const v=cd[s.id]||'';
-      const statusIcon=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';
-      return`<tr class="${s.o?'or':''}"><td style="color:var(--txt2);font-size:10px">${i+1}</td><td style="text-align:left;font-weight:600;font-size:11px">${s.o?'💜 ':''}${s.name}</td><td>${statusIcon}</td></tr>`;
-    }).join('');
-
-    classRows+=`<div class="card" style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-        <strong style="color:var(--pri-d)">${c.name}</strong>
-        <div style="display:flex;gap:10px;font-size:12px;font-weight:700">
-          <span style="color:var(--ok)">✅ ${cp}</span>
-          <span style="color:var(--err)">❌ ${ca}</span>
-          ${cu>0?`<span style="color:var(--txt2)">— ${cu}</span>`:''}
-          ${cpc!==null?`<span style="color:${cpc>=80?'var(--ok)':cpc>=60?'var(--warn)':'var(--err)'}">📊 ${cpc}%</span>`:''}
-        </div>
-      </div>
-      <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Student</th><th>Status</th></tr></thead><tbody>${studentRows}</tbody></table></div>
-    </div>`;
+    const cd=ta[c.id]||{};let cp=0,ca=0,cu=0;
+    c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){cp++;totalP++;if(s.o){totalOP++;}}else if(v==='absent'){ca++;totalA++;if(s.o){totalOA++;}}else cu++;totalS++;if(s.o)totalO++;});
+    const ctt=cp+ca;const cpc=ctt>0?Math.round(cp/ctt*100):null;
+    const studentRows=c.students.map((s,i)=>{const v=cd[s.id]||'';const statusIcon=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';return`<tr class="${s.o?'or':''}"><td style="color:var(--txt2);font-size:10px">${i+1}</td><td style="text-align:left;font-weight:600;font-size:11px">${s.o?'💜 ':''}${s.name}</td><td>${statusIcon}</td></tr>`;}).join('');
+    classRows+=`<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong style="color:var(--pri-d)">${c.name}</strong><div style="display:flex;gap:10px;font-size:12px;font-weight:700"><span style="color:var(--ok)">✅ ${cp}</span><span style="color:var(--err)">❌ ${ca}</span>${cu>0?`<span style="color:var(--txt2)">— ${cu}</span>`:''}${cpc!==null?`<span style="color:${cpc>=80?'var(--ok)':cpc>=60?'var(--warn)':'var(--err)'}">📊 ${cpc}%</span>`:''}</div></div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Student</th><th>Status</th></tr></thead><tbody>${studentRows}</tbody></table></div></div>`;
   });
-
-  const totalTT=totalP+totalA;
-  const avgPc=totalTT>0?Math.round(totalP/totalTT*100):null;
-
-  $('rdo').innerHTML=`
-    <div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}</div>
-    ${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}
-    <div class="day-rpt-grid">
-      <div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div>
-      <div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div>
-      <div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div>
-      <div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div>
-      <div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div>
-      <div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div>
-    </div>
-    ${classRows}
-  `;
+  const totalTT=totalP+totalA;const avgPc=totalTT>0?Math.round(totalP/totalTT*100):null;
+  $('rdo').innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}</div>${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}<div class="day-rpt-grid"><div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div><div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div><div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div><div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div></div>${classRows}`;
 }
 
 function doReport(){const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp)}
 
 function rptS(y,mn,dm,cf,tp){
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
-  cl.forEach(c=>{
-    let st=c.students;
-    if(tp==='orphans')st=st.filter(s=>s.o);
-    else if(tp==='nonorphans')st=st.filter(s=>!s.o);
-    st.forEach(s=>{
-      let p=0,a=0,recordedDays=0;
-      for(let d=1;d<=dm;d++){
-        const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-        const dy=new Date(y,mn-1,d).getDay();
-        if(dy===5||dy===6)continue;
-        if(new Date(ds)>new Date())continue;
-        const dayData=att[ds];
-        if(!dayData||!dayData[c.id])continue;
-        recordedDays++;
-        const val=(dayData[c.id]||{})[s.id];
-        if(val==='present')p++;
-        else if(val==='absent')a++;
-      }
-      const tt=p+a;
-      const pc=recordedDays>0?Math.round(p/Math.max(tt,1)*100):null;
-      rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o,recordedDays});
-    });
-  });
-  const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;
-  const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;
-  const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
-  $('ro').innerHTML=rows.length===0
-    ?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found for this filter</div>`
-    :`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-        <div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div>
-        <div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div>
-        <div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div>
-      </div>
-      <div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students</div>
-      <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead>
-      <tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}">
-        <td style="color:var(--txt2)">${i+1}</td>
-        <td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td>
-        <td style="font-size:10px">${r.cn}</td>
-        <td style="color:var(--ok);font-weight:700">${r.p}</td>
-        <td style="color:var(--err);font-weight:700">${r.a}</td>
-        <td style="color:var(--txt2)">${r.tt}</td>
-        <td>${r.pc!==null
-          ?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`
-          :'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td>
-      </tr>`).join('')}</tbody></table></div>`
+  cl.forEach(c=>{let st=c.students;if(tp==='orphans')st=st.filter(s=>s.o);else if(tp==='nonorphans')st=st.filter(s=>!s.o);st.forEach(s=>{let p=0,a=0,recordedDays=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;if(new Date(ds)>new Date())continue;const dayData=att[ds];if(!dayData||!dayData[c.id])continue;recordedDays++;const val=(dayData[c.id]||{})[s.id];if(val==='present')p++;else if(val==='absent')a++;}const tt=p+a;const pc=recordedDays>0?Math.round(p/Math.max(tt,1)*100):null;rows.push({n:s.name,cn:c.name,p,a,tt,pc,o:s.o,recordedDays});});});
+  const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
+  $('ro').innerHTML=rows.length===0?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found for this filter</div>`:`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div><div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div><div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div></div><div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.pc!==null?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function rptT(y,mn,dm){
-  let rows=[];
-  teachers.forEach(t=>{
-    let p=0,a=0;
-    for(let d=1;d<=dm;d++){
-      const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      const dy=new Date(y,mn-1,d).getDay();
-      if(dy===5||dy===6)continue;
-      if(new Date(ds)>=new Date(today()))continue;
-      const dayRec=tatt[ds];
-      if(!dayRec)continue;
-      const x=dayRec[t.id];
-      if(x==='present')p++;
-      else a++;
-    }
-    const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;
-    rows.push({n:t.name,p,a,pc});
-  });
-  $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`
+  let rows=[];teachers.forEach(t=>{let p=0,a=0;for(let d=1;d<=dm;d++){const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;if(new Date(ds)>=new Date(today()))continue;const dayRec=tatt[ds];if(!dayRec)continue;const x=dayRec[t.id];if(x==='present')p++;else a++;}const tt=p+a,pc=tt>0?Math.round(p/tt*100):0;rows.push({n:t.name,p,a,pc});});
+  $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 // ===== STUDENT PROGRESS =====
 let spSelClass=null;
 
 function getLevelOptions(classId,currentLevel){
-  const levels = getLevelsForClass(classId);
+  const levels=getLevelsForClass(classId);
   return levels.map(o=>`<option value="${o}" ${currentLevel===o?'selected':''}>${o}</option>`).join('');
 }
 
@@ -1168,315 +1363,95 @@ function renderSPList(){
   const c=classes.find(x=>x.id===spSelClass);if(!c){$('spStudentList').innerHTML='';return;}
   const isC1=spSelClass==='c1';
   $('spStudentList').innerHTML=c.students.map((s,i)=>{
-    const age=s.age||'';
-    const level=s.level||'';
-    const progress=s.progress||'';
-    const levelOpts=getLevelOptions(spSelClass,level);
-    return`<div class="sp-student-card ${s.o?'orp':''}" id="spc-${s.id}">
-      <div class="sp-student-header">
-        <div class="sp-student-num">${i+1}</div>
-        <div class="sp-student-name">${s.o?'💜 ':''}${s.name}</div>
-        ${level?`<span class="prg-level-badge">${level}</span>`:''}
-      </div>
-      <div class="sp-fields">
-        <div class="sp-field"><label>Age</label><input type="number" min="4" max="25" id="sp-age-${s.id}" value="${age}" placeholder="—"></div>
-        <div class="sp-field"><label>${isC1?'Level':'Current Surah'}</label><select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select></div>
-        <div class="sp-field" style="grid-column:1/-1"><label>Monthly Progress Note</label><input type="text" id="sp-prg-${s.id}" value="${progress}" placeholder="e.g. Improved fluency this month"></div>
-      </div>
-      <button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">&#128190; Save</button>
-    </div>`;
+    const age=s.age||'';const level=s.level||'';const progress=s.progress||'';const levelOpts=getLevelOptions(spSelClass,level);
+    return`<div class="sp-student-card ${s.o?'orp':''}" id="spc-${s.id}"><div class="sp-student-header"><div class="sp-student-num">${i+1}</div><div class="sp-student-name">${s.o?'💜 ':''}${s.name}</div>${level?`<span class="prg-level-badge">${level}</span>`:''}</div><div class="sp-fields"><div class="sp-field"><label>Age</label><input type="number" min="4" max="25" id="sp-age-${s.id}" value="${age}" placeholder="—"></div><div class="sp-field"><label>${isC1?'Level':'Current Surah'}</label><select id="sp-lvl-${s.id}"><option value="">— Select —</option>${levelOpts}</select></div><div class="sp-field" style="grid-column:1/-1"><label>Monthly Progress Note</label><input type="text" id="sp-prg-${s.id}" value="${progress}" placeholder="e.g. Improved fluency this month"></div></div><button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">&#128190; Save</button></div>`;
   }).join('');
 }
 
 async function saveStudentProgress(cid,sid){
-  const c=classes.find(x=>x.id===cid);
-  const s=c.students.find(x=>x.id===sid);
-  const age=document.getElementById('sp-age-'+sid)?.value;
-  const level=document.getElementById('sp-lvl-'+sid)?.value;
-  const progress=(document.getElementById('sp-prg-'+sid)?.value||'').trim();
-  s.age=age?Number(age):null;
-  s.level=level||null;
-  s.progress=progress||null;
-  const btn=document.getElementById('spcbtn-'+sid);
-  if(btn){btn.disabled=true;btn.textContent='Saving...';}
+  const c=classes.find(x=>x.id===cid);const s=c.students.find(x=>x.id===sid);
+  const age=document.getElementById('sp-age-'+sid)?.value;const level=document.getElementById('sp-lvl-'+sid)?.value;const progress=(document.getElementById('sp-prg-'+sid)?.value||'').trim();
+  s.age=age?Number(age):null;s.level=level||null;s.progress=progress||null;
+  const btn=document.getElementById('spcbtn-'+sid);if(btn){btn.disabled=true;btn.textContent='Saving...';}
   try{
-    await Promise.all([
-      fbSaveStudentProgress(cid,sid,{age:s.age,level:s.level,progress:s.progress}),
-      fbSaveMain()
-    ]);
+    await Promise.all([fbSaveStudentProgress(cid,sid,{age:s.age,level:s.level,progress:s.progress}),fbSaveMain()]);
     toast('Progress saved ✅','ok');
     const card=document.getElementById('spc-'+sid);
-    if(card){
-      const badge=card.querySelector('.prg-level-badge');
-      if(s.level){
-        if(badge)badge.textContent=s.level;
-        else{const hdr=card.querySelector('.sp-student-name');if(hdr){const b=document.createElement('span');b.className='prg-level-badge';b.textContent=s.level;hdr.parentNode.appendChild(b);}}
-      } else if(badge){badge.remove();}
-    }
-    if(btn){btn.disabled=false;btn.textContent='✅ Saved';}
-    setTimeout(()=>{if(btn)btn.textContent='💾 Save';},2000);
-  }catch(e){
-    toast('Save failed ❌','er');
-    if(btn){btn.disabled=false;btn.textContent='💾 Save';}
-  }
+    if(card){const badge=card.querySelector('.prg-level-badge');if(s.level){if(badge)badge.textContent=s.level;else{const hdr=card.querySelector('.sp-student-name');if(hdr){const b=document.createElement('span');b.className='prg-level-badge';b.textContent=s.level;hdr.parentNode.appendChild(b);}}}else if(badge){badge.remove();}}
+    if(btn){btn.disabled=false;btn.textContent='✅ Saved';}setTimeout(()=>{if(btn)btn.textContent='💾 Save';},2000);
+  }catch(e){toast('Save failed ❌','er');if(btn){btn.disabled=false;btn.textContent='💾 Save';}}
 }
 
-// ===== STUDENT DATA SECTION =====
-function isProfileComplete(s){
-  return s.age && s.gender && s.address && s.liveWith && s.schoolLevel && s.economicStatus;
-}
+// ===== STUDENT DATA =====
+function isProfileComplete(s){return s.age&&s.gender&&s.address&&s.liveWith&&s.schoolLevel&&s.economicStatus;}
 
 function renderStudentData(){
   $('sdClassTabs').innerHTML=classes.map(c=>`<button class="sp-class-tab ${sdSelClass===c.id?'on':''}" onclick="selectSDClass('${c.id}')">${c.name}</button>`).join('');
-  renderSDStats();
-  renderSDList();
+  renderSDStats();renderSDList();
 }
 
 function selectSDClass(cid){sdSelClass=cid;renderStudentData();}
 
 function renderSDStats(){
-  const c=classes.find(x=>x.id===sdSelClass);
-  if(!c){$('sdStats').innerHTML='';return;}
-  const total=c.students.length;
-  const males=c.students.filter(s=>s.gender==='Male').length;
-  const females=c.students.filter(s=>s.gender==='Female').length;
-  const orphans=c.students.filter(s=>s.o).length;
-  const complete=c.students.filter(s=>isProfileComplete(s)).length;
-  const incomplete=total-complete;
-  $('sdStats').innerHTML=`
-    <div class="sd-stat"><div class="sdn">${total}</div><div class="sdl">Total</div></div>
-    <div class="sd-stat"><div class="sdn">👦${males}</div><div class="sdl">Male</div></div>
-    <div class="sd-stat"><div class="sdn">👧${females}</div><div class="sdl">Female</div></div>
-    <div class="sd-stat"><div class="sdn" style="color:var(--orp)">💜${orphans}</div><div class="sdl">Orphans</div></div>
-    <div class="sd-stat complete"><div class="sdn" style="color:var(--ok)">${complete}</div><div class="sdl">Complete</div></div>
-    <div class="sd-stat incomplete"><div class="sdn" style="color:var(--warn)">${incomplete}</div><div class="sdl">Incomplete</div></div>`;
+  const c=classes.find(x=>x.id===sdSelClass);if(!c){$('sdStats').innerHTML='';return;}
+  const total=c.students.length,males=c.students.filter(s=>s.gender==='Male').length,females=c.students.filter(s=>s.gender==='Female').length,orphans=c.students.filter(s=>s.o).length,complete=c.students.filter(s=>isProfileComplete(s)).length,incomplete=total-complete;
+  $('sdStats').innerHTML=`<div class="sd-stat"><div class="sdn">${total}</div><div class="sdl">Total</div></div><div class="sd-stat"><div class="sdn">👦${males}</div><div class="sdl">Male</div></div><div class="sd-stat"><div class="sdn">👧${females}</div><div class="sdl">Female</div></div><div class="sd-stat"><div class="sdn" style="color:var(--orp)">💜${orphans}</div><div class="sdl">Orphans</div></div><div class="sd-stat complete"><div class="sdn" style="color:var(--ok)">${complete}</div><div class="sdl">Complete</div></div><div class="sd-stat incomplete"><div class="sdn" style="color:var(--warn)">${incomplete}</div><div class="sdl">Incomplete</div></div>`;
 }
 
 function filterStudentData(){renderSDList();}
 
 function getFilteredStudents(c){
-  const search=($('sdSearch')?.value||'').toLowerCase();
-  const genderFilter=$('sdFilterGender')?.value||'';
-  const statusFilter=$('sdFilterStatus')?.value||'';
-  return c.students.filter(s=>{
-    if(search && !s.name.toLowerCase().includes(search))return false;
-    if(genderFilter && s.gender!==genderFilter)return false;
-    if(statusFilter==='complete' && !isProfileComplete(s))return false;
-    if(statusFilter==='incomplete' && isProfileComplete(s))return false;
-    return true;
-  });
+  const search=($('sdSearch')?.value||'').toLowerCase();const genderFilter=$('sdFilterGender')?.value||'';const statusFilter=$('sdFilterStatus')?.value||'';
+  return c.students.filter(s=>{if(search&&!s.name.toLowerCase().includes(search))return false;if(genderFilter&&s.gender!==genderFilter)return false;if(statusFilter==='complete'&&!isProfileComplete(s))return false;if(statusFilter==='incomplete'&&isProfileComplete(s))return false;return true;});
 }
 
 function renderSDList(){
-  const c=classes.find(x=>x.id===sdSelClass);
-  if(!c){$('sdStudentList').innerHTML='';return;}
-  const students=getFilteredStudents(c);
-  const isAdmin=user.r==='admin';
-  if(students.length===0){
-    $('sdStudentList').innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--txt2)">No students match your filters</div>';
-    return;
-  }
+  const c=classes.find(x=>x.id===sdSelClass);if(!c){$('sdStudentList').innerHTML='';return;}
+  const students=getFilteredStudents(c);const isAdmin=user.r==='admin';
+  if(students.length===0){$('sdStudentList').innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--txt2)">No students match your filters</div>';return;}
   $('sdStudentList').innerHTML=students.map(s=>{
-    const origIdx=c.students.indexOf(s)+1;
-    const complete=isProfileComplete(s);
-    const cardClass=`sd-card ${s.o?'orp':''} ${!complete?'incomplete-profile':''}`;
-    const avatar=s.gender==='Female'?'👧':'👦';
-    const lwVal=s.liveWith||'';
-    const slVal=s.schoolLevel||'';
-    return`<div class="${cardClass}" id="sd-${s.id}">
-      <div class="sd-card-header">
-        <div class="sd-avatar">${avatar}</div>
-        <div class="sd-info">
-          <div class="sd-name">${s.name}
-            <div class="sd-badges">
-              ${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}
-              ${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}
-            </div>
-          </div>
-          <div class="sd-meta">
-            <span>#${origIdx}</span>
-            ${s.age?`<span>🎂 ${s.age} yrs</span>`:''}
-            ${s.level?`<span>📚 ${s.level}</span>`:''}
-          </div>
-        </div>
-      </div>
-      <div class="sd-fields">
-        <div class="sd-field"><label>Gender *</label>
-          <select id="sd-gender-${s.id}" onchange="markSDDirty('${s.id}')">
-            <option value="">— Select —</option>
-            ${GENDER_OPTIONS.map(g=>`<option value="${g}" ${s.gender===g?'selected':''}>${g}</option>`).join('')}
-          </select>
-        </div>
-        <div class="sd-field"><label>Orphan Status</label>
-          <select id="sd-orphan-${s.id}" ${!isAdmin?'disabled':''} onchange="markSDDirty('${s.id}')">
-            <option value="0" ${!s.o?'selected':''}>No</option>
-            <option value="1" ${s.o?'selected':''}>Yes 💜</option>
-          </select>
-        </div>
-        <div class="sd-field full"><label>Address *</label>
-          <input type="text" id="sd-address-${s.id}" value="${s.address||''}" placeholder="Enter address..." oninput="markSDDirty('${s.id}')">
-        </div>
-        <div class="sd-field" id="sd-lw-field-${s.id}"><label>Live With *</label>
-          <select id="sd-livewith-${s.id}" onchange="handleLiveWithChange('${s.id}');markSDDirty('${s.id}')">
-            <option value="">— Select —</option>
-            ${LIVE_WITH_OPTIONS.map(o=>`<option value="${o}" ${lwVal===o?'selected':''}>${o}</option>`).join('')}
-          </select>
-          ${lwVal==='Other'?`<input type="text" class="other-input" id="sd-livewith-other-${s.id}" value="${s.liveWithOther||''}" placeholder="Specify..." oninput="markSDDirty('${s.id}')">`:''}
-        </div>
-        <div class="sd-field" id="sd-sl-field-${s.id}"><label>School Level *</label>
-          <select id="sd-schoollevel-${s.id}" onchange="handleSchoolLevelChange('${s.id}');markSDDirty('${s.id}')">
-            <option value="">— Select —</option>
-            ${SCHOOL_LEVEL_OPTIONS.map(o=>`<option value="${o}" ${slVal===o?'selected':''}>${o}</option>`).join('')}
-          </select>
-          ${slVal==='Other'?`<input type="text" class="other-input" id="sd-schoollevel-other-${s.id}" value="${s.schoolLevelOther||''}" placeholder="Specify..." oninput="markSDDirty('${s.id}')">`:''}
-        </div>
-        <div class="sd-field"><label>Economic Status *</label>
-          <select id="sd-economic-${s.id}" onchange="markSDDirty('${s.id}')">
-            <option value="">— Select —</option>
-            ${ECONOMIC_STATUS_OPTIONS.map(o=>`<option value="${o}" ${s.economicStatus===o?'selected':''}>${o}</option>`).join('')}
-          </select>
-        </div>
-        <div class="sd-field full"><label>Notes</label>
-          <textarea id="sd-notes-${s.id}" placeholder="Additional notes..." oninput="markSDDirty('${s.id}')">${s.notes||''}</textarea>
-        </div>
-      </div>
-      <div class="sd-actions">
-        <button class="sd-save-btn" id="sd-btn-${s.id}" onclick="saveStudentDataCard('${c.id}','${s.id}')">💾 Save</button>
-      </div>
-    </div>`;
+    const origIdx=c.students.indexOf(s)+1;const complete=isProfileComplete(s);const cardClass=`sd-card ${s.o?'orp':''} ${!complete?'incomplete-profile':''}`;const avatar=s.gender==='Female'?'👧':'👦';const lwVal=s.liveWith||'';const slVal=s.schoolLevel||'';
+    return`<div class="${cardClass}" id="sd-${s.id}"><div class="sd-card-header"><div class="sd-avatar">${avatar}</div><div class="sd-info"><div class="sd-name">${s.name}<div class="sd-badges">${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}</div></div><div class="sd-meta"><span>#${origIdx}</span>${s.age?`<span>🎂 ${s.age} yrs</span>`:''}${s.level?`<span>📚 ${s.level}</span>`:''}</div></div></div><div class="sd-fields"><div class="sd-field"><label>Gender *</label><select id="sd-gender-${s.id}" onchange="markSDDirty('${s.id}')"><option value="">— Select —</option>${GENDER_OPTIONS.map(g=>`<option value="${g}" ${s.gender===g?'selected':''}>${g}</option>`).join('')}</select></div><div class="sd-field"><label>Orphan Status</label><select id="sd-orphan-${s.id}" ${!isAdmin?'disabled':''} onchange="markSDDirty('${s.id}')"><option value="0" ${!s.o?'selected':''}>No</option><option value="1" ${s.o?'selected':''}>Yes 💜</option></select></div><div class="sd-field full"><label>Address *</label><input type="text" id="sd-address-${s.id}" value="${s.address||''}" placeholder="Enter address..." oninput="markSDDirty('${s.id}')"></div><div class="sd-field" id="sd-lw-field-${s.id}"><label>Live With *</label><select id="sd-livewith-${s.id}" onchange="handleLiveWithChange('${s.id}');markSDDirty('${s.id}')"><option value="">— Select —</option>${LIVE_WITH_OPTIONS.map(o=>`<option value="${o}" ${lwVal===o?'selected':''}>${o}</option>`).join('')}</select>${lwVal==='Other'?`<input type="text" class="other-input" id="sd-livewith-other-${s.id}" value="${s.liveWithOther||''}" placeholder="Specify..." oninput="markSDDirty('${s.id}')">`:''}  </div><div class="sd-field" id="sd-sl-field-${s.id}"><label>School Level *</label><select id="sd-schoollevel-${s.id}" onchange="handleSchoolLevelChange('${s.id}');markSDDirty('${s.id}')"><option value="">— Select —</option>${SCHOOL_LEVEL_OPTIONS.map(o=>`<option value="${o}" ${slVal===o?'selected':''}>${o}</option>`).join('')}</select>${slVal==='Other'?`<input type="text" class="other-input" id="sd-schoollevel-other-${s.id}" value="${s.schoolLevelOther||''}" placeholder="Specify..." oninput="markSDDirty('${s.id}')">`:''}  </div><div class="sd-field"><label>Economic Status *</label><select id="sd-economic-${s.id}" onchange="markSDDirty('${s.id}')"><option value="">— Select —</option>${ECONOMIC_STATUS_OPTIONS.map(o=>`<option value="${o}" ${s.economicStatus===o?'selected':''}>${o}</option>`).join('')}</select></div><div class="sd-field full"><label>Notes</label><textarea id="sd-notes-${s.id}" placeholder="Additional notes..." oninput="markSDDirty('${s.id}')">${s.notes||''}</textarea></div></div><div class="sd-actions"><button class="sd-save-btn" id="sd-btn-${s.id}" onclick="saveStudentDataCard('${c.id}','${s.id}')">💾 Save</button></div></div>`;
   }).join('');
 }
 
-function markSDDirty(sid){
-  const btn=$('sd-btn-'+sid);
-  if(btn && !btn.textContent.includes('⚠')){
-    btn.textContent='⚠️ Save Changes';
-    btn.style.background='var(--warn)';
-  }
-}
-
-function handleLiveWithChange(sid){
-  const sel=$('sd-livewith-'+sid);
-  const field=$('sd-lw-field-'+sid);
-  const existing=field.querySelector('.other-input');
-  if(sel.value==='Other'){
-    if(!existing){
-      const inp=document.createElement('input');
-      inp.type='text';inp.className='other-input';inp.id='sd-livewith-other-'+sid;
-      inp.placeholder='Specify...';inp.oninput=()=>markSDDirty(sid);
-      field.appendChild(inp);
-    }
-  }else if(existing){existing.remove();}
-}
-
-function handleSchoolLevelChange(sid){
-  const sel=$('sd-schoollevel-'+sid);
-  const field=$('sd-sl-field-'+sid);
-  const existing=field.querySelector('.other-input');
-  if(sel.value==='Other'){
-    if(!existing){
-      const inp=document.createElement('input');
-      inp.type='text';inp.className='other-input';inp.id='sd-schoollevel-other-'+sid;
-      inp.placeholder='Specify...';inp.oninput=()=>markSDDirty(sid);
-      field.appendChild(inp);
-    }
-  }else if(existing){existing.remove();}
-}
+function markSDDirty(sid){const btn=$('sd-btn-'+sid);if(btn&&!btn.textContent.includes('⚠')){btn.textContent='⚠️ Save Changes';btn.style.background='var(--warn)';}}
+function handleLiveWithChange(sid){const sel=$('sd-livewith-'+sid);const field=$('sd-lw-field-'+sid);const existing=field.querySelector('.other-input');if(sel.value==='Other'){if(!existing){const inp=document.createElement('input');inp.type='text';inp.className='other-input';inp.id='sd-livewith-other-'+sid;inp.placeholder='Specify...';inp.oninput=()=>markSDDirty(sid);field.appendChild(inp);}}else if(existing){existing.remove();}}
+function handleSchoolLevelChange(sid){const sel=$('sd-schoollevel-'+sid);const field=$('sd-sl-field-'+sid);const existing=field.querySelector('.other-input');if(sel.value==='Other'){if(!existing){const inp=document.createElement('input');inp.type='text';inp.className='other-input';inp.id='sd-schoollevel-other-'+sid;inp.placeholder='Specify...';inp.oninput=()=>markSDDirty(sid);field.appendChild(inp);}}else if(existing){existing.remove();}}
 
 async function saveStudentDataCard(cid,sid){
-  const c=classes.find(x=>x.id===cid);
-  const s=c.students.find(x=>x.id===sid);
-  const btn=$('sd-btn-'+sid);
-  const isAdmin=user.r==='admin';
-  
-  const gender=$('sd-gender-'+sid)?.value||null;
-  const address=($('sd-address-'+sid)?.value||'').trim()||null;
-  const liveWith=$('sd-livewith-'+sid)?.value||null;
-  const liveWithOther=($('sd-livewith-other-'+sid)?.value||'').trim()||null;
-  const schoolLevel=$('sd-schoollevel-'+sid)?.value||null;
-  const schoolLevelOther=($('sd-schoollevel-other-'+sid)?.value||'').trim()||null;
-  const economicStatus=$('sd-economic-'+sid)?.value||null;
-  const notes=($('sd-notes-'+sid)?.value||'').trim()||null;
-  const orphanVal=$('sd-orphan-'+sid)?.value;
-  
-  s.gender=gender;s.address=address;s.liveWith=liveWith;s.liveWithOther=liveWithOther;
-  s.schoolLevel=schoolLevel;s.schoolLevelOther=schoolLevelOther;s.economicStatus=economicStatus;s.notes=notes;
-  if(isAdmin && orphanVal!==undefined){s.o=parseInt(orphanVal)||0;}
-  
+  const c=classes.find(x=>x.id===cid);const s=c.students.find(x=>x.id===sid);const btn=$('sd-btn-'+sid);const isAdmin=user.r==='admin';
+  const gender=$('sd-gender-'+sid)?.value||null;const address=($('sd-address-'+sid)?.value||'').trim()||null;const liveWith=$('sd-livewith-'+sid)?.value||null;const liveWithOther=($('sd-livewith-other-'+sid)?.value||'').trim()||null;const schoolLevel=$('sd-schoollevel-'+sid)?.value||null;const schoolLevelOther=($('sd-schoollevel-other-'+sid)?.value||'').trim()||null;const economicStatus=$('sd-economic-'+sid)?.value||null;const notes=($('sd-notes-'+sid)?.value||'').trim()||null;const orphanVal=$('sd-orphan-'+sid)?.value;
+  s.gender=gender;s.address=address;s.liveWith=liveWith;s.liveWithOther=liveWithOther;s.schoolLevel=schoolLevel;s.schoolLevelOther=schoolLevelOther;s.economicStatus=economicStatus;s.notes=notes;
+  if(isAdmin&&orphanVal!==undefined){s.o=parseInt(orphanVal)||0;}
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
   try{
-    await Promise.all([
-      fbSaveStudentData(cid,sid,{gender,address,liveWith,liveWithOther,schoolLevel,schoolLevelOther,economicStatus,notes}),
-      fbSaveMain()
-    ]);
+    await Promise.all([fbSaveStudentData(cid,sid,{gender,address,liveWith,liveWithOther,schoolLevel,schoolLevelOther,economicStatus,notes}),fbSaveMain()]);
     await fbLog('student_data',`Updated data for ${s.name}`);
     toast('Student data saved ✅');
     if(btn){btn.disabled=false;btn.textContent='✅ Saved';btn.style.background='var(--ok)';}
     renderSDStats();
-    // Update avatar if gender changed
-    const avatar=document.querySelector(`#sd-${sid} .sd-avatar`);
-    if(avatar)avatar.textContent=s.gender==='Female'?'👧':'👦';
-    // Update badges
-    const badges=document.querySelector(`#sd-${sid} .sd-badges`);
-    if(badges){
-      const complete=isProfileComplete(s);
-      badges.innerHTML=`${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}`;
-    }
+    const avatar=document.querySelector(`#sd-${sid} .sd-avatar`);if(avatar)avatar.textContent=s.gender==='Female'?'👧':'👦';
+    const badges=document.querySelector(`#sd-${sid} .sd-badges`);if(badges){const complete=isProfileComplete(s);badges.innerHTML=`${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}`;}
     setTimeout(()=>{if(btn){btn.textContent='💾 Save';btn.style.background='var(--ok)';}},2000);
-  }catch(e){
-    toast('Save failed ❌','er');
-    if(btn){btn.disabled=false;btn.textContent='💾 Save';btn.style.background='var(--ok)';}
-  }
+  }catch(e){toast('Save failed ❌','er');if(btn){btn.disabled=false;btn.textContent='💾 Save';btn.style.background='var(--ok)';}}
 }
 
 function exportStudentData(){
-  const c=classes.find(x=>x.id===sdSelClass);
-  if(!c){toast('No class selected','er');return;}
+  const c=classes.find(x=>x.id===sdSelClass);if(!c){toast('No class selected','er');return;}
   const students=getFilteredStudents(c);
   let csv='No,Name,Age,Gender,Orphan,Address,Live With,School Level,Economic Status,Progress Level,Notes,Profile Complete\n';
-  students.forEach((s,i)=>{
-    const esc=v=>`"${(v||'').toString().replace(/"/g,'""')}"`;
-    const complete=isProfileComplete(s)?'Yes':'No';
-    const lw=s.liveWith==='Other'?(s.liveWithOther||'Other'):(s.liveWith||'');
-    const sl=s.schoolLevel==='Other'?(s.schoolLevelOther||'Other'):(s.schoolLevel||'');
-    csv+=`${i+1},${esc(s.name)},${s.age||''},${s.gender||''},${s.o?'Yes':'No'},${esc(s.address)},${esc(lw)},${esc(sl)},${s.economicStatus||''},${esc(s.level)},${esc(s.notes)},${complete}\n`;
-  });
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download=`${c.name}_student_data_${today()}.csv`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('Export downloaded ✅');
+  students.forEach((s,i)=>{const esc=v=>`"${(v||'').toString().replace(/"/g,'""')}"`;const complete=isProfileComplete(s)?'Yes':'No';const lw=s.liveWith==='Other'?(s.liveWithOther||'Other'):(s.liveWith||'');const sl=s.schoolLevel==='Other'?(s.schoolLevelOther||'Other'):(s.schoolLevel||'');csv+=`${i+1},${esc(s.name)},${s.age||''},${s.gender||''},${s.o?'Yes':'No'},${esc(s.address)},${esc(lw)},${esc(sl)},${s.economicStatus||''},${esc(s.level)},${esc(s.notes)},${complete}\n`;});
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${c.name}_student_data_${today()}.csv`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('Export downloaded ✅');
 }
 
 // ===== PROGRESS REPORT =====
 function doProgressReport(){
-  const cf=document.getElementById('rprc')?.value||'all';
-  const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
-  let rows=[];
-  cl.forEach(c=>{c.students.forEach(s=>{
-    rows.push({name:s.name,cls:c.name,age:s.age||'—',level:s.level||'—',progress:s.progress||'—',o:s.o,hasData:!!(s.level||s.progress)});
-  });});
+  const cf=document.getElementById('rprc')?.value||'all';const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
+  cl.forEach(c=>{c.students.forEach(s=>{rows.push({name:s.name,cls:c.name,age:s.age||'—',level:s.level||'—',progress:s.progress||'—',o:s.o,hasData:!!(s.level||s.progress)});});});
   if(!rows.length){document.getElementById('rpro').innerHTML='<div class="card" style="text-align:center;padding:20px;color:var(--txt2)">No students found.</div>';return;}
   const withData=rows.filter(r=>r.hasData).length;
-  document.getElementById('rpro').innerHTML=`
-    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-      <div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">👥</div><div class="sn" style="font-size:18px">${rows.length}</div><div class="sl">Students</div></div>
-      <div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">📚</div><div class="sn" style="font-size:18px">${withData}</div><div class="sl">With Progress</div></div>
-      <div class="sc rd" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">⏳</div><div class="sn" style="font-size:18px">${rows.length-withData}</div><div class="sl">Pending</div></div>
-    </div>
-    <div style="overflow-x:auto"><table class="rt">
-      <thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>Age</th><th style="text-align:left">Level / Surah</th><th style="text-align:left">Monthly Progress</th></tr></thead>
-      <tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}">
-        <td style="color:var(--txt2)">${i+1}</td>
-        <td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.name}</td>
-        <td style="font-size:10px">${r.cls}</td>
-        <td>${r.age}</td>
-        <td style="text-align:left">${r.level!=='—'?'<span class="prg-level-badge">'+r.level+'</span>':'<span style="color:#ccc;font-size:10px">—</span>'}</td>
-        <td style="text-align:left;font-size:11px;color:var(--txt2)">${r.progress}</td>
-      </tr>`).join('')}</tbody>
-    </table></div>`;
+  document.getElementById('rpro').innerHTML=`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">👥</div><div class="sn" style="font-size:18px">${rows.length}</div><div class="sl">Students</div></div><div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">📚</div><div class="sn" style="font-size:18px">${withData}</div><div class="sl">With Progress</div></div><div class="sc rd" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">⏳</div><div class="sn" style="font-size:18px">${rows.length-withData}</div><div class="sl">Pending</div></div></div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>Age</th><th style="text-align:left">Level / Surah</th><th style="text-align:left">Monthly Progress</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.name}</td><td style="font-size:10px">${r.cls}</td><td>${r.age}</td><td style="text-align:left">${r.level!=='—'?'<span class="prg-level-badge">'+r.level+'</span>':'<span style="color:#ccc;font-size:10px">—</span>'}</td><td style="text-align:left;font-size:11px;color:var(--txt2)">${r.progress}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
 // ===== ADMIN =====
@@ -1497,221 +1472,53 @@ function renderAdmin(){
   $('ac').innerHTML=h;
   $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
   $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('');
-  
-  // Render levels management section
   renderLevelsAdmin();
 }
 
-// ===== LEVELS MANAGEMENT (NEW) =====
+// ===== LEVELS MANAGEMENT =====
 function renderLevelsAdmin(){
-  // Build class tabs for levels
-  $('levelsClassTabs').innerHTML = classes.map(c => 
-    `<button class="levels-class-tab ${levelsSelClass===c.id?'on':''}" onclick="selectLevelsClass('${c.id}')">${c.name}</button>`
-  ).join('');
-  
+  $('levelsClassTabs').innerHTML=classes.map(c=>`<button class="levels-class-tab ${levelsSelClass===c.id?'on':''}" onclick="selectLevelsClass('${c.id}')">${c.name}</button>`).join('');
   renderLevelsList();
 }
 
-function selectLevelsClass(cid){
-  levelsSelClass = cid;
-  renderLevelsAdmin();
-}
+function selectLevelsClass(cid){levelsSelClass=cid;renderLevelsAdmin();}
 
 function renderLevelsList(){
-  const levels = getLevelsForClass(levelsSelClass);
-  const cls = classes.find(c=>c.id===levelsSelClass);
-  const isC1 = levelsSelClass === 'c1';
-  
-  if(!levels || levels.length === 0){
-    $('levelsListContainer').innerHTML = `<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">No levels defined for ${cls?.name || 'this class'}. Add one below.</div>`;
-    return;
-  }
-  
-  $('levelsListContainer').innerHTML = `
-    <div style="font-size:11px;color:var(--txt2);margin-bottom:8px;font-weight:600">${isC1?'Progress Levels':'Surahs'} for ${cls?.name} (${levels.length} items)</div>
-    <div style="max-height:300px;overflow-y:auto">
-      ${levels.map((lvl,i) => `
-        <div class="level-item">
-          <div class="level-num">${i+1}</div>
-          <div class="level-name">${lvl}</div>
-          <div class="level-actions">
-            <button class="level-move-btn" onclick="moveLevelUp('${levelsSelClass}',${i})" ${i===0?'disabled':''}title="Move up">↑</button>
-            <button class="level-move-btn" onclick="moveLevelDown('${levelsSelClass}',${i})" ${i===levels.length-1?'disabled':''} title="Move down">↓</button>
-            <button class="abtn ed" onclick="mEditLevel('${levelsSelClass}',${i})" title="Edit">✏️</button>
-            <button class="abtn dl" onclick="deleteLevel('${levelsSelClass}',${i})" title="Delete">🗑️</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+  const levels=getLevelsForClass(levelsSelClass);const cls=classes.find(c=>c.id===levelsSelClass);const isC1=levelsSelClass==='c1';
+  if(!levels||levels.length===0){$('levelsListContainer').innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">No levels defined. Add one below.</div>`;return;}
+  $('levelsListContainer').innerHTML=`<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;font-weight:600">${isC1?'Progress Levels':'Surahs'} for ${cls?.name} (${levels.length} items)</div><div style="max-height:300px;overflow-y:auto">${levels.map((lvl,i)=>`<div class="level-item"><div class="level-num">${i+1}</div><div class="level-name">${lvl}</div><div class="level-actions"><button class="level-move-btn" onclick="moveLevelUp('${levelsSelClass}',${i})" ${i===0?'disabled':''}>↑</button><button class="level-move-btn" onclick="moveLevelDown('${levelsSelClass}',${i})" ${i===levels.length-1?'disabled':''}>↓</button><button class="abtn ed" onclick="mEditLevel('${levelsSelClass}',${i})">✏️</button><button class="abtn dl" onclick="deleteLevel('${levelsSelClass}',${i})">🗑️</button></div></div>`).join('')}</div>`;
 }
 
-function mAddLevel(){
-  const cls = classes.find(c=>c.id===levelsSelClass);
-  const isC1 = levelsSelClass === 'c1';
-  const labelType = isC1 ? 'Level' : 'Surah';
-  
-  showM(`
-    <div class="mt">Add New ${labelType}</div>
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name || 'selected class'}</div>
-    <div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" placeholder="e.g. ${isC1?'Reading – Fluency':'115. New Surah'}"></div>
-    <div class="mb">
-      <button class="btn btn-p" onclick="addLevel()">Add ${labelType}</button>
-      <button class="btn btn-s" onclick="hideM()">Cancel</button>
-    </div>
-  `);
-}
+function mAddLevel(){const cls=classes.find(c=>c.id===levelsSelClass);const isC1=levelsSelClass==='c1';const labelType=isC1?'Level':'Surah';showM(`<div class="mt">Add New ${labelType}</div><div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name||'selected class'}</div><div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" placeholder="e.g. ${isC1?'Reading – Fluency':'115. New Surah'}"></div><div class="mb"><button class="btn btn-p" onclick="addLevel()">Add ${labelType}</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);}
+async function addLevel(){const name=$('_lvlName').value.trim();if(!name){toast('Please enter a name','er');return;}if(!classLevels[levelsSelClass]){classLevels[levelsSelClass]=[];}if(classLevels[levelsSelClass].includes(name)){toast('This level already exists','er');return;}classLevels[levelsSelClass].push(name);hideM();toast('Level added ✅','ok');renderLevelsList();await fbSaveMain();await fbLog('levels','Added level: '+name+' to '+levelsSelClass);}
+function mEditLevel(cid,idx){const levels=classLevels[cid]||[];const currentName=levels[idx];const cls=classes.find(c=>c.id===cid);const isC1=cid==='c1';const labelType=isC1?'Level':'Surah';showM(`<div class="mt">Edit ${labelType}</div><div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name||'selected class'}</div><div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" value="${currentName}"></div><div class="mb"><button class="btn btn-p" onclick="saveEditLevel('${cid}',${idx})">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);}
+async function saveEditLevel(cid,idx){const name=$('_lvlName').value.trim();if(!name){toast('Please enter a name','er');return;}const oldName=classLevels[cid][idx];const otherLevels=classLevels[cid].filter((_,i)=>i!==idx);if(otherLevels.includes(name)){toast('This level already exists','er');return;}classLevels[cid][idx]=name;hideM();toast('Level updated ✅','ok');renderLevelsList();await fbSaveMain();await fbLog('levels','Renamed level: '+oldName+' → '+name+' in '+cid);}
+function deleteLevel(cid,idx){const levels=classLevels[cid]||[];const levelName=levels[idx];showConfirm('Delete Level','Are you sure you want to delete "'+levelName+'"?',async()=>{classLevels[cid].splice(idx,1);toast('Level deleted','ok');renderLevelsList();await fbSaveMain();await fbLog('levels','Deleted level: '+levelName+' from '+cid);});}
+async function moveLevelUp(cid,idx){if(idx===0)return;const levels=classLevels[cid];[levels[idx-1],levels[idx]]=[levels[idx],levels[idx-1]];renderLevelsList();await fbSaveMain();}
+async function moveLevelDown(cid,idx){const levels=classLevels[cid];if(idx>=levels.length-1)return;[levels[idx],levels[idx+1]]=[levels[idx+1],levels[idx]];renderLevelsList();await fbSaveMain();}
 
-async function addLevel(){
-  const name = $('_lvlName').value.trim();
-  if(!name){toast('Please enter a name','er');return;}
-  
-  // Initialize levels array for this class if needed
-  if(!classLevels[levelsSelClass]){
-    classLevels[levelsSelClass] = [];
-  }
-  
-  // Check for duplicate
-  if(classLevels[levelsSelClass].includes(name)){
-    toast('This level already exists','er');
-    return;
-  }
-  
-  classLevels[levelsSelClass].push(name);
-  
-  hideM();
-  toast('Level added ✅','ok');
-  renderLevelsList();
-  
-  // Save to Firebase
-  await fbSaveMain();
-  await fbLog('levels','Added level: '+name+' to '+levelsSelClass);
-}
-
-function mEditLevel(cid, idx){
-  const levels = classLevels[cid] || [];
-  const currentName = levels[idx];
-  const cls = classes.find(c=>c.id===cid);
-  const isC1 = cid === 'c1';
-  const labelType = isC1 ? 'Level' : 'Surah';
-  
-  showM(`
-    <div class="mt">Edit ${labelType}</div>
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px;text-align:center">For ${cls?.name || 'selected class'}</div>
-    <div class="ig"><label>${labelType} Name</label><input type="text" id="_lvlName" value="${currentName}"></div>
-    <div class="mb">
-      <button class="btn btn-p" onclick="saveEditLevel('${cid}',${idx})">Save</button>
-      <button class="btn btn-s" onclick="hideM()">Cancel</button>
-    </div>
-  `);
-}
-
-async function saveEditLevel(cid, idx){
-  const name = $('_lvlName').value.trim();
-  if(!name){toast('Please enter a name','er');return;}
-  
-  const oldName = classLevels[cid][idx];
-  
-  // Check for duplicate (excluding current)
-  const otherLevels = classLevels[cid].filter((_,i)=>i!==idx);
-  if(otherLevels.includes(name)){
-    toast('This level already exists','er');
-    return;
-  }
-  
-  classLevels[cid][idx] = name;
-  
-  hideM();
-  toast('Level updated ✅','ok');
-  renderLevelsList();
-  
-  // Save to Firebase
-  await fbSaveMain();
-  await fbLog('levels','Renamed level: '+oldName+' → '+name+' in '+cid);
-}
-
-function deleteLevel(cid, idx){
-  const levels = classLevels[cid] || [];
-  const levelName = levels[idx];
-  
-  showConfirm('Delete Level','Are you sure you want to delete "'+levelName+'"? Students using this level will keep their current value but won\'t see it in the dropdown.',async()=>{
-    classLevels[cid].splice(idx, 1);
-    toast('Level deleted','ok');
-    renderLevelsList();
-    await fbSaveMain();
-    await fbLog('levels','Deleted level: '+levelName+' from '+cid);
-  });
-}
-
-async function moveLevelUp(cid, idx){
-  if(idx === 0) return;
-  const levels = classLevels[cid];
-  [levels[idx-1], levels[idx]] = [levels[idx], levels[idx-1]];
-  renderLevelsList();
-  await fbSaveMain();
-}
-
-async function moveLevelDown(cid, idx){
-  const levels = classLevels[cid];
-  if(idx >= levels.length - 1) return;
-  [levels[idx], levels[idx+1]] = [levels[idx+1], levels[idx]];
-  renderLevelsList();
-  await fbSaveMain();
-}
-
-// ===== REST OF ADMIN FUNCTIONS =====
+// ===== REST OF ADMIN =====
 async function tgO(ci,si){const c=classes.find(x=>x.id===ci),s=c.students.find(x=>x.id===si);s.o=s.o?0:1;await fbSaveMain();renderAdmin();updateOrphanCount();toast(s.o?'💜 Marked as orphan':'Unmarked')}
 function showM(c){$('moc').innerHTML=c;$('mov').classList.add('sh')}
 function hideM(){$('mov').classList.remove('sh')}
 
 let _confirmCb=null;
-function showConfirm(title,msg,onYes){
-  _confirmCb=onYes;
-  showM(`<div class="conf-modal"><div class="conf-ic">⚠️</div><div class="mt" style="margin-bottom:6px">${title}</div><div class="conf-msg">${msg}</div><div class="mb"><button class="btn btn-p" onclick="hideM();if(_confirmCb){_confirmCb();_confirmCb=null;}">Yes, proceed</button><button class="btn btn-s" onclick="hideM();_confirmCb=null;">Cancel</button></div></div>`);
-}
+function showConfirm(title,msg,onYes){_confirmCb=onYes;showM(`<div class="conf-modal"><div class="conf-ic">⚠️</div><div class="mt" style="margin-bottom:6px">${title}</div><div class="conf-msg">${msg}</div><div class="mb"><button class="btn btn-p" onclick="hideM();if(_confirmCb){_confirmCb();_confirmCb=null;}">Yes, proceed</button><button class="btn btn-s" onclick="hideM();_confirmCb=null;">Cancel</button></div></div>`);}
 
 function mAddS(ci){showM(`<div class="mt">Add Student</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="cg"><input type="checkbox" id="_o"><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="aS('${ci}')">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
 async function aS(ci){const n=$('_n').value.trim();if(!n)return;classes.find(c=>c.id===ci).students.push({id:'s_'+Date.now(),name:n,o:$('_o').checked?1:0});await fbSaveMain();hideM();renderAdmin();updateOrphanCount();toast('Added ✅')}
 function mEdS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);showM(`<div class="mt">Edit Student</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${s.name}"></div><div class="cg"><input type="checkbox" id="_o" ${s.o?'checked':''}><label for="_o">💜 Orphan</label></div><div class="mb"><button class="btn btn-p" onclick="svS('${ci}','${si}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
 async function svS(ci,si){const s=classes.find(c=>c.id===ci).students.find(x=>x.id===si);const n=$('_n').value.trim();if(n)s.name=n;s.o=$('_o').checked?1:0;await fbSaveMain();hideM();renderAdmin();updateOrphanCount();toast('Updated ✅')}
-
-function dS(ci,si){
-  showConfirm('Delete Student','Are you sure you want to delete this student? This cannot be undone.',async()=>{
-    const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();updateOrphanCount();toast('Deleted');
-  });
-}
+function dS(ci,si){showConfirm('Delete Student','Are you sure?',async()=>{const c=classes.find(x=>x.id===ci);c.students=c.students.filter(s=>s.id!==si);await fbSaveMain();renderAdmin();updateOrphanCount();toast('Deleted');});}
 function mAddC(){showM(`<div class="mt">Add Class</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="mb"><button class="btn btn-p" onclick="aC()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
-async function aC(){
-  const n=$('_n').value.trim();if(!n)return;
-  const newId='c_'+Date.now();
-  classes.push({id:newId,name:n,students:[]});
-  // Initialize empty levels for new class
-  classLevels[newId] = [];
-  await fbSaveMain();hideM();renderAdmin();toast('Added ✅');
-}
+async function aC(){const n=$('_n').value.trim();if(!n)return;const newId='c_'+Date.now();classes.push({id:newId,name:n,students:[]});classLevels[newId]=[];await fbSaveMain();hideM();renderAdmin();toast('Added ✅');}
 function mAddT(){showM(`<div class="mt">Add Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n"></div><div class="ig"><label>Username</label><input type="text" id="_u"></div><div class="ig"><label>Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="aT()">Add</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
-async function aT(){
-  const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();
-  if(!u||!p)return;
-  const id='t_'+Date.now();
-  teachers.push({id,name:n||u,u});
-  users.push({u,ph:hashPW(p),r:'teacher',n:n||u,tid:id});
-  await fbSaveMain();hideM();renderAdmin();toast('Added ✅')
-}
+async function aT(){const n=$('_n').value.trim(),u=$('_u').value.trim(),p=$('_p').value.trim();if(!u||!p)return;const id='t_'+Date.now();teachers.push({id,name:n||u,u});users.push({u,ph:hashPW(p),r:'teacher',n:n||u,tid:id});await fbSaveMain();hideM();renderAdmin();toast('Added ✅')}
 function mEdT(ti){const t=teachers.find(x=>x.id===ti);showM(`<div class="mt">Edit Teacher</div><div class="ig"><label>Name</label><input type="text" id="_n" value="${t.name}"></div><div class="mb"><button class="btn btn-p" onclick="svT('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
 async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim();if(n){t.name=n;const u2=users.find(x=>x.tid===ti);if(u2)u2.n=n}await fbSaveMain();hideM();renderAdmin();toast('Updated ✅')}
-function dT(ti){
-  showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{
-    teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');
-  });
-}
+function dT(ti){showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');});}
 function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`)}
-async function svPW(un){
-  const p=$('_p').value.trim();if(!p)return;
-  const u=users.find(x=>x.u===un);
-  u.ph=hashPW(p);delete u.p;
-  await fbSaveMain();hideM();toast('Password changed ✅')
-}
+async function svPW(un){const p=$('_p').value.trim();if(!p)return;const u=users.find(x=>x.u===un);u.ph=hashPW(p);delete u.p;await fbSaveMain();hideM();toast('Password changed ✅')}
 
 $('mov').addEventListener('click',e=>{if(e.target===e.currentTarget)hideM()});
 $('ad').addEventListener('change',()=>{if(selCl){renderSL();if(!isReadOnly())$('svb').style.display='block';else $('svb').style.display='none';updateROBar();}});
@@ -1722,12 +1529,10 @@ $('pw').addEventListener('input',()=>$('le').style.display='none');
 // ===== BOOT =====
 (async function(){
   const ok=await initFirebase();
-
   $('ld').classList.add('hide');
   const cs=$('cs');
   if(ok){cs.className='conn y';cs.textContent='🟢 Connected to server'}
   else{cs.className='conn n';cs.textContent='🔴 Offline – cached data shown'}
-
   const saved=loadSession();
   if(saved){user=saved;showApp()}
   else{$('lp').style.display='flex'}
