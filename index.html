@@ -331,7 +331,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .fri-topic-btn{padding:6px 13px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:11px;font-weight:700;color:var(--txt2);transition:.2s}
 .fri-topic-btn.on{border-color:var(--fri);background:var(--fri);color:#fff}
 
-/* Arabic RTL support for lecture content */
+.flc-lang-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:8px;font-size:10px;font-weight:800}
+.flc-lang-badge.ar{background:#FFF3E0;color:#E65100}
+.flc-lang-badge.en{background:#E3F2FD;color:#1565C0}
+/* English lecture content override */
+.fri-english{direction:ltr;text-align:left;font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.75}
+.fri-english .flc-section-heading{justify-content:flex-start;flex-direction:row;font-size:14px}
+.fri-english .flc-sub-heading{border-left:3px solid var(--acc);border-right:none;padding-left:8px;padding-right:0;text-align:left}
+.fri-english .flc-bullet-list{padding-left:20px;padding-right:0;text-align:left}
+.fri-english .flc-plain-text{text-align:left;font-size:13px}
 .flc-body-content, .flc-plain-text, .flc-bullet-list,
 .flc-section-heading, .flc-sub-heading {
   font-family: 'Noto Naskh Arabic', 'Inter', system-ui, sans-serif;
@@ -587,6 +595,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="fri-form-field">
             <label>المحاضر (اختياري)</label>
             <input type="text" id="friSpeaker" placeholder="مثال: الشيخ شعيب" style="direction:rtl;text-align:right">
+          </div>
+          <div class="fri-form-field">
+            <label>لغة المحاضرة *</label>
+            <select id="friLang" onchange="updateFriTextareaDir()" style="font-size:14px;font-weight:700">
+              <option value="ar">🇸🇦 عربي</option>
+              <option value="en">🇬🇧 English</option>
+            </select>
           </div>
           <div class="fri-form-field full">
             <label>محتوى المحاضرة *</label>
@@ -943,7 +958,25 @@ function setFriTopicFilter(t){
   renderFriLectures();
 }
 
-// Toolbar: insert formatting around selection or at cursor
+// Switch textarea direction based on selected language
+function updateFriTextareaDir(){
+  const lang = $('friLang')?.value || 'ar';
+  const ta = $('friContent');
+  const preview = $('friPreviewBody');
+  if(!ta) return;
+  if(lang === 'ar'){
+    ta.style.direction = 'rtl';
+    ta.style.textAlign = 'right';
+    ta.placeholder = 'اكتب محتوى المحاضرة هنا...\n\n# عنوان رئيسي\n## عنوان فرعي\n**نص بولد**\n• نقطة\nفقرة نصية عادية';
+    if(preview){ preview.className = 'fri-preview-body fri-arabic'; }
+  } else {
+    ta.style.direction = 'ltr';
+    ta.style.textAlign = 'left';
+    ta.placeholder = 'Write lecture content here...\n\n# Main Heading\n## Sub-heading\n**bold text**\n• bullet point\nNormal paragraph text';
+    if(preview){ preview.className = 'fri-preview-body fri-english'; }
+  }
+  updateFriPreview();
+}
 function friInsert(before, after){
   const ta = $('friContent');
   if(!ta) return;
@@ -994,6 +1027,11 @@ function renderFriLectures(){
 
   container.innerHTML = filtered.map((lec, idx) => {
     const dateLabel = lec.date ? new Date(lec.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '—';
+    const isAr = (lec.lang || 'ar') === 'ar';
+    const contentClass = isAr ? 'flc-body-content fri-arabic' : 'flc-body-content fri-english';
+    const langBadge = isAr
+      ? `<span class="flc-lang-badge ar">🇸🇦 عربي</span>`
+      : `<span class="flc-lang-badge en">🇬🇧 English</span>`;
     const contentHtml = parseLectureContent(lec.content || '');
     const adminBtns = isAdmin
       ? `<div class="flc-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editFriLecture('${lec.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteFriLecture('${lec.id}')">🗑️</button></div>`
@@ -1006,6 +1044,7 @@ function renderFriLectures(){
           <div class="flc-date-row">
             <span class="flc-date-badge">📅 ${dateLabel}</span>
             ${lec.topic?`<span class="flc-topic-badge">${escHtml(lec.topic)}</span>`:''}
+            ${langBadge}
           </div>
         </div>
         ${adminBtns}
@@ -1013,7 +1052,7 @@ function renderFriLectures(){
       </div>
       <div class="flc-body" id="flbody-${lec.id}">
         ${lec.speaker?`<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px;direction:rtl"><span>👨‍🏫 المحاضر:</span><strong style="color:var(--pri)">${escHtml(lec.speaker)}</strong></div>`:''}
-        <div class="flc-body-content fri-arabic">${contentHtml}</div>
+        <div class="${contentClass}">${contentHtml}</div>
         <div class="flc-footer">
           <span>نشره ${escHtml(lec.createdBy||'Admin')}</span>
           <span>${lec.createdAt ? new Date(lec.createdAt).toLocaleDateString('ar-SA',{month:'short',day:'numeric',year:'numeric'}) : ''}</span>
@@ -1036,6 +1075,7 @@ async function saveFriLecture(){
   const date = $('friDate')?.value || '';
   const topic = ($('friTopic')?.value || '').trim();
   const speaker = ($('friSpeaker')?.value || '').trim();
+  const lang = $('friLang')?.value || 'ar';
   const content = ($('friContent')?.value || '').trim();
 
   if(!title){ toast('يرجى إدخال العنوان','er'); return; }
@@ -1047,12 +1087,14 @@ async function saveFriLecture(){
   btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
 
   try{
-    const lecture = {title, date, topic, speaker, content};
+    const lecture = {title, date, topic, speaker, lang, content};
     await fbSaveFriLecture(lecture);
     await fbLog('friday_lecture', 'Published: ' + title);
 
     // Reset form
     $('friTitle').value='';$('friDate').value='';$('friTopic').value='';$('friSpeaker').value='';$('friContent').value='';
+    if($('friLang')) $('friLang').value='ar';
+    updateFriTextareaDir();
     toast('تم نشر المحاضرة ✅', 'ok');
     btn.disabled = false;
     btn.innerHTML = '🕌 نشر المحاضرة';
@@ -1074,7 +1116,13 @@ function editFriLecture(id){
     <div class="ig"><label>التاريخ</label><input type="date" id="_fd" value="${lec.date||''}"></div>
     <div class="ig"><label>الموضوع</label><input type="text" id="_fto" value="${escHtml(lec.topic||'')}" style="direction:rtl;text-align:right"></div>
     <div class="ig"><label>المحاضر</label><input type="text" id="_fsp" value="${escHtml(lec.speaker||'')}" style="direction:rtl;text-align:right"></div>
-    <div class="ig"><label>المحتوى <span style="font-size:10px;color:var(--txt2);font-weight:400">(# عنوان | ## فرعي | **بولد** | • نقطة)</span></label><textarea id="_fc" style="width:100%;min-height:160px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:14px;resize:vertical;line-height:1.9;direction:rtl;text-align:right">${escHtml(lec.content||'')}</textarea></div>
+    <div class="ig"><label>اللغة</label>
+      <select id="_flang" style="width:100%;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font:inherit;font-size:14px;font-weight:700">
+        <option value="ar" ${(lec.lang||'ar')==='ar'?'selected':''}>🇸🇦 عربي</option>
+        <option value="en" ${lec.lang==='en'?'selected':''}>🇬🇧 English</option>
+      </select>
+    </div>
+    <div class="ig"><label>المحتوى <span style="font-size:10px;color:var(--txt2);font-weight:400">(# عنوان | ## فرعي | **بولد** | • نقطة)</span></label><textarea id="_fc" style="width:100%;min-height:160px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:14px;resize:vertical;line-height:1.9;direction:${(lec.lang||'ar')==='ar'?'rtl':'ltr'};text-align:${(lec.lang||'ar')==='ar'?'right':'left'}">${escHtml(lec.content||'')}</textarea></div>
     <div class="mb">
       <button class="btn btn-p" onclick="saveEditFriLecture('${id}')">💾 حفظ</button>
       <button class="btn btn-s" onclick="hideM()">إلغاء</button>
@@ -1087,10 +1135,11 @@ async function saveEditFriLecture(id){
     const date = $('_fd')?.value||'';
     const topic = ($('_fto')?.value||'').trim();
     const speaker = ($('_fsp')?.value||'').trim();
+    const lang = $('_flang')?.value || 'ar';
     const content = ($('_fc')?.value||'').trim();
   if(!title||!date||!content){toast('العنوان والتاريخ والمحتوى مطلوبة','er');return;}
   try{
-    await fbUpdateFriLecture(id,{title,date,topic,speaker,content});
+    await fbUpdateFriLecture(id,{title,date,topic,speaker,lang,content});
     await fbLog('friday_lecture','Edited: '+title);
     hideM();
     toast('تم تحديث المحاضرة ✅','ok');
