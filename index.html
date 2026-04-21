@@ -396,6 +396,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   line-height: 2;
 }
 
+/* ===== LIBRARY TABS ===== */
+.lib-tabs{display:flex;gap:0;margin-bottom:16px;background:#E8EDF2;border-radius:var(--rs);padding:3px}
+.lib-tab{flex:1;padding:10px;border:none;background:none;border-radius:8px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--txt2);transition:.2s;font-family:'Noto Naskh Arabic','Inter',sans-serif}
+.lib-tab.on{background:#fff;color:var(--pri);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
 /* ===== CURRICULUM STYLES ===== */
 :root{--cur:#1A6B3A;--cur-l:#E8F5E9;--cur-m:#2E7D52;--cur-d:#0D3B20}
 
@@ -661,124 +666,51 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div id="spStudentList"></div>
   </div>
 
-  <!-- ===== FRIDAY LECTURES PAGE ===== -->
-  <div class="pg" id="pgF">
-    <div class="st">🕌 محاضرات الجمعة</div>
+  <!-- ===== LIBRARY PAGE (المكتبة) ===== -->
+  <div class="pg" id="pgB">
+    <div class="st">📚 المكتبة</div>
 
-    <!-- Hero Banner -->
-    <div class="fri-hero">
-      <div class="fri-hero-title">محاضرات الجمعة 🕌</div>
-      <div class="fri-hero-sub">العلم الشرعي الأسبوعي</div>
-      <div class="fri-hero-stats">
-        <div class="fri-hero-stat"><span id="friTotalCount">0</span>محاضرة</div>
-        <div class="fri-hero-stat"><span id="friTopicCount">0</span>موضوع</div>
-      </div>
+    <!-- Inner tabs -->
+    <div class="lib-tabs">
+      <button class="lib-tab on" id="libtab-cur" onclick="switchLibTab('cur')">📖 المنهج</button>
+      <button class="lib-tab" id="libtab-fri" onclick="switchLibTab('fri')">🕌 خطب الجمعة</button>
     </div>
 
-    <!-- Admin: Add New Lecture Form -->
-    <div id="friAdminForm" style="display:none">
-      <div class="fri-add-card">
-        <div class="fri-add-title">➕ إضافة محاضرة جديدة</div>
-        <div class="fri-form-grid">
-          <div class="fri-form-field">
-            <label>عنوان المحاضرة *</label>
-            <input type="text" id="friTitle" placeholder="مثال: أهمية الصلاة" style="direction:rtl;text-align:right">
-          </div>
-          <div class="fri-form-field">
-            <label>التاريخ *</label>
-            <input type="date" id="friDate">
-          </div>
-          <div class="fri-form-field">
-            <label>الموضوع / التصنيف</label>
-            <input type="text" id="friTopic" placeholder="مثال: فقه، عقيدة، سيرة..." style="direction:rtl;text-align:right">
-          </div>
-          <div class="fri-form-field">
-            <label>المحاضر (اختياري)</label>
-            <input type="text" id="friSpeaker" placeholder="مثال: الشيخ شعيب" style="direction:rtl;text-align:right">
-          </div>
-          <div class="fri-form-field">
-            <label>لغة المحاضرة *</label>
-            <select id="friLang" onchange="updateFriTextareaDir()" style="font-size:14px;font-weight:700">
-              <option value="ar">🇸🇦 عربي</option>
-              <option value="en">🇬🇧 English</option>
-            </select>
-          </div>
-          <div class="fri-form-field full">
-            <label>محتوى المحاضرة *</label>
-            <div class="fri-toolbar">
-              <button type="button" class="fri-tb-btn" onclick="friInsert('# ','')">H1 عنوان</button>
-              <button type="button" class="fri-tb-btn" onclick="friInsert('## ','')">H2 فرعي</button>
-              <button type="button" class="fri-tb-btn" onclick="friInsert('**','**')"><b>بولد</b></button>
-              <button type="button" class="fri-tb-btn" onclick="friInsert('• ','')">• نقطة</button>
-            </div>
-            <textarea id="friContent" placeholder="اكتب محتوى المحاضرة هنا...
-
-# عنوان رئيسي
-## عنوان فرعي
-**نص بولد**
-• نقطة
-فقرة نصية عادية" oninput="updateFriPreview()"></textarea>
-            <div class="fri-form-hint" style="direction:rtl;text-align:right">💡 &nbsp;<b>#</b> عنوان رئيسي &nbsp;|&nbsp; <b>##</b> عنوان فرعي &nbsp;|&nbsp; <b>**نص**</b> بولد &nbsp;|&nbsp; <b>•</b> نقطة</div>
-            <div class="fri-preview-wrap" id="friPreviewWrap">
-              <div class="fri-preview-label">👁 معاينة مباشرة</div>
-              <div class="fri-preview-body fri-arabic" id="friPreviewBody"></div>
-            </div>
-          </div>
+    <!-- ── CURRICULUM TAB ── -->
+    <div id="lib-cur-section">
+      <div class="cur-hero">
+        <div class="cur-hero-title">المنهج الدراسي 📖</div>
+        <div class="cur-hero-sub">مقالات تعليمية ومفردات</div>
+        <div class="cur-hero-stats">
+          <div class="cur-hero-stat"><span id="curTotalCount">0</span>مقال</div>
+          <div class="cur-hero-stat"><span id="curVocabCount">0</span>مفردة</div>
         </div>
-        <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 نشر المحاضرة</button>
       </div>
-    </div>
-
-    <!-- Search & Filter -->
-    <div class="fri-search-bar">
-      <input type="text" id="friSearch" placeholder="🔍 ابحث في المحاضرات..." oninput="renderFriLectures()" style="direction:rtl;text-align:right">
-    </div>
-    <div class="fri-topics-filter" id="friTopicsFilter"></div>
-
-    <!-- Lectures List -->
-    <div id="friLecturesList"></div>
-  </div>
-
-  <!-- ===== CURRICULUM PAGE ===== -->
-  <div class="pg" id="pgC">
-    <div class="st">📖 المنهج</div>
-
-    <!-- Hero -->
-    <div class="cur-hero">
-      <div class="cur-hero-title">المنهج الدراسي 📖</div>
-      <div class="cur-hero-sub">مقالات تعليمية ومفردات</div>
-      <div class="cur-hero-stats">
-        <div class="cur-hero-stat"><span id="curTotalCount">0</span>مقال</div>
-        <div class="cur-hero-stat"><span id="curVocabCount">0</span>مفردة</div>
-      </div>
-    </div>
-
-    <!-- Admin Add Form -->
-    <div id="curAdminForm" style="display:none">
-      <div class="cur-add-card">
-        <div class="cur-add-title">➕ إضافة مقال جديد</div>
-        <div class="cur-form-grid">
-          <div class="cur-form-field">
-            <label>عنوان المقال *</label>
-            <input type="text" id="curTitle" placeholder="مثال: الأفعال الأساسية" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif">
-          </div>
-          <div class="cur-form-field">
-            <label>التصنيف</label>
-            <input type="text" id="curCat" placeholder="مثال: نحو، مفردات، قواعد..." style="direction:rtl;text-align:right">
-          </div>
-          <div class="cur-form-field full">
-            <label>محتوى المقال *</label>
-            <div class="cur-toolbar">
-              <button type="button" class="cur-tb-btn" onclick="curInsert('# ','')">H1 عنوان</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('## ','')">H2 فرعي</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('**','**')"><b>بولد</b></button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('• ','')">• نقطة</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('@ar ','')">🟢 عربي</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('@en ','')">🔵 إنجليزي</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsert('@bi ','|')">⚡ ثنائي</button>
-              <button type="button" class="cur-tb-btn" onclick="curInsertVocab()">📊 جدول</button>
+      <div id="curAdminForm" style="display:none">
+        <div class="cur-add-card">
+          <div class="cur-add-title">➕ إضافة مقال جديد</div>
+          <div class="cur-form-grid">
+            <div class="cur-form-field">
+              <label>عنوان المقال *</label>
+              <input type="text" id="curTitle" placeholder="مثال: الأفعال الأساسية" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif">
             </div>
-            <textarea id="curContent" oninput="updateCurPreview()" placeholder="اكتب المقال هنا...
+            <div class="cur-form-field">
+              <label>التصنيف</label>
+              <input type="text" id="curCat" placeholder="مثال: نحو، مفردات، قواعد..." style="direction:rtl;text-align:right">
+            </div>
+            <div class="cur-form-field full">
+              <label>محتوى المقال *</label>
+              <div class="cur-toolbar">
+                <button type="button" class="cur-tb-btn" onclick="curInsert('# ','')">H1 عنوان</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('## ','')">H2 فرعي</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('**','**')"><b>بولد</b></button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('• ','')">• نقطة</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('@ar ','')">🟢 عربي</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('@en ','')">🔵 إنجليزي</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsert('@bi ','|')">⚡ ثنائي</button>
+                <button type="button" class="cur-tb-btn" onclick="curInsertVocab()">📊 جدول</button>
+              </div>
+              <textarea id="curContent" oninput="updateCurPreview()" placeholder="اكتب المقال هنا...
 
 # عنوان رئيسي
 ## عنوان فرعي
@@ -792,29 +724,95 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 @vocab
 صلاة | Prayer | Daily worship
 زكاة | Zakat | Obligatory charity"></textarea>
-            <div class="cur-form-hint">
-              💡 <b># عنوان</b> | <b>## فرعي</b> | <b>**بولد**</b> | <b>• نقطة</b><br>
-              🟢 <b>@ar</b> سطر عربي &nbsp;|&nbsp; 🔵 <b>@en</b> English line &nbsp;|&nbsp; ⚡ <b>@bi عربي | English</b> ثنائي جنباً لجنب<br>
-              📊 <b>@vocab</b> ثم سطر لكل كلمة: <b>عربي | English | ملاحظة</b>
-            </div>
-            <div class="cur-preview-wrap" id="curPreviewWrap">
-              <div class="cur-preview-label">👁 معاينة مباشرة</div>
-              <div class="cur-preview-body" id="curPreviewBody"></div>
+              <div class="cur-form-hint">
+                💡 <b># عنوان</b> | <b>## فرعي</b> | <b>**بولد**</b> | <b>• نقطة</b><br>
+                🟢 <b>@ar</b> سطر عربي &nbsp;|&nbsp; 🔵 <b>@en</b> English line &nbsp;|&nbsp; ⚡ <b>@bi عربي | English</b> ثنائي<br>
+                📊 <b>@vocab</b> ثم سطر لكل كلمة: <b>عربي | English | ملاحظة</b>
+              </div>
+              <div class="cur-preview-wrap" id="curPreviewWrap">
+                <div class="cur-preview-label">👁 معاينة مباشرة</div>
+                <div class="cur-preview-body" id="curPreviewBody"></div>
+              </div>
             </div>
           </div>
+          <button class="cur-save-btn" id="curSaveBtn" onclick="saveCurArticle()">📖 نشر المقال</button>
         </div>
-        <button class="cur-save-btn" id="curSaveBtn" onclick="saveCurArticle()">📖 نشر المقال</button>
       </div>
+      <div class="cur-search-bar">
+        <input type="text" id="curSearch" placeholder="🔍 ابحث في المقالات..." oninput="renderCurArticles()">
+      </div>
+      <div class="cur-cat-filter" id="curCatFilter"></div>
+      <div id="curArticlesList"></div>
     </div>
 
-    <!-- Search & Filter -->
-    <div class="cur-search-bar">
-      <input type="text" id="curSearch" placeholder="🔍 ابحث في المقالات..." oninput="renderCurArticles()">
-    </div>
-    <div class="cur-cat-filter" id="curCatFilter"></div>
+    <!-- ── FRIDAY SERMONS TAB ── -->
+    <div id="lib-fri-section" style="display:none">
+      <div class="fri-hero">
+        <div class="fri-hero-title">خطب الجمعة 🕌</div>
+        <div class="fri-hero-sub">العلم الشرعي الأسبوعي</div>
+        <div class="fri-hero-stats">
+          <div class="fri-hero-stat"><span id="friTotalCount">0</span>خطبة</div>
+          <div class="fri-hero-stat"><span id="friTopicCount">0</span>موضوع</div>
+        </div>
+      </div>
+      <div id="friAdminForm" style="display:none">
+        <div class="fri-add-card">
+          <div class="fri-add-title">➕ إضافة خطبة جديدة</div>
+          <div class="fri-form-grid">
+            <div class="fri-form-field">
+              <label>عنوان الخطبة *</label>
+              <input type="text" id="friTitle" placeholder="مثال: أهمية الصلاة" style="direction:rtl;text-align:right">
+            </div>
+            <div class="fri-form-field">
+              <label>التاريخ *</label>
+              <input type="date" id="friDate">
+            </div>
+            <div class="fri-form-field">
+              <label>الموضوع / التصنيف</label>
+              <input type="text" id="friTopic" placeholder="مثال: فقه، عقيدة، سيرة..." style="direction:rtl;text-align:right">
+            </div>
+            <div class="fri-form-field">
+              <label>الخطيب (اختياري)</label>
+              <input type="text" id="friSpeaker" placeholder="مثال: الشيخ شعيب" style="direction:rtl;text-align:right">
+            </div>
+            <div class="fri-form-field">
+              <label>لغة الخطبة *</label>
+              <select id="friLang" onchange="updateFriTextareaDir()" style="font-size:14px;font-weight:700">
+                <option value="ar">🇸🇦 عربي</option>
+                <option value="en">🇬🇧 English</option>
+              </select>
+            </div>
+            <div class="fri-form-field full">
+              <label>محتوى الخطبة *</label>
+              <div class="fri-toolbar">
+                <button type="button" class="fri-tb-btn" onclick="friInsert('# ','')">H1 عنوان</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('## ','')">H2 فرعي</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('**','**')"><b>بولد</b></button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('• ','')">• نقطة</button>
+              </div>
+              <textarea id="friContent" placeholder="اكتب محتوى الخطبة هنا...
 
-    <!-- Articles list -->
-    <div id="curArticlesList"></div>
+# عنوان رئيسي
+## عنوان فرعي
+**نص بولد**
+• نقطة
+فقرة نصية عادية" oninput="updateFriPreview()"></textarea>
+              <div class="fri-form-hint" style="direction:rtl;text-align:right">💡 &nbsp;<b>#</b> عنوان رئيسي &nbsp;|&nbsp; <b>##</b> عنوان فرعي &nbsp;|&nbsp; <b>**نص**</b> بولد &nbsp;|&nbsp; <b>•</b> نقطة</div>
+              <div class="fri-preview-wrap" id="friPreviewWrap">
+                <div class="fri-preview-label">👁 معاينة مباشرة</div>
+                <div class="fri-preview-body fri-arabic" id="friPreviewBody"></div>
+              </div>
+            </div>
+          </div>
+          <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 نشر الخطبة</button>
+        </div>
+      </div>
+      <div class="fri-search-bar">
+        <input type="text" id="friSearch" placeholder="🔍 ابحث في الخطب..." oninput="renderFriLectures()" style="direction:rtl;text-align:right">
+      </div>
+      <div class="fri-topics-filter" id="friTopicsFilter"></div>
+      <div id="friLecturesList"></div>
+    </div>
   </div>
 
   <div class="bnav" id="bnav"></div>
@@ -1006,7 +1004,7 @@ async function loadAllData(){
     DB.collection('fridayLectures').orderBy('date','desc').onSnapshot(snap=>{
       friLectures=[];
       snap.forEach(d=>friLectures.push({id:d.id,...d.data()}));
-      if(user && $('pgF').classList.contains('on')) renderFriLectures();
+      if(user && $('pgB')?.classList.contains('on') && $('lib-fri-section')?.style.display!=='none') renderFriLectures();
       updateFriStats();
     });
 
@@ -1014,7 +1012,7 @@ async function loadAllData(){
     DB.collection('curriculum').orderBy('createdAt','desc').onSnapshot(snap=>{
       curArticles=[];
       snap.forEach(d=>curArticles.push({id:d.id,...d.data()}));
-      if(user && $('pgC').classList.contains('on')) renderCurArticles();
+      if(user && $('pgB')?.classList.contains('on') && $('lib-cur-section')?.style.display!=='none') renderCurArticles();
       updateCurStats();
     });
 
@@ -1780,12 +1778,11 @@ function buildNav(){
   let navItems=[
     {id:'H',ic:'🏠',lbl:'Home'},
     {id:'A',ic:'✅',lbl:'Attend'},
-    {id:'C',ic:'📖',lbl:'المنهج'},
-    {id:'F',ic:'🕌',lbl:'محاضرات'},
-    {id:'P',ic:'📚',lbl:'Progress'},
+    {id:'D',ic:'👥',lbl:'Data'},
+    {id:'B',ic:'📚',lbl:'المكتبة'},
+    {id:'P',ic:'📖',lbl:'Progress'},
   ];
   if(isAdmin){
-    navItems.push({id:'D',ic:'👥',lbl:'Data'});
     navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
     navItems.push({id:'R',ic:'📈',lbl:'Reports'});
     navItems.push({id:'L',ic:'📋',lbl:'Log'});
@@ -1795,13 +1792,12 @@ function buildNav(){
 
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
-    {id:'C',ic:'📖',title:'المنهج',desc:'مقالات تعليمية ومفردات للمدرسين',badge:'جديد',badgeNew:true},
-    {id:'F',ic:'🕌',title:'محاضرات الجمعة',desc:'محاضرات إسلامية أسبوعية للمطالعة',badge:'',badgeNew:false},
-    {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
+    {id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false},
+    {id:'B',ic:'📚',title:'المكتبة',desc:'المنهج الدراسي وخطب الجمعة',badge:'',badgeNew:false},
+    {id:'P',ic:'📖',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
   ];
   if(isAdmin){
-    cards.push({id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false});
-    cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true});
+    cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'',badgeNew:false});
     cards.push({id:'R',ic:'📈',title:'Reports',desc:'Attendance & progress reports',badge:'',badgeNew:false});
     cards.push({id:'M',ic:'⚙️',title:'Admin',desc:'Manage students, teachers & passwords',badge:'',badgeNew:false});
   }
@@ -1823,7 +1819,7 @@ function _go(pg,btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
-  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'محاضرات الجمعة',C:'المنهج'};
+  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',B:'المكتبة'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
   if(pg==='R')initFilters();
@@ -1832,21 +1828,27 @@ function _go(pg,btn){
   if(pg==='M'){adminSearchTerm='';const asr=document.getElementById('adminSearch');if(asr)asr.value='';renderAdmin();}
   if(pg==='L')refreshLog();
   if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS();updateROBar();}
-  if(pg==='F'){
-    const isAdmin = user && user.r === 'admin';
-    const adminForm = $('friAdminForm');
-    if(adminForm) adminForm.style.display = isAdmin ? 'block' : 'none';
-    if(isAdmin && $('friDate') && !$('friDate').value) $('friDate').value = today();
-    friTopicFilter = 'all';
-    renderFriLectures();
+  if(pg==='B'){
+    const isAdmin=user&&user.r==='admin';
+    // Show admin forms only for admin
+    const cf=$('curAdminForm');if(cf)cf.style.display=isAdmin?'block':'none';
+    const ff=$('friAdminForm');if(ff)ff.style.display=isAdmin?'block':'none';
+    if(isAdmin&&$('friDate')&&!$('friDate').value)$('friDate').value=today();
+    // Reset to curriculum tab
+    switchLibTab('cur');
   }
-  if(pg==='C'){
-    const isAdmin = user && user.r === 'admin';
-    const adminForm = $('curAdminForm');
-    if(adminForm) adminForm.style.display = isAdmin ? 'block' : 'none';
-    curCatFilter = 'all';
-    renderCurArticles();
-  }
+}
+
+// ===== LIBRARY TAB SWITCHER =====
+function switchLibTab(tab){
+  const curSec=$('lib-cur-section');
+  const friSec=$('lib-fri-section');
+  if(curSec)curSec.style.display=tab==='cur'?'block':'none';
+  if(friSec)friSec.style.display=tab==='fri'?'block':'none';
+  document.querySelectorAll('.lib-tab').forEach(b=>b.classList.remove('on'));
+  const active=$('libtab-'+tab);if(active)active.classList.add('on');
+  if(tab==='cur'){curCatFilter='all';renderCurArticles();}
+  if(tab==='fri'){friTopicFilter='all';renderFriLectures();}
 }
 
 // ===== DASHBOARD =====
