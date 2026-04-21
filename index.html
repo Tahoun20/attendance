@@ -395,6 +395,106 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   font-size: 15px;
   line-height: 2;
 }
+
+/* ===== CURRICULUM STYLES ===== */
+:root{--cur:#1A6B3A;--cur-l:#E8F5E9;--cur-m:#2E7D52;--cur-d:#0D3B20}
+
+/* Curriculum hero */
+.cur-hero{background:linear-gradient(135deg,var(--cur-d),var(--cur),var(--cur-m));border-radius:20px;padding:20px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.cur-hero::after{content:'📖';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.2}
+.cur-hero-title{font-size:18px;font-weight:800;margin-bottom:4px;font-family:'Noto Naskh Arabic','Inter',sans-serif}
+.cur-hero-sub{font-size:12px;opacity:.75;margin-bottom:10px}
+.cur-hero-stats{display:flex;gap:12px}
+.cur-hero-stat{background:rgba(255,255,255,.18);border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;text-align:center}
+.cur-hero-stat span{display:block;font-size:18px;font-weight:900;margin-bottom:1px}
+
+/* Article card */
+.cur-article-card{background:#fff;border-radius:var(--r);margin-bottom:14px;box-shadow:var(--sh);overflow:hidden;border-left:4px solid var(--cur)}
+.cur-article-header{padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,rgba(26,107,58,.05),rgba(46,125,82,.03))}
+.cur-article-header:hover{background:linear-gradient(135deg,rgba(26,107,58,.1),rgba(46,125,82,.06))}
+.cur-art-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--cur),var(--cur-m));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.cur-art-meta{flex:1;min-width:0}
+.cur-art-title{font-size:14px;font-weight:800;color:var(--cur-d);margin-bottom:4px;line-height:1.3;font-family:'Noto Naskh Arabic','Inter',sans-serif}
+.cur-art-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cur-cat-badge{background:var(--cur-l);color:var(--cur);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.cur-toggle-ic{font-size:14px;color:var(--txt2);transition:.3s;flex-shrink:0}
+.cur-toggle-ic.open{transform:rotate(180deg)}
+.cur-admin-btns{display:flex;gap:6px;flex-shrink:0}
+
+/* Article body */
+.cur-art-body{display:none;padding:16px}
+.cur-art-body.open{display:block;animation:fadeUp .25s ease}
+
+/* Rich content rendering */
+.cur-content-block{margin-bottom:10px}
+.cur-h1{font-size:18px;font-weight:800;color:var(--cur-d);margin-bottom:6px;padding-bottom:5px;border-bottom:2px solid var(--cur-l);font-family:'Noto Naskh Arabic','Inter',sans-serif;line-height:1.5}
+.cur-h2{font-size:15px;font-weight:700;color:var(--cur);margin-bottom:5px;padding-left:10px;border-left:3px solid var(--cur-m);font-family:'Noto Naskh Arabic','Inter',sans-serif;line-height:1.5}
+.cur-h2.rtl{padding-left:0;padding-right:10px;border-left:none;border-right:3px solid var(--cur-m);text-align:right}
+.cur-para{font-size:13px;line-height:1.9;color:var(--txt);margin-bottom:4px}
+.cur-para.ar{font-family:'Noto Naskh Arabic',serif;font-size:15px;line-height:2.1;direction:rtl;text-align:right}
+.cur-bullet-list{margin:0;padding-left:20px;margin-bottom:6px}
+.cur-bullet-list.ar{padding-left:0;padding-right:20px;direction:rtl;text-align:right}
+.cur-bullet-list li{font-size:13px;line-height:1.8;color:var(--txt);margin-bottom:3px}
+.cur-bullet-list.ar li{font-family:'Noto Naskh Arabic',serif;font-size:14px;line-height:2}
+
+/* Vocabulary table */
+.cur-vocab-wrap{margin:12px 0;border-radius:var(--rs);overflow:hidden;box-shadow:0 2px 8px rgba(26,107,58,.1)}
+.cur-vocab-table{width:100%;border-collapse:collapse;font-size:12px}
+.cur-vocab-table thead th{background:var(--cur);color:#fff;padding:8px 10px;font-weight:700;text-align:center}
+.cur-vocab-table td{padding:8px 10px;border-bottom:1px solid var(--cur-l);background:#fff;vertical-align:middle}
+.cur-vocab-table tr:last-child td{border-bottom:none}
+.cur-vocab-table tr:hover td{background:var(--cur-l)}
+.vocab-arabic{font-family:'Noto Naskh Arabic',serif;font-size:16px;font-weight:600;direction:rtl;text-align:right;color:var(--cur-d)}
+.vocab-english{font-size:12px;font-weight:600;color:var(--pri-d);text-align:left}
+.vocab-note{font-size:11px;color:var(--txt2);text-align:center;font-style:italic}
+
+/* Mixed bilingual block */
+.cur-bilingual{background:linear-gradient(135deg,rgba(26,107,58,.04),rgba(98,182,203,.04));border:1px solid #D5EAD8;border-radius:10px;padding:12px 14px;margin:8px 0;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.cur-bi-ar{flex:1;min-width:100px;font-family:'Noto Naskh Arabic',serif;font-size:16px;font-weight:600;direction:rtl;text-align:right;color:var(--cur-d);line-height:1.9}
+.cur-bi-sep{color:#ccc;font-size:20px;padding-top:2px;flex-shrink:0}
+.cur-bi-en{flex:1;min-width:100px;font-size:13px;color:var(--pri-d);text-align:left;line-height:1.8}
+
+/* Admin add form */
+.cur-add-card{background:linear-gradient(135deg,#fff,var(--cur-l));border:2px dashed #A5D6B0;border-radius:var(--r);padding:16px;margin-bottom:14px}
+.cur-add-title{font-size:14px;font-weight:800;color:var(--cur);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.cur-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.cur-form-field{display:flex;flex-direction:column;gap:4px}
+.cur-form-field.full{grid-column:1/-1}
+.cur-form-field label{font-size:11px;font-weight:700;color:var(--txt2)}
+.cur-form-field input,.cur-form-field select,.cur-form-field textarea{padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;color:var(--pri-d);background:#fff}
+.cur-form-field input:focus,.cur-form-field select:focus,.cur-form-field textarea:focus{outline:none;border-color:var(--cur)}
+.cur-form-field textarea{resize:vertical;min-height:160px;line-height:1.7;font-family:'Noto Naskh Arabic','Inter',sans-serif}
+.cur-form-hint{font-size:10px;color:var(--txt2);margin-top:3px;line-height:1.6;background:var(--cur-l);padding:6px 10px;border-radius:6px}
+.cur-save-btn{padding:12px 20px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--cur),var(--cur-m));color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;justify-content:center;margin-top:6px}
+.cur-save-btn:hover{opacity:.9}.cur-save-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Toolbar */
+.cur-toolbar{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.cur-tb-btn{padding:5px 10px;border:2px solid #E8EDF2;border-radius:7px;background:#fff;cursor:pointer;font:inherit;font-size:11px;font-weight:700;color:var(--txt2);transition:.15s;white-space:nowrap}
+.cur-tb-btn:hover{border-color:var(--cur);color:var(--cur);background:var(--cur-l)}
+
+/* Preview */
+.cur-preview-wrap{margin-top:12px;border:2px solid var(--cur-l);border-radius:var(--rs);overflow:hidden;display:none}
+.cur-preview-wrap.show{display:block}
+.cur-preview-label{background:var(--cur-l);color:var(--cur);font-size:10px;font-weight:800;padding:5px 12px}
+.cur-preview-body{padding:14px 16px;background:#fff;min-height:60px}
+
+/* Search & filter */
+.cur-search-bar{display:flex;gap:8px;margin-bottom:12px}
+.cur-search-bar input{flex:1;padding:10px 14px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff;direction:rtl;text-align:right}
+.cur-search-bar input:focus{outline:none;border-color:var(--cur)}
+.cur-cat-filter{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.cur-cat-btn{padding:6px 13px;border:2px solid #E8EDF2;border-radius:20px;background:#fff;cursor:pointer;font:inherit;font-size:11px;font-weight:700;color:var(--txt2);transition:.2s}
+.cur-cat-btn.on{border-color:var(--cur);background:var(--cur);color:#fff}
+
+/* Article footer */
+.cur-art-footer{padding:8px 16px;background:#FAFBFC;border-top:1px solid var(--cur-l);font-size:11px;color:var(--txt2);display:flex;justify-content:space-between}
+
+/* Empty state */
+.cur-empty{display:flex;flex-direction:column;align-items:center;padding:50px 20px;text-align:center}
+.cur-empty .ce-ic{font-size:56px;margin-bottom:12px;opacity:.6}
+.cur-empty h3{font-size:16px;font-weight:700;color:var(--pri-d);margin-bottom:6px}
+.cur-empty p{font-size:12px;color:var(--txt2);max-width:240px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -639,6 +739,84 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div id="friLecturesList"></div>
   </div>
 
+  <!-- ===== CURRICULUM PAGE ===== -->
+  <div class="pg" id="pgC">
+    <div class="st">📖 المنهج</div>
+
+    <!-- Hero -->
+    <div class="cur-hero">
+      <div class="cur-hero-title">المنهج الدراسي 📖</div>
+      <div class="cur-hero-sub">مقالات تعليمية ومفردات</div>
+      <div class="cur-hero-stats">
+        <div class="cur-hero-stat"><span id="curTotalCount">0</span>مقال</div>
+        <div class="cur-hero-stat"><span id="curVocabCount">0</span>مفردة</div>
+      </div>
+    </div>
+
+    <!-- Admin Add Form -->
+    <div id="curAdminForm" style="display:none">
+      <div class="cur-add-card">
+        <div class="cur-add-title">➕ إضافة مقال جديد</div>
+        <div class="cur-form-grid">
+          <div class="cur-form-field">
+            <label>عنوان المقال *</label>
+            <input type="text" id="curTitle" placeholder="مثال: الأفعال الأساسية" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif">
+          </div>
+          <div class="cur-form-field">
+            <label>التصنيف</label>
+            <input type="text" id="curCat" placeholder="مثال: نحو، مفردات، قواعد..." style="direction:rtl;text-align:right">
+          </div>
+          <div class="cur-form-field full">
+            <label>محتوى المقال *</label>
+            <div class="cur-toolbar">
+              <button type="button" class="cur-tb-btn" onclick="curInsert('# ','')">H1 عنوان</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('## ','')">H2 فرعي</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('**','**')"><b>بولد</b></button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('• ','')">• نقطة</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('@ar ','')">🟢 عربي</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('@en ','')">🔵 إنجليزي</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsert('@bi ','|')">⚡ ثنائي</button>
+              <button type="button" class="cur-tb-btn" onclick="curInsertVocab()">📊 جدول</button>
+            </div>
+            <textarea id="curContent" oninput="updateCurPreview()" placeholder="اكتب المقال هنا...
+
+# عنوان رئيسي
+## عنوان فرعي
+**نص بولد**
+• نقطة
+
+@ar النص العربي هنا
+@en English text here
+@bi كلمة عربية | English word
+
+@vocab
+صلاة | Prayer | Daily worship
+زكاة | Zakat | Obligatory charity"></textarea>
+            <div class="cur-form-hint">
+              💡 <b># عنوان</b> | <b>## فرعي</b> | <b>**بولد**</b> | <b>• نقطة</b><br>
+              🟢 <b>@ar</b> سطر عربي &nbsp;|&nbsp; 🔵 <b>@en</b> English line &nbsp;|&nbsp; ⚡ <b>@bi عربي | English</b> ثنائي جنباً لجنب<br>
+              📊 <b>@vocab</b> ثم سطر لكل كلمة: <b>عربي | English | ملاحظة</b>
+            </div>
+            <div class="cur-preview-wrap" id="curPreviewWrap">
+              <div class="cur-preview-label">👁 معاينة مباشرة</div>
+              <div class="cur-preview-body" id="curPreviewBody"></div>
+            </div>
+          </div>
+        </div>
+        <button class="cur-save-btn" id="curSaveBtn" onclick="saveCurArticle()">📖 نشر المقال</button>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="cur-search-bar">
+      <input type="text" id="curSearch" placeholder="🔍 ابحث في المقالات..." oninput="renderCurArticles()">
+    </div>
+    <div class="cur-cat-filter" id="curCatFilter"></div>
+
+    <!-- Articles list -->
+    <div id="curArticlesList"></div>
+  </div>
+
   <div class="bnav" id="bnav"></div>
 </div>
 
@@ -711,8 +889,12 @@ let levelsSelClass='c1';
 let sdSelClass='c1';
 
 // ===== FRIDAY LECTURES STATE =====
-let friLectures = [];       // Array of lecture objects
-let friTopicFilter = 'all'; // Active topic filter
+let friLectures = [];
+let friTopicFilter = 'all';
+
+// ===== CURRICULUM STATE =====
+let curArticles = [];
+let curCatFilter = 'all';
 
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dim(y,m){return new Date(y,m,0).getDate()}
@@ -778,6 +960,8 @@ async function loadAllData(){
 
     // Load Friday Lectures
     await loadFriLectures();
+    // Load Curriculum
+    await loadCurArticles();
 
     await loadStudentProgress();
     await loadStudentData();
@@ -824,6 +1008,14 @@ async function loadAllData(){
       snap.forEach(d=>friLectures.push({id:d.id,...d.data()}));
       if(user && $('pgF').classList.contains('on')) renderFriLectures();
       updateFriStats();
+    });
+
+    // Real-time listener for Curriculum
+    DB.collection('curriculum').orderBy('createdAt','desc').onSnapshot(snap=>{
+      curArticles=[];
+      snap.forEach(d=>curArticles.push({id:d.id,...d.data()}));
+      if(user && $('pgC').classList.contains('on')) renderCurArticles();
+      updateCurStats();
     });
 
     DB.collection('studentProgress').onSnapshot(snap=>{
@@ -1157,6 +1349,324 @@ function deleteFriLecture(id){
   });
 }
 
+// ===== CURRICULUM — FIREBASE =====
+async function loadCurArticles(){
+  if(!DB)return;
+  try{
+    const snap=await DB.collection('curriculum').orderBy('createdAt','desc').get();
+    curArticles=[];
+    snap.forEach(d=>curArticles.push({id:d.id,...d.data()}));
+  }catch(e){console.error('loadCurArticles:',e);}
+}
+
+async function fbSaveCurArticle(article){
+  if(!DB)return null;
+  try{
+    const ref=await DB.collection('curriculum').add({...article,createdAt:new Date().toISOString(),createdBy:user?user.n:'Admin'});
+    return ref.id;
+  }catch(e){console.error('fbSaveCurArticle:',e);throw e;}
+}
+
+async function fbUpdateCurArticle(id,data){
+  if(!DB)return;
+  try{await DB.collection('curriculum').doc(id).update({...data,updatedAt:new Date().toISOString()});}
+  catch(e){console.error('fbUpdateCurArticle:',e);throw e;}
+}
+
+async function fbDeleteCurArticle(id){
+  if(!DB)return;
+  try{await DB.collection('curriculum').doc(id).delete();}
+  catch(e){console.error('fbDeleteCurArticle:',e);throw e;}
+}
+
+// ===== CURRICULUM — CONTENT PARSER =====
+// Supports: # H1, ## H2, **bold**, • bullets,
+// @ar line (Arabic RTL), @en line (English LTR),
+// @bi arabic | english  (bilingual side-by-side),
+// @vocab block: arabic | english | note (one per line until blank or end)
+function parseCurContent(text){
+  if(!text)return '';
+  const lines=text.split('\n');
+  let html='';
+  let inBullet=false;
+  let inVocab=false;
+  let vocabRows=[];
+
+  function flushBullet(){if(inBullet){html+='</ul>';inBullet=false;}}
+  function flushVocab(){
+    if(!inVocab)return;
+    inVocab=false;
+    if(!vocabRows.length){vocabRows=[];return;}
+    let rows=vocabRows.map(r=>{
+      const parts=r.split('|').map(s=>s.trim());
+      const ar=escHtml(parts[0]||'');
+      const en=escHtml(parts[1]||'');
+      const nt=escHtml(parts[2]||'');
+      return`<tr><td class="vocab-arabic">${ar}</td><td class="vocab-english">${en}</td>${nt?`<td class="vocab-note">${nt}</td>`:''}</tr>`;
+    }).join('');
+    const hasNote=vocabRows.some(r=>r.split('|').length>2);
+    html+=`<div class="cur-vocab-wrap"><table class="cur-vocab-table"><thead><tr><th>عربي</th><th>English</th>${hasNote?'<th>ملاحظة</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    vocabRows=[];
+  }
+
+  lines.forEach(line=>{
+    const raw=line;
+    const trimmed=raw.trim();
+
+    // blank line
+    if(!trimmed){
+      flushBullet();
+      flushVocab();
+      html+='<div style="height:8px"></div>';
+      return;
+    }
+
+    // inside vocab block — collect rows
+    if(inVocab){
+      if(trimmed.includes('|')){vocabRows.push(trimmed);return;}
+      else{flushVocab();}
+    }
+
+    // @vocab — start vocab table
+    if(trimmed.toLowerCase()==='@vocab'){
+      flushBullet();
+      inVocab=true;vocabRows=[];
+      return;
+    }
+
+    // @bi arabic | english  — bilingual side-by-side
+    if(/^@bi\s/i.test(trimmed)){
+      flushBullet();flushVocab();
+      const rest=trimmed.replace(/^@bi\s+/i,'');
+      const [ar,en,...more]=rest.split('|').map(s=>s.trim());
+      const note=more.join('|').trim();
+      html+=`<div class="cur-bilingual">
+        <div class="cur-bi-ar">${applyInline(ar||'')}</div>
+        <div class="cur-bi-sep">⟷</div>
+        <div class="cur-bi-en">${applyInline(en||'')}${note?`<div style="font-size:11px;color:var(--txt2);margin-top:2px;font-style:italic">${escHtml(note)}</div>`:''}</div>
+      </div>`;
+      return;
+    }
+
+    // @ar Arabic line
+    if(/^@ar\s/i.test(trimmed)){
+      flushBullet();flushVocab();
+      const content=trimmed.replace(/^@ar\s+/i,'');
+      html+=`<div class="cur-para ar">${applyInline(content)}</div>`;
+      return;
+    }
+
+    // @en English line
+    if(/^@en\s/i.test(trimmed)){
+      flushBullet();flushVocab();
+      const content=trimmed.replace(/^@en\s+/i,'');
+      html+=`<div class="cur-para">${applyInline(content)}</div>`;
+      return;
+    }
+
+    // ## H2
+    if(trimmed.startsWith('## ')){
+      flushBullet();flushVocab();
+      const t=trimmed.replace(/^##\s*/,'');
+      const isAr=/[\u0600-\u06FF]/.test(t);
+      html+=`<div class="cur-h2${isAr?' rtl':''}">${applyInline(t)}</div>`;
+      return;
+    }
+
+    // # H1
+    if(trimmed.startsWith('#')){
+      flushBullet();flushVocab();
+      const t=trimmed.replace(/^#+\s*/,'');
+      html+=`<div class="cur-h1">${applyInline(t)}</div>`;
+      return;
+    }
+
+    // bullet
+    if(/^[•\-]\s/.test(trimmed)||/^\*\s/.test(trimmed)){
+      flushVocab();
+      const content=trimmed.replace(/^[•\-\*]\s+/,'');
+      const isAr=/[\u0600-\u06FF]/.test(content);
+      if(!inBullet){html+=`<ul class="cur-bullet-list${isAr?' ar':''}">`;inBullet=true;}
+      html+=`<li>${applyInline(content)}</li>`;
+      return;
+    }
+
+    // plain paragraph — auto-detect RTL
+    flushBullet();flushVocab();
+    const isAr=/[\u0600-\u06FF]/.test(trimmed);
+    html+=`<div class="cur-para${isAr?' ar':''}">${applyInline(trimmed)}</div>`;
+  });
+
+  flushBullet();flushVocab();
+  return html;
+}
+
+// ===== CURRICULUM — STATS =====
+function updateCurStats(){
+  const total=curArticles.length;
+  // Count vocab entries across all articles
+  let vocabCount=0;
+  curArticles.forEach(a=>{
+    if(!a.content)return;
+    let inV=false;
+    a.content.split('\n').forEach(l=>{
+      const t=l.trim();
+      if(t.toLowerCase()==='@vocab'){inV=true;return;}
+      if(inV&&t.includes('|'))vocabCount++;
+      else if(inV&&!t)inV=false;
+    });
+  });
+  const el1=$('curTotalCount'),el2=$('curVocabCount');
+  if(el1)el1.textContent=total;
+  if(el2)el2.textContent=vocabCount;
+}
+
+// ===== CURRICULUM — RENDER =====
+function buildCurCatFilter(){
+  const cats=['all',...new Set(curArticles.map(a=>a.category).filter(Boolean))];
+  const c=$('curCatFilter');if(!c)return;
+  c.innerHTML=cats.map(t=>`<button class="cur-cat-btn ${curCatFilter===t?'on':''}" onclick="setCurCat('${escHtml(t)}')">${t==='all'?'📋 الكل':t}</button>`).join('');
+}
+
+function setCurCat(t){curCatFilter=t;renderCurArticles();}
+
+function renderCurArticles(){
+  buildCurCatFilter();
+  updateCurStats();
+  const isAdmin=user&&user.r==='admin';
+  const search=($('curSearch')?.value||'').toLowerCase();
+  let filtered=curArticles.filter(a=>{
+    if(curCatFilter!=='all'&&a.category!==curCatFilter)return false;
+    if(search&&!a.title.toLowerCase().includes(search)&&!(a.content||'').toLowerCase().includes(search))return false;
+    return true;
+  });
+  const container=$('curArticlesList');if(!container)return;
+  if(!filtered.length){
+    container.innerHTML=`<div class="cur-empty"><div class="ce-ic">📖</div><h3>${curArticles.length===0?'لا توجد مقالات بعد':'لا توجد نتائج'}</h3><p>${curArticles.length===0?'سيقوم الأدمن بنشر مقالات المنهج هنا.':'جرّب بحثاً أو تصنيفاً مختلفاً.'}</p></div>`;
+    return;
+  }
+  container.innerHTML=filtered.map((art,idx)=>{
+    const contentHtml=parseCurContent(art.content||'');
+    const adminBtns=isAdmin?`<div class="cur-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editCurArticle('${art.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteCurArticle('${art.id}')">🗑️</button></div>`:'';
+    const dateLbl=art.createdAt?new Date(art.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'}):'';
+    return`<div class="cur-article-card" id="cacard-${art.id}">
+      <div class="cur-article-header" onclick="toggleCurCard('${art.id}')">
+        <div class="cur-art-num">${filtered.length-idx}</div>
+        <div class="cur-art-meta">
+          <div class="cur-art-title">${escHtml(art.title||'بدون عنوان')}</div>
+          <div class="cur-art-badges">
+            ${art.category?`<span class="cur-cat-badge">${escHtml(art.category)}</span>`:''}
+          </div>
+        </div>
+        ${adminBtns}
+        <div class="cur-toggle-ic" id="caic-${art.id}">▼</div>
+      </div>
+      <div class="cur-art-body" id="cabody-${art.id}">
+        ${contentHtml}
+        <div class="cur-art-footer">
+          <span>بقلم ${escHtml(art.createdBy||'Admin')}</span>
+          <span>${dateLbl}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCurCard(id){
+  const body=$('cabody-'+id);const icon=$('caic-'+id);
+  if(!body)return;
+  const open=body.classList.toggle('open');
+  if(icon)icon.classList.toggle('open',open);
+}
+
+// ===== CURRICULUM — SAVE/EDIT/DELETE =====
+async function saveCurArticle(){
+  const title=($('curTitle')?.value||'').trim();
+  const category=($('curCat')?.value||'').trim();
+  const content=($('curContent')?.value||'').trim();
+  if(!title){toast('يرجى إدخال العنوان','er');return;}
+  if(!content){toast('يرجى إدخال محتوى المقال','er');return;}
+  const btn=$('curSaveBtn');
+  btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
+  try{
+    await fbSaveCurArticle({title,category,content});
+    await fbLog('curriculum','نشر مقال: '+title);
+    $('curTitle').value='';$('curCat').value='';$('curContent').value='';
+    const pw=$('curPreviewWrap');if(pw)pw.classList.remove('show');
+    toast('تم نشر المقال ✅','ok');
+    btn.disabled=false;btn.innerHTML='📖 نشر المقال';
+    $('curArticlesList').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    toast('فشل النشر ❌','er');
+    btn.disabled=false;btn.innerHTML='📖 نشر المقال';
+  }
+}
+
+function editCurArticle(id){
+  const art=curArticles.find(a=>a.id===id);if(!art)return;
+  showM(`
+    <div class="mt">✏️ تعديل المقال</div>
+    <div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div>
+    <div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div>
+    <div class="ig"><label>المحتوى</label><textarea id="_ccontent" style="width:100%;min-height:180px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:13px;resize:vertical;line-height:1.8">${escHtml(art.content||'')}</textarea></div>
+    <div class="mb">
+      <button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button>
+      <button class="btn btn-s" onclick="hideM()">إلغاء</button>
+    </div>
+  `);
+}
+
+async function saveEditCurArticle(id){
+  const title=($('_ct')?.value||'').trim();
+  const category=($('_cc')?.value||'').trim();
+  const content=($('_ccontent')?.value||'').trim();
+  if(!title||!content){toast('العنوان والمحتوى مطلوبان','er');return;}
+  try{
+    await fbUpdateCurArticle(id,{title,category,content});
+    await fbLog('curriculum','تعديل مقال: '+title);
+    hideM();toast('تم التحديث ✅','ok');
+  }catch(e){toast('فشل التحديث ❌','er');}
+}
+
+function deleteCurArticle(id){
+  const art=curArticles.find(a=>a.id===id);
+  showConfirm('حذف المقال',`هل تريد حذف "${art?.title||'هذا المقال'}"؟ لا يمكن التراجع.`,async()=>{
+    try{
+      await fbDeleteCurArticle(id);
+      await fbLog('curriculum','حذف مقال: '+(art?.title||id));
+      toast('تم الحذف','ok');
+    }catch(e){toast('فشل الحذف ❌','er');}
+  });
+}
+
+// ===== CURRICULUM — TOOLBAR & PREVIEW =====
+function curInsert(before,after){
+  const ta=$('curContent');if(!ta)return;
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  const sel=ta.value.slice(s,e);
+  ta.value=ta.value.slice(0,s)+before+(sel||'')+after+ta.value.slice(e);
+  const p=s+before.length+(sel?sel.length:0)+after.length;
+  ta.setSelectionRange(p,p);ta.focus();
+  updateCurPreview();
+}
+
+function curInsertVocab(){
+  const ta=$('curContent');if(!ta)return;
+  const s=ta.selectionStart;
+  const snippet='\n@vocab\nكلمة عربية | English word | ملاحظة\nكلمة ثانية | Second word\n';
+  ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);
+  ta.setSelectionRange(s+snippet.length,s+snippet.length);
+  ta.focus();updateCurPreview();
+}
+
+function updateCurPreview(){
+  const content=$('curContent')?.value||'';
+  const wrap=$('curPreviewWrap');const body=$('curPreviewBody');
+  if(!wrap||!body)return;
+  if(content.trim()){wrap.classList.add('show');body.innerHTML=parseCurContent(content);}
+  else wrap.classList.remove('show');
+}
+
 // ===== FIREBASE SAVE FUNCTIONS =====
 async function fbSaveMain(){
   if(!DB)return;
@@ -1261,6 +1771,7 @@ function showApp(){
   if(user.r==='admin')renderAdmin();
   updateOrphanCount();
   updateFriStats();
+  updateCurStats();
 }
 
 // ===== NAV & HOME CARDS =====
@@ -1269,11 +1780,12 @@ function buildNav(){
   let navItems=[
     {id:'H',ic:'🏠',lbl:'Home'},
     {id:'A',ic:'✅',lbl:'Attend'},
-    {id:'D',ic:'👥',lbl:'Data'},
-    {id:'P',ic:'📚',lbl:'Progress'},
+    {id:'C',ic:'📖',lbl:'المنهج'},
     {id:'F',ic:'🕌',lbl:'محاضرات'},
+    {id:'P',ic:'📚',lbl:'Progress'},
   ];
   if(isAdmin){
+    navItems.push({id:'D',ic:'👥',lbl:'Data'});
     navItems.push({id:'O',ic:'💜',lbl:'Orphans'});
     navItems.push({id:'R',ic:'📈',lbl:'Reports'});
     navItems.push({id:'L',ic:'📋',lbl:'Log'});
@@ -1283,11 +1795,12 @@ function buildNav(){
 
   let cards=[
     {id:'A',ic:'✅',title:'Attendance',desc:'Mark & manage daily attendance for all classes',badge:'Today',badgeNew:false},
-    {id:'F',ic:'🕌',title:'محاضرات الجمعة',desc:'محاضرات إسلامية أسبوعية للمطالعة',badge:'جديد',badgeNew:true},
-    {id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false},
+    {id:'C',ic:'📖',title:'المنهج',desc:'مقالات تعليمية ومفردات للمدرسين',badge:'جديد',badgeNew:true},
+    {id:'F',ic:'🕌',title:'محاضرات الجمعة',desc:'محاضرات إسلامية أسبوعية للمطالعة',badge:'',badgeNew:false},
     {id:'P',ic:'📚',title:'Student Progress',desc:'Update age, level & monthly progress for each student',badge:'',badgeNew:false},
   ];
   if(isAdmin){
+    cards.push({id:'D',ic:'👥',title:'Student Data',desc:'View & manage student profiles and information',badge:'',badgeNew:false});
     cards.push({id:'O',ic:'💜',title:'Orphans',desc:'Welfare profiles, sponsorship & progress tracking',badge:'New',badgeNew:true});
     cards.push({id:'R',ic:'📈',title:'Reports',desc:'Attendance & progress reports',badge:'',badgeNew:false});
     cards.push({id:'M',ic:'⚙️',title:'Admin',desc:'Manage students, teachers & passwords',badge:'',badgeNew:false});
@@ -1310,7 +1823,7 @@ function _go(pg,btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   if(btn)btn.classList.add('on');
   else{const nb=$('ni'+pg);if(nb)nb.classList.add('on')}
-  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'محاضرات الجمعة'};
+  const titles={H:'Home',A:'Attendance',D:'Student Data',P:'Student Progress',O:'Orphans',R:'Reports',L:'Activity Log',M:'Admin Panel',F:'محاضرات الجمعة',C:'المنهج'};
   $('topTitle').textContent=titles[pg]||'';
   if(pg==='H')refreshDash();
   if(pg==='R')initFilters();
@@ -1320,13 +1833,19 @@ function _go(pg,btn){
   if(pg==='L')refreshLog();
   if(pg==='A'){$('svb').style.display='none';$('acon').style.display='none';$('sl').innerHTML='';selCl=null;renderCS();updateROBar();}
   if(pg==='F'){
-    // Show admin add form only for admin
     const isAdmin = user && user.r === 'admin';
     const adminForm = $('friAdminForm');
     if(adminForm) adminForm.style.display = isAdmin ? 'block' : 'none';
     if(isAdmin && $('friDate') && !$('friDate').value) $('friDate').value = today();
     friTopicFilter = 'all';
     renderFriLectures();
+  }
+  if(pg==='C'){
+    const isAdmin = user && user.r === 'admin';
+    const adminForm = $('curAdminForm');
+    if(adminForm) adminForm.style.display = isAdmin ? 'block' : 'none';
+    curCatFilter = 'all';
+    renderCurArticles();
   }
 }
 
