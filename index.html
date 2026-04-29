@@ -551,8 +551,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <input type="date" id="rd" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff;color:var(--pri-d)">
         <select id="rdc" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff"><option value="all">All Classes</option></select>
       </div>
+      <div class="rpt-search-bar">
+        <input type="text" id="rdSearch" placeholder="🔍 Search student by name..." oninput="doDailyReport()">
+      </div>
       <button class="btn btn-p" onclick="doDailyReport()" style="margin-bottom:14px">📊 Generate Daily Report</button>
       <div id="rdo"></div>
+      <div id="rdoExportBar" style="display:none;margin-top:10px">
+        <button class="btn btn-p" onclick="exportDailyReportXlsx()" style="background:linear-gradient(135deg,#1A6B3A,#2E7D52);box-shadow:0 4px 16px rgba(26,107,58,.3)">📥 Export to Excel</button>
+      </div>
     </div>
 
     <!-- Monthly tab -->
@@ -568,8 +574,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <option value="teachers">Teachers</option>
         </select>
       </div>
+      <div class="rpt-search-bar" id="rmSearchBar">
+        <input type="text" id="rmSearch" placeholder="🔍 Search student by name..." oninput="doReport()">
+      </div>
       <button class="btn btn-p" onclick="doReport()" style="margin-bottom:14px">📊 Generate Monthly Report</button>
       <div id="ro"></div>
+      <div id="roExportBar" style="display:none;margin-top:10px">
+        <button class="btn btn-p" onclick="exportMonthlyReportXlsx()" style="background:linear-gradient(135deg,#1A6B3A,#2E7D52);box-shadow:0 4px 16px rgba(26,107,58,.3)">📥 Export to Excel</button>
+      </div>
     </div>
 
     <!-- Progress tab — with student search + month filter -->
@@ -590,6 +602,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       <button class="btn btn-p" onclick="doProgressReport()" style="margin-bottom:14px">📚 Generate Progress Report</button>
       <div id="rpro"></div>
+      <div id="rproExportBar" style="display:none;margin-top:10px">
+        <button class="btn btn-p" onclick="exportProgressReportXlsx()" style="background:linear-gradient(135deg,#1A6B3A,#2E7D52);box-shadow:0 4px 16px rgba(26,107,58,.3)">📥 Export to Excel</button>
+      </div>
     </div>
   </div>
 
@@ -1775,37 +1790,55 @@ function initFilters(){
   $('rd').setAttribute('max',today());
 }
 
+// Cache for last generated report data (used by Excel export)
+let _lastDailyData = null;
+let _lastMonthlyData = null;
+let _lastProgressData = null;
+
 function doDailyReport(){
   const dt=$('rd').value; const cf=$('rdc').value;
   if(!dt){toast('Pick a date first','er');return;}
+  const search=($('rdSearch')?.value||'').toLowerCase().trim();
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
   const ta=att[dt]||{};
   const dayName=new Date(dt+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const hasRecord=Object.keys(ta).length>0;
   let totalS=0,totalP=0,totalA=0,totalO=0,totalOP=0,totalOA=0;let classRows='';
+  // Flat rows for export
+  const exportRows=[];
   cl.forEach(c=>{
     const cd=ta[c.id]||{};let cp=0,ca=0,cu=0;
-    c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){cp++;totalP++;if(s.o)totalOP++;}else if(v==='absent'){ca++;totalA++;if(s.o)totalOA++;}else cu++;totalS++;if(s.o)totalO++;});
+    // filter by search if provided
+    const sts=search?c.students.filter(s=>s.name.toLowerCase().includes(search)):c.students;
+    sts.forEach(s=>{const v=cd[s.id];if(v==='present'){cp++;totalP++;if(s.o)totalOP++;}else if(v==='absent'){ca++;totalA++;if(s.o)totalOA++;}else cu++;totalS++;if(s.o)totalO++;exportRows.push({Class:c.name,Name:s.name,Orphan:s.o?'Yes':'No',Status:v==='present'?'Present':v==='absent'?'Absent':'Unmarked'});});
     const ctt=cp+ca; const cpc=ctt>0?Math.round(cp/ctt*100):null;
-    const studentRows=c.students.map((s,i)=>{const v=cd[s.id]||'';const si=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';return`<tr class="${s.o?'or':''}"><td style="color:var(--txt2);font-size:10px">${i+1}</td><td style="text-align:left;font-weight:600;font-size:11px">${s.o?'💜 ':''}${s.name}</td><td>${si}</td></tr>`;}).join('');
+    if(sts.length===0)return;
+    const studentRows=sts.map((s,i)=>{const v=cd[s.id]||'';const si=v==='present'?'<span style="color:var(--ok);font-weight:800">✓</span>':v==='absent'?'<span style="color:var(--err);font-weight:800">✕</span>':'<span style="color:#ccc">—</span>';return`<tr class="${s.o?'or':''}"><td style="color:var(--txt2);font-size:10px">${i+1}</td><td style="text-align:left;font-weight:600;font-size:11px">${s.o?'💜 ':''}${s.name}</td><td>${si}</td></tr>`;}).join('');
     classRows+=`<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong style="color:var(--pri-d)">${c.name}</strong><div style="display:flex;gap:10px;font-size:12px;font-weight:700"><span style="color:var(--ok)">✅ ${cp}</span><span style="color:var(--err)">❌ ${ca}</span>${cu>0?`<span style="color:var(--txt2)">— ${cu}</span>`:''}${cpc!==null?`<span style="color:${cpc>=80?'var(--ok)':cpc>=60?'var(--warn)':'var(--err)'}">📊 ${cpc}%</span>`:''}</div></div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Student</th><th>Status</th></tr></thead><tbody>${studentRows}</tbody></table></div></div>`;
   });
   const totalTT=totalP+totalA; const avgPc=totalTT>0?Math.round(totalP/totalTT*100):null;
-  $('rdo').innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}</div>${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}<div class="day-rpt-grid"><div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div><div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div><div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div><div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div></div>${classRows}`;
+  $('rdo').innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}${search?` <span style="font-size:11px;color:var(--txt2);font-weight:500">— filtered: "${escHtml(search)}"</span>`:''}</div>${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}<div class="day-rpt-grid"><div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div><div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div><div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div><div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div></div>${classRows||'<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students match search.</div>'}`;
+  // Store for export
+  _lastDailyData={date:dt,dayName,rows:exportRows};
+  const bar=$('rdoExportBar');if(bar)bar.style.display=exportRows.length>0?'block':'none';
 }
 
 function doReport(){
   const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;
   const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);
+  // Hide search bar for teachers report (teachers list doesn't benefit from name search)
+  const sb=$('rmSearchBar');if(sb)sb.style.display=tp==='teachers'?'none':'flex';
   if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp);
 }
 
 function rptS(y,mn,dm,cf,tp){
+  const search=($('rmSearch')?.value||'').toLowerCase().trim();
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
   cl.forEach(c=>{
     let st=c.students;
     if(tp==='orphans')st=st.filter(s=>s.o);
     else if(tp==='nonorphans')st=st.filter(s=>!s.o);
+    if(search)st=st.filter(s=>s.name.toLowerCase().includes(search));
     st.forEach(s=>{
       let p=0,a=0,recordedDays=0;
       for(let d=1;d<=dm;d++){
@@ -1824,7 +1857,11 @@ function rptS(y,mn,dm,cf,tp){
   const total=rows.length,recorded=rows.filter(r=>r.tt>0).length;
   const avgPc=recorded>0?Math.round(rows.filter(r=>r.tt>0).reduce((s,r)=>s+r.pc,0)/recorded):0;
   const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
-  $('ro').innerHTML=rows.length===0?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found for this filter</div>`:`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div><div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div><div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div></div><div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.pc!==null?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  const monthLabel=new Date(y,mn-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
+  $('ro').innerHTML=rows.length===0?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found${search?' matching "'+escHtml(search)+'"':' for this filter'}.</div>`:`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div><div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div><div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div></div><div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students${search?` <span style="font-size:11px;color:var(--txt2);font-weight:500">— filtered: "${escHtml(search)}"</span>`:''}</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.pc!==null?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  // Store for export
+  _lastMonthlyData={month:`${y}-${String(mn).padStart(2,'0')}`,monthLabel,label,type:'students',rows:rows.map(r=>({'Name':r.n,'Class':r.cn,'Orphan':r.o?'Yes':'No','Days Present':r.p,'Days Absent':r.a,'Total Recorded Days':r.tt,'Attendance %':r.pc!==null?r.pc+'%':'No data'}))};
+  const bar=$('roExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
 }
 
 function rptT(y,mn,dm){
@@ -1842,6 +1879,10 @@ function rptT(y,mn,dm){
     rows.push({n:t.name,p,a,pc});
   });
   $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`;
+  const monthLabel=new Date(y,mn-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
+  // Store for export
+  _lastMonthlyData={month:`${y}-${String(mn).padStart(2,'0')}`,monthLabel,label:'Teachers',type:'teachers',rows:rows.map(r=>({'Teacher':r.n,'Days Present':r.p,'Days Absent':r.a,'Attendance %':r.pc+'%'}))};
+  const bar=$('roExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
 }
 
 /**
@@ -1892,6 +1933,7 @@ function doProgressReport(){
   const container=$('rpro');
   if(!rows.length){
     container.innerHTML='<div class="card" style="text-align:center;padding:20px;color:var(--txt2)">No students found.</div>';
+    const bar=$('rproExportBar');if(bar)bar.style.display='none';
     return;
   }
 
@@ -1904,7 +1946,7 @@ function doProgressReport(){
       <div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">📚</div><div class="sn" style="font-size:18px">${withData}</div><div class="sl">With Progress</div></div>
       <div class="sc rd" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">⏳</div><div class="sn" style="font-size:18px">${rows.length-withData}</div><div class="sl">Pending</div></div>
     </div>
-    <div style="margin-bottom:10px;font-size:12px;font-weight:700;color:var(--pri)">📅 ${monthLabel}</div>
+    <div style="margin-bottom:10px;font-size:12px;font-weight:700;color:var(--pri)">📅 ${monthLabel}${search?` <span style="font-size:11px;color:var(--txt2);font-weight:500">— filtered: "${escHtml(search)}"</span>`:''}</div>
     <div style="overflow-x:auto">
       <table class="rt">
         <thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th style="text-align:left">Month</th><th style="text-align:left">Level / Surah</th><th style="text-align:left">Progress Note</th><th>Updated By</th></tr></thead>
@@ -1921,6 +1963,102 @@ function doProgressReport(){
         </tbody>
       </table>
     </div>`;
+  // Store for export
+  _lastProgressData={monthLabel,rows:rows.map(r=>({'Name':r.name,'Class':r.cls,'Orphan':r.o?'Yes':'No','Month':r.month,'Level / Surah':r.level,'Progress Note':r.note,'Updated By':r.updatedBy}))};
+  const bar=$('rproExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
+}
+
+// ================================================================
+// EXCEL EXPORT (SheetJS — loaded on demand)
+// ================================================================
+
+let _xlsxLoaded = false;
+async function _loadXlsx(){
+  if(_xlsxLoaded)return true;
+  try{
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    _xlsxLoaded=true;return true;
+  }catch(e){toast('Failed to load Excel library','er');return false;}
+}
+
+/** Helper: build workbook with a summary sheet + data sheet, then trigger download */
+function _downloadXlsx(filename, sheetName, dataRows, summaryRows){
+  const wb=XLSX.utils.book_new();
+  // Summary sheet
+  if(summaryRows&&summaryRows.length){
+    const ws1=XLSX.utils.aoa_to_sheet(summaryRows);
+    // Style header row width
+    ws1['!cols']=[{wch:28},{wch:20}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Summary');
+  }
+  // Data sheet
+  const ws2=XLSX.utils.json_to_sheet(dataRows);
+  // Auto-width columns
+  if(dataRows.length){
+    const keys=Object.keys(dataRows[0]);
+    ws2['!cols']=keys.map(k=>({wch:Math.max(k.length,16)+2}));
+  }
+  XLSX.utils.book_append_sheet(wb,ws2,sheetName);
+  XLSX.writeFile(wb,filename);
+}
+
+async function exportDailyReportXlsx(){
+  if(!_lastDailyData||!_lastDailyData.rows.length){toast('Generate a report first','er');return;}
+  if(!(await _loadXlsx()))return;
+  const d=_lastDailyData;
+  const present=d.rows.filter(r=>r.Status==='Present').length;
+  const absent=d.rows.filter(r=>r.Status==='Absent').length;
+  const unmarked=d.rows.filter(r=>r.Status==='Unmarked').length;
+  const total=d.rows.length;
+  const rate=total>0?Math.round(present/(present+absent||1)*100):0;
+  const summary=[
+    ['Quran School — Daily Attendance Report'],
+    ['Date',d.dayName],
+    ['Total Students',total],
+    ['Present',present],
+    ['Absent',absent],
+    ['Unmarked',unmarked],
+    ['Attendance Rate',rate+'%'],
+    ['Generated',new Date().toLocaleString()],
+  ];
+  _downloadXlsx(`Daily_Attendance_${d.date}.xlsx`,'Attendance',d.rows,summary);
+  toast('Excel downloaded ✅','ok');
+  await fbLog('export',`Daily attendance export — ${d.date}`);
+}
+
+async function exportMonthlyReportXlsx(){
+  if(!_lastMonthlyData||!_lastMonthlyData.rows.length){toast('Generate a report first','er');return;}
+  if(!(await _loadXlsx()))return;
+  const d=_lastMonthlyData;
+  const summary=[
+    ['Quran School — Monthly Attendance Report'],
+    ['Month',d.monthLabel],
+    ['Report Type',d.label],
+    ['Total Rows',d.rows.length],
+    ['Generated',new Date().toLocaleString()],
+  ];
+  const sheetName=d.type==='teachers'?'Teachers':'Students';
+  _downloadXlsx(`Monthly_Attendance_${d.month}_${d.type}.xlsx`,sheetName,d.rows,summary);
+  toast('Excel downloaded ✅','ok');
+  await fbLog('export',`Monthly ${d.type} report export — ${d.monthLabel}`);
+}
+
+async function exportProgressReportXlsx(){
+  if(!_lastProgressData||!_lastProgressData.rows.length){toast('Generate a report first','er');return;}
+  if(!(await _loadXlsx()))return;
+  const d=_lastProgressData;
+  const withData=d.rows.filter(r=>r['Level / Surah']&&r['Level / Surah']!=='—').length;
+  const summary=[
+    ['Quran School — Student Progress Report'],
+    ['Period',d.monthLabel],
+    ['Total Students',d.rows.length],
+    ['With Progress Data',withData],
+    ['Pending',d.rows.length-withData],
+    ['Generated',new Date().toLocaleString()],
+  ];
+  _downloadXlsx(`Progress_Report_${today()}.xlsx`,'Progress',d.rows,summary);
+  toast('Excel downloaded ✅','ok');
+  await fbLog('export','Progress report export');
 }
 
 /**
