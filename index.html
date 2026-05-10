@@ -1443,10 +1443,21 @@ async function fbSaveMain(){
 async function fbSaveAtt(date){
   if(!DB)return;
   try{
+    // Save only the currently selected class (selCl), not all att[date].
+    // merge:true ensures two teachers saving different classes on the same date
+    // never overwrite each other — Firestore merges keys instead of replacing the doc.
     const flat={};
-    if(att[date]){Object.keys(att[date]).forEach(cid=>{const cv=att[date][cid];if(cv&&typeof cv==='object'){Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid]});}})}
-    await DB.collection('attendance').doc(date).set(flat);
-    if(tatt[date]) await DB.collection('teacherAttendance').doc(date).set(tatt[date]);
+    const classesToSave = selCl ? [selCl] : Object.keys(att[date]||{});
+    classesToSave.forEach(cid=>{
+      const cv=(att[date]||{})[cid];
+      if(cv&&typeof cv==='object'){
+        Object.keys(cv).forEach(sid=>{flat[cid+'__'+sid]=cv[sid];});
+      }
+    });
+    if(Object.keys(flat).length>0){
+      await DB.collection('attendance').doc(date).set(flat,{merge:true});
+    }
+    if(tatt[date]) await DB.collection('teacherAttendance').doc(date).set(tatt[date],{merge:true});
   }catch(e){console.error('fbSaveAtt:',e);throw e;}
 }
 
