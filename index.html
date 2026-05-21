@@ -2485,7 +2485,7 @@ function renderAdmin(){
     if(filteredStudents.length>0||adminSearchTerm===''){
       const oc=c.students.filter(s=>s.o).length;
       h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?` <span style="color:var(--orp)">💜${oc}</span>`:''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
-      h+=filteredStudents.map(s=>{const oi=c.students.indexOf(s)+1;return`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`;}).join('');
+      h+=filteredStudents.map(s=>{const oi=c.students.indexOf(s)+1;return`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn ed" onclick="mTransferS('${c.id}','${s.id}')" title="Transfer to another class">🔄</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`;}).join('');
       h+=`</div></div>`;
     }
   });
@@ -2537,6 +2537,48 @@ async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim(
 function dT(ti){showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');});}
 function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);}
 async function svPW(un){const p=$('_p').value.trim();if(!p)return;const u=users.find(x=>x.u===un);u.ph=hashPW(p);delete u.p;await fbSaveMain();hideM();toast('Password changed ✅');}
+  // Transfer student to another class
+function mTransferS(fromCid, sid){
+  const fromC=classes.find(c=>c.id===fromCid);
+  const s=fromC.students.find(x=>x.id===sid);
+  const otherClasses=classes.filter(c=>c.id!==fromCid);
+  if(!otherClasses.length){toast('No other classes to transfer to','er');return;}
+  const opts=otherClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  showM(`<div class="mt">🔄 Transfer Student</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:14px;font-weight:700;color:var(--pri-d)">${s.o?'💜 ':''}${s.name}</div>
+      <div style="font-size:12px;color:var(--txt2);margin-top:4px">Currently in <strong>${fromC.name}</strong></div>
+    </div>
+    <div class="ig"><label>Transfer to</label>
+      <select id="_toCid" style="width:100%;padding:12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;font-weight:600;background:#fff">${opts}</select>
+    </div>
+    <div class="mb">
+      <button class="btn btn-p" onclick="transferStudent('${fromCid}','${sid}')">🔄 Transfer</button>
+      <button class="btn btn-s" onclick="hideM()">Cancel</button>
+    </div>`);
+}
+
+async function transferStudent(fromCid, sid){
+  const toCid=$('_toCid')?.value;
+  if(!toCid||toCid===fromCid){toast('Pick a different class','er');return;}
+  const fromC=classes.find(c=>c.id===fromCid);
+  const toC=classes.find(c=>c.id===toCid);
+  const sIdx=fromC.students.findIndex(x=>x.id===sid);
+  if(sIdx===-1){toast('Student not found','er');return;}
+  const [s]=fromC.students.splice(sIdx,1);
+  toC.students.push(s);
+  hideM();
+  try{
+    await fbSaveMain();
+    await fbLog('transfer',`${s.name} transferred from ${fromC.name} to ${toC.name}`);
+    toast(`✅ ${s.name} moved to ${toC.name}`,'ok');
+    renderAdmin();
+  }catch(e){
+    // Rollback on failure
+    toC.students.pop();fromC.students.splice(sIdx,0,s);
+    toast('Transfer failed ❌','er');
+  }
+}
 
 // ================================================================
 // MODAL & UI HELPERS
