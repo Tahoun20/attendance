@@ -584,14 +584,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
     </div>
 
-    <!-- Progress tab — with student search + month filter -->
+    <!-- Progress tab -->
     <div id="rpt-progress-section" style="display:none">
       <div class="report-note">📚 Shows student progress records. Use search to find a specific student across all months.</div>
-      <!-- Search bar -->
       <div class="rpt-search-bar">
         <input type="text" id="rptProgressSearch" placeholder="🔍 Search student by name..." oninput="doProgressReport()">
       </div>
-      <!-- Filters row -->
       <div class="rf" style="margin-bottom:10px">
         <select id="rprc" style="flex:1;padding:10px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;font-weight:600;background:#fff">
           <option value="all">All Classes</option>
@@ -658,22 +656,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <!-- STUDENT PROGRESS PAGE -->
   <div class="pg" id="pgP">
     <div class="st">📖 Student Progress</div>
-
-    <!-- Class tabs -->
     <div class="sp-class-tabs" id="spClassTabs"></div>
-
-    <!-- Month selector bar -->
     <div class="sp-month-bar">
       <label>📅 Month:</label>
       <select id="spMonthSel" onchange="onSpMonthChange()"></select>
       <span id="spMonthBadge" class="sp-month-badge current">Current</span>
     </div>
-
-    <!-- Admin-only search bar -->
     <div class="sp-search-bar" id="spSearchBar" style="display:none">
       <input type="text" id="spSearch" placeholder="🔍 Search student by name..." oninput="renderSPList()">
     </div>
-
     <div id="spStudentList"></div>
   </div>
 
@@ -758,7 +749,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <div class="fri-preview-wrap" id="friPreviewWrap"><div class="fri-preview-label">👁 معاينة مباشرة</div><div class="fri-preview-body fri-arabic" id="friPreviewBody"></div></div>
             </div>
           </div>
-          <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 نشر الخطبة</button>
+          <button class="fri-save-btn" id="friSaveBtn" onclick="saveFriLecture()">🕌 نشر المحاضرة</button>
         </div>
       </div>
       <div class="fri-search-bar"><input type="text" id="friSearch" placeholder="🔍 ابحث في الخطب..." oninput="renderFriLectures()" style="direction:rtl;text-align:right"></div>
@@ -825,9 +816,9 @@ let sdSelClass     = 'c1';
 
 // Student Progress — monthly
 let spSelClass = null;
-let spSelMonth = '';      // 'YYYY-MM', current month by default
-let monthlyProgress = {}; // key: 'cid__sid__YYYY-MM' → { level, note, updatedBy, updatedAt }
-let migrationDone = false;// prevent re-running migration in the same session
+let spSelMonth = '';
+let monthlyProgress = {};
+let migrationDone = false;
 
 // Friday Lectures state
 let friLectures = [];
@@ -841,7 +832,7 @@ let curCatFilter = 'all';
 let classLevels = { c1: [...DEFAULT_C1_LEVELS], c2: [...DEFAULT_SURAHS] };
 
 // ================================================================
-// STUDENT ROSTER & DEFAULT USERS (overridden by Firebase on load)
+// STUDENT ROSTER & DEFAULT USERS
 // ================================================================
 
 const CLASSES = [
@@ -890,7 +881,6 @@ function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMon
 function thisMonth(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
 function dim(y,m){ return new Date(y,m,0).getDate(); }
 
-/** Format YYYY-MM as "Month YYYY" label */
 function fmtMonth(ym){
   const [y,m] = ym.split('-').map(Number);
   return new Date(y,m-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
@@ -905,7 +895,6 @@ function toast(m, t='ok'){
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function applyInline(text){ return escHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--pri-d)">$1</strong>'); }
 
-/** Parse flat Firestore attendance doc keys → nested { cid: { sid: status } } */
 function parseAttDoc(raw){
   const out={};
   Object.keys(raw).forEach(k=>{
@@ -971,7 +960,6 @@ async function initFirebase(){
 
 async function loadAllData(){
   try{
-    // Load appData/main
     const mainDoc = await DB.collection('appData').doc('main').get();
     if(mainDoc.exists){
       const d=mainDoc.data();
@@ -983,7 +971,6 @@ async function loadAllData(){
       await DB.collection('appData').doc('main').set({classes,teachers,users,classLevels});
     }
 
-    // Load attendance, teacher attendance, logs in parallel
     const [aSnap,tSnap,lSnap] = await Promise.all([
       DB.collection('attendance').get(),
       DB.collection('teacherAttendance').get(),
@@ -993,18 +980,13 @@ async function loadAllData(){
     tatt={}; tSnap.forEach(d=>{tatt[d.id]=d.data()});
     logs=[]; lSnap.forEach(d=>logs.push(d.data()));
 
-    // Load library content
     await loadFriLectures();
     await loadCurArticles();
-
-    // Load student data snapshots
-    await loadStudentProgress();      // old flat collection (for migration source)
-    await loadStudentProgressMonthly();// new monthly collection
+    await loadStudentProgress();
+    await loadStudentProgressMonthly();
     await loadStudentData();
 
     if(user){ refreshDash(); refreshLog(); }
-
-    // ── Real-time listeners ──
 
     DB.collection('attendance').onSnapshot(snap=>{
       snap.docChanges().forEach(ch=>{
@@ -1055,13 +1037,11 @@ async function loadAllData(){
       updateCurStats();
     });
 
-    // Real-time listener for monthly progress
     DB.collection('studentProgressMonthly').onSnapshot(snap=>{
       snap.docChanges().forEach(ch=>{
         if(ch.type==='added'||ch.type==='modified') monthlyProgress[ch.doc.id]={...ch.doc.data()};
         else if(ch.type==='removed') delete monthlyProgress[ch.doc.id];
       });
-      // Re-render progress page if open
       if(user&&$('pgP')?.classList.contains('on')) renderSPList();
     });
 
@@ -1086,21 +1066,15 @@ async function loadAllData(){
 // STUDENT PROGRESS — MONTHLY COLLECTION
 // ================================================================
 
-/** Load all docs from studentProgressMonthly into monthlyProgress map */
 async function loadStudentProgressMonthly(){
   if(!DB)return;
   try{
     const snap = await DB.collection('studentProgressMonthly').get();
     monthlyProgress={};
     snap.forEach(doc=>{monthlyProgress[doc.id]={...doc.data()};});
-    console.log(`Loaded ${snap.size} monthly progress docs`);
   }catch(e){console.error('loadStudentProgressMonthly:',e);}
 }
 
-/**
- * Load old flat studentProgress docs (cid__sid) into student objects.
- * These are still used as the migration source.
- */
 async function loadStudentProgress(){
   if(!DB)return;
   try{
@@ -1116,100 +1090,54 @@ async function loadStudentProgress(){
   }catch(e){console.error('loadStudentProgress:',e);}
 }
 
-/**
- * Migration: for every student that has old flat progress data (level or progress note)
- * and does NOT already have a 'baseline' monthly doc, write a baseline entry.
- * Runs once per session, only for admin users.
- */
 async function migrateOldProgress(){
   if(!DB||!user||user.r!=='admin'||migrationDone)return;
   migrationDone=true;
-
   const batch = DB.batch();
   let count=0;
-
   classes.forEach(c=>{
     c.students.forEach(s=>{
-      // Only migrate if student has old-style level or progress data
       if(!s.level && !s.progress)return;
       const baselineKey=`${c.id}__${s.id}__baseline`;
-      // Only write if not already exists
       if(monthlyProgress[baselineKey])return;
-
       const ref = DB.collection('studentProgressMonthly').doc(baselineKey);
-      batch.set(ref,{
-        cid:c.id, sid:s.id,
-        month:'baseline',
-        level:s.level||null,
-        note:s.progress||null,
-        updatedBy:'Migration',
-        updatedAt:new Date().toISOString(),
-        migratedFrom:'studentProgress'
-      });
-      // Cache it locally too
+      batch.set(ref,{cid:c.id,sid:s.id,month:'baseline',level:s.level||null,note:s.progress||null,updatedBy:'Migration',updatedAt:new Date().toISOString(),migratedFrom:'studentProgress'});
       monthlyProgress[baselineKey]={cid:c.id,sid:s.id,month:'baseline',level:s.level||null,note:s.progress||null,updatedBy:'Migration',updatedAt:new Date().toISOString()};
       count++;
     });
   });
-
   if(count>0){
-    try{
-      await batch.commit();
-      await fbLog('migration',`Migrated ${count} student progress records to monthly format`);
-      console.log(`Migrated ${count} records`);
-    }catch(e){console.error('Migration failed:',e);}
+    try{await batch.commit();await fbLog('migration',`Migrated ${count} student progress records to monthly format`);}
+    catch(e){console.error('Migration failed:',e);}
   }
 }
 
-/**
- * Save a monthly progress record for one student.
- * Doc ID: cid__sid__YYYY-MM  (or 'baseline' for the seed entry)
- */
 async function fbSaveMonthlyProgress(cid, sid, month, data){
   if(!DB)return;
   try{
     const docId=`${cid}__${sid}__${month}`;
-    const payload={
-      cid, sid, month,
-      level:data.level||null,
-      note:data.note||null,
-      updatedBy:user?user.n:'?',
-      updatedAt:new Date().toISOString()
-    };
+    const payload={cid,sid,month,level:data.level||null,note:data.note||null,updatedBy:user?user.n:'?',updatedAt:new Date().toISOString()};
     await DB.collection('studentProgressMonthly').doc(docId).set(payload,{merge:true});
-    monthlyProgress[docId]=payload; // update local cache
+    monthlyProgress[docId]=payload;
   }catch(e){console.error('fbSaveMonthlyProgress:',e);throw e;}
 }
 
-/**
- * Get the progress record for a student in a given month from local cache.
- * @returns {object|null}
- */
 function getProgressForMonth(cid, sid, month){
   return monthlyProgress[`${cid}__${sid}__${month}`]||null;
 }
 
-/**
- * Find the most recent previous month entry for a student to use as pre-fill.
- * Looks backwards through the last 12 months, then falls back to 'baseline'.
- * @returns {object|null} — the most recent found record, or null
- */
 function getPreviousMonthProgress(cid, sid, currentMonth){
-  // Build list of months to check, from most recent backward
   const [y,m] = currentMonth.split('-').map(Number);
   const candidates=[];
-  // Go back up to 24 months
   for(let i=1;i<=24;i++){
     let pm=m-i; let py=y;
     while(pm<=0){pm+=12;py--;}
     candidates.push(`${py}-${String(pm).padStart(2,'0')}`);
   }
-  // Check monthly docs
   for(const month of candidates){
     const rec=monthlyProgress[`${cid}__${sid}__${month}`];
     if(rec&&rec.level)return rec;
   }
-  // Fall back to baseline
   const baseline=monthlyProgress[`${cid}__${sid}__baseline`];
   return baseline||null;
 }
@@ -1218,19 +1146,14 @@ function getPreviousMonthProgress(cid, sid, currentMonth){
 // STUDENT PROGRESS — PAGE RENDER (pgP)
 // ================================================================
 
-/** Build the month selector options (current month + 11 past months + future months for admin) */
 function buildMonthOptions(){
   const sel=$('spMonthSel'); if(!sel)return;
   const isAdmin=user&&user.r==='admin';
   const now=new Date();
   const currentYM=thisMonth();
   let options='';
-
-  // For admin: show next 2 months (in case they want to pre-enter data) + last 12
-  // For teacher: show only current month + last 11
   const futureMos = isAdmin ? 2 : 0;
   const pastMos   = 11;
-
   for(let i=-futureMos; i<=pastMos; i++){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
@@ -1264,30 +1187,17 @@ function onSpMonthChange(){
   renderSPList();
 }
 
-/** Main render function for Student Progress page (pgP) */
 function renderStudentProgress(){
-  // Set default class if needed
   if(!spSelClass||!classes.find(c=>c.id===spSelClass)) spSelClass=classes[0]?.id;
-
-  // Set default month to current
   if(!spSelMonth) spSelMonth=thisMonth();
-
-  // Build class tabs
   $('spClassTabs').innerHTML=classes.map(c=>
     `<button class="sp-class-tab ${spSelClass===c.id?'on':''}" onclick="spSelCl('${c.id}')">${c.name}</button>`
   ).join('');
-
-  // Build month options
   buildMonthOptions();
-
-  // Admin: show search bar
   const isAdmin=user&&user.r==='admin';
   const searchBar=$('spSearchBar');
   if(searchBar) searchBar.style.display=isAdmin?'flex':'none';
-
-  // Run migration for admin (once per session)
   if(isAdmin&&!migrationDone) migrateOldProgress();
-
   renderSPList();
 }
 
@@ -1299,41 +1209,27 @@ function spSelCl(cid){
   renderSPList();
 }
 
-/** Render the list of student progress cards for the selected class + month */
 function renderSPList(){
   const c=classes.find(x=>x.id===spSelClass);
   if(!c){$('spStudentList').innerHTML='';return;}
-
   const isAdmin=user&&user.r==='admin';
   const cm=thisMonth();
-  // Teachers can only edit current month; admin can edit any month
   const isReadOnlyMonth = (!isAdmin && spSelMonth!==cm);
   const isC1=(spSelClass==='c1');
-
-  // Apply search filter (admin only)
   const searchTerm=isAdmin?($('spSearch')?.value||'').toLowerCase().trim():'';
   let students=c.students;
   if(searchTerm) students=students.filter(s=>s.name.toLowerCase().includes(searchTerm));
-
   if(students.length===0){
     $('spStudentList').innerHTML=`<div class="sp-empty">No students match your search.</div>`;
     return;
   }
-
   const html=students.map((s,idx)=>{
-    // Get data for selected month
     const rec=getProgressForMonth(c.id,s.id,spSelMonth);
-
-    // If no record, pre-fill from previous month or baseline
     const prev=!rec?getPreviousMonthProgress(c.id,s.id,spSelMonth):null;
-
     const level   = rec ? (rec.level||'')   : (prev ? (prev.level||'') : '');
     const note    = rec ? (rec.note||'')    : (prev ? (prev.note||'') : '');
     const levelOpts=getLevelOptions(c.id,level);
-
     const origIdx=c.students.indexOf(s)+1;
-
-    // Status badge: filled (own month data), prefilled (from prev), empty
     let tagHtml='';
     if(rec){
       tagHtml=`<span class="sp-month-tag filled">✅ Saved for ${fmtMonth(spSelMonth)}</span>`;
@@ -1343,12 +1239,10 @@ function renderSPList(){
     } else {
       tagHtml=`<span class="sp-month-tag">— No data</span>`;
     }
-
     const disabledAttr=isReadOnlyMonth?'disabled':'';
     const saveOrNotice=isReadOnlyMonth
       ?`<div class="sp-readonly-notice">🔒 Past month — read-only for teachers. Contact admin to make changes.</div>`
       :`<button class="sp-save-btn" id="spcbtn-${s.id}" onclick="saveStudentProgress('${c.id}','${s.id}')">💾 Save</button>`;
-
     return`<div class="sp-student-card ${s.o?'orp':''} ${isReadOnlyMonth?'readonly':''}" id="spc-${s.id}">
       <div class="sp-student-header">
         <div class="sp-student-num">${origIdx}</div>
@@ -1371,7 +1265,6 @@ function renderSPList(){
       ${saveOrNotice}
     </div>`;
   }).join('');
-
   $('spStudentList').innerHTML=html;
 }
 
@@ -1380,30 +1273,20 @@ function getLevelOptions(classId, currentLevel){
   return levels.map(o=>`<option value="${escHtml(o)}" ${currentLevel===o?'selected':''}>${escHtml(o)}</option>`).join('');
 }
 
-/** Save monthly progress for one student */
 async function saveStudentProgress(cid, sid){
   const c=classes.find(x=>x.id===cid);
   const s=c.students.find(x=>x.id===sid);
-
   const level=($('sp-lvl-'+sid)?.value||'').trim();
   const note =($('sp-note-'+sid)?.value||'').trim();
-
   const btn=$('spcbtn-'+sid);
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
-
   try{
     await fbSaveMonthlyProgress(cid,sid,spSelMonth,{level,note});
-
-    // Also update student's in-memory current level for display elsewhere
     s.level=level||s.level;
-
     await fbLog('progress',`${s.name} | ${fmtMonth(spSelMonth)} | Level: ${level||'—'}`);
     toast('Progress saved ✅','ok');
-
     if(btn){btn.disabled=false;btn.textContent='✅ Saved';}
     setTimeout(()=>{if(btn)btn.textContent='💾 Save';},2000);
-
-    // Update the tag badge on this card
     const card=$('spc-'+sid);
     if(card){
       const tag=card.querySelector('.sp-month-tag');
@@ -1443,9 +1326,6 @@ async function fbSaveMain(){
 async function fbSaveAtt(date){
   if(!DB)return;
   try{
-    // Save only the currently selected class (selCl), not all att[date].
-    // merge:true ensures two teachers saving different classes on the same date
-    // never overwrite each other — Firestore merges keys instead of replacing the doc.
     const flat={};
     const classesToSave = selCl ? [selCl] : Object.keys(att[date]||{});
     classesToSave.forEach(cid=>{
@@ -1771,16 +1651,12 @@ function switchRptTab(tab){
 
 function initFilters(){
   const now=new Date();
-
-  // Monthly attendance month picker (last 6 months)
   const ms=$('rm'); ms.innerHTML='';
   for(let i=0;i<6;i++){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
     ms.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`;
   }
-
-  // Class pickers
   const cs=$('rc'); cs.innerHTML='<option value="all">All Classes</option>';
   const rdc=$('rdc'); rdc.innerHTML='<option value="all">All Classes</option>';
   const rprc=$('rprc'); rprc.innerHTML='<option value="all">All Classes</option>';
@@ -1788,20 +1664,16 @@ function initFilters(){
     const opt=`<option value="${c.id}">${c.name}</option>`;
     cs.innerHTML+=opt; rdc.innerHTML+=opt; rprc.innerHTML+=opt;
   });
-
-  // Progress report month picker (last 12 months + "All Months")
   const rprm=$('rprm'); rprm.innerHTML='<option value="all">All Months</option>';
   for(let i=0;i<12;i++){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
     rprm.innerHTML+=`<option value="${v}">${d.toLocaleDateString('en-US',{year:'numeric',month:'long'})}</option>`;
   }
-
   if(!$('rd').value)$('rd').value=today();
   $('rd').setAttribute('max',today());
 }
 
-// Cache for last generated report data (used by Excel export)
 let _lastDailyData = null;
 let _lastMonthlyData = null;
 let _lastProgressData = null;
@@ -1815,11 +1687,9 @@ function doDailyReport(){
   const dayName=new Date(dt+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const hasRecord=Object.keys(ta).length>0;
   let totalS=0,totalP=0,totalA=0,totalO=0,totalOP=0,totalOA=0;let classRows='';
-  // Flat rows for export
   const exportRows=[];
   cl.forEach(c=>{
     const cd=ta[c.id]||{};let cp=0,ca=0,cu=0;
-    // filter by search if provided
     const sts=search?c.students.filter(s=>s.name.toLowerCase().includes(search)):c.students;
     sts.forEach(s=>{const v=cd[s.id];if(v==='present'){cp++;totalP++;if(s.o)totalOP++;}else if(v==='absent'){ca++;totalA++;if(s.o)totalOA++;}else cu++;totalS++;if(s.o)totalO++;exportRows.push({Class:c.name,Name:s.name,Orphan:s.o?'Yes':'No',Status:v==='present'?'Present':v==='absent'?'Absent':'Unmarked'});});
     const ctt=cp+ca; const cpc=ctt>0?Math.round(cp/ctt*100):null;
@@ -1829,7 +1699,6 @@ function doDailyReport(){
   });
   const totalTT=totalP+totalA; const avgPc=totalTT>0?Math.round(totalP/totalTT*100):null;
   $('rdo').innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px">📅 ${dayName}${search?` <span style="font-size:11px;color:var(--txt2);font-weight:500">— filtered: "${escHtml(search)}"</span>`:''}</div>${!hasRecord?'<div class="report-note" style="background:#FEE;border-color:var(--err);color:var(--err)">⚠️ No attendance was saved for this date.</div>':''}<div class="day-rpt-grid"><div class="day-rpt-card"><div class="drn">${totalP}</div><div class="drl">✅ Present</div></div><div class="day-rpt-card"><div class="drn">${totalA}</div><div class="drl">❌ Absent</div></div><div class="day-rpt-card"><div class="drn">${avgPc!==null?avgPc+'%':'—'}</div><div class="drl">📊 Rate</div></div><div class="day-rpt-card"><div class="drn">${totalO}</div><div class="drl">💜 Orphans</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--ok)">${totalOP}</div><div class="drl">💜 Present</div></div><div class="day-rpt-card"><div class="drn" style="color:var(--err)">${totalOA}</div><div class="drl">💜 Absent</div></div></div>${classRows||'<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students match search.</div>'}`;
-  // Store for export
   _lastDailyData={date:dt,dayName,rows:exportRows};
   const bar=$('rdoExportBar');if(bar)bar.style.display=exportRows.length>0?'block':'none';
 }
@@ -1837,7 +1706,6 @@ function doDailyReport(){
 function doReport(){
   const m=$('rm').value,cf=$('rc').value,tp=$('rtp').value;
   const[y,mn]=m.split('-').map(Number),dm=dim(y,mn);
-  // Hide search bar for teachers report (teachers list doesn't benefit from name search)
   const sb=$('rmSearchBar');if(sb)sb.style.display=tp==='teachers'?'none':'flex';
   if(tp==='teachers')rptT(y,mn,dm);else rptS(y,mn,dm,cf,tp);
 }
@@ -1870,7 +1738,6 @@ function rptS(y,mn,dm,cf,tp){
   const label=tp==='orphans'?'💜 Orphans Only':tp==='nonorphans'?'👤 Non-Orphans Only':'All Students';
   const monthLabel=new Date(y,mn-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
   $('ro').innerHTML=rows.length===0?`<div class="card" style="text-align:center;padding:24px;color:var(--txt2)">No students found${search?' matching "'+escHtml(search)+'"':' for this filter'}.</div>`:`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">👥</div><div class="sn" style="font-size:18px">${total}</div><div class="sl">Students</div></div><div class="sc gn" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📊</div><div class="sn" style="font-size:18px">${recorded}</div><div class="sl">With Records</div></div><div class="sc ${avgPc>=80?'gn':avgPc>=60?'':' rd'}" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:16px">📈</div><div class="sn" style="font-size:18px">${avgPc}%</div><div class="sl">Avg Rate</div></div></div><div style="margin-bottom:10px;font-size:13px;font-weight:700;color:var(--pri)">${label} — ${total} students${search?` <span style="font-size:11px;color:var(--txt2);font-weight:500">— filtered: "${escHtml(search)}"</span>`:''}</div><div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th style="text-align:left">Name</th><th>Class</th><th>✅P</th><th>❌A</th><th>Days</th><th>Rate%</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${r.o?'or':''}"><td style="color:var(--txt2)">${i+1}</td><td style="text-align:left;font-weight:600">${r.o?'💜 ':''}${r.n}</td><td style="font-size:10px">${r.cn}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td style="color:var(--txt2)">${r.tt}</td><td>${r.pc!==null?`<b style="color:${r.pc>=80?'var(--ok)':r.pc>=60?'var(--warn)':'var(--err)'}">${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div>`:'<span style="color:var(--txt2);font-size:10px">No data</span>'}</td></tr>`).join('')}</tbody></table></div>`;
-  // Store for export
   _lastMonthlyData={month:`${y}-${String(mn).padStart(2,'0')}`,monthLabel,label,type:'students',rows:rows.map(r=>({'Name':r.n,'Class':r.cn,'Orphan':r.o?'Yes':'No','Days Present':r.p,'Days Absent':r.a,'Total Recorded Days':r.tt,'Attendance %':r.pc!==null?r.pc+'%':'No data'}))};
   const bar=$('roExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
 }
@@ -1891,66 +1758,36 @@ function rptT(y,mn,dm){
   });
   $('ro').innerHTML=`<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Teacher</th><th>P</th><th>A</th><th>%</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="text-align:left;font-weight:600">${r.n}</td><td style="color:var(--ok);font-weight:700">${r.p}</td><td style="color:var(--err);font-weight:700">${r.a}</td><td><b>${r.pc}%</b><div class="pb"><div class="pf ${r.pc>=80?'ph':r.pc>=60?'pm':'pl'}" style="width:${r.pc}%"></div></div></td></tr>`).join('')}</tbody></table></div>`;
   const monthLabel=new Date(y,mn-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
-  // Store for export
   _lastMonthlyData={month:`${y}-${String(mn).padStart(2,'0')}`,monthLabel,label:'Teachers',type:'teachers',rows:rows.map(r=>({'Teacher':r.n,'Days Present':r.p,'Days Absent':r.a,'Attendance %':r.pc+'%'}))};
   const bar=$('roExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
 }
 
-/**
- * Progress Report — shows monthly progress data.
- * Supports: student name search, class filter, month filter.
- * When a specific month is selected, shows only that month's data.
- * When "All Months" is selected, shows the most recent entry per student.
- */
 function doProgressReport(){
   const cf=$('rprc')?.value||'all';
   const mf=$('rprm')?.value||'all';
   const search=($('rptProgressSearch')?.value||'').toLowerCase().trim();
-
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
   let rows=[];
-
   cl.forEach(c=>{
     c.students.forEach(s=>{
-      // Apply name search filter
       if(search&&!s.name.toLowerCase().includes(search))return;
-
       if(mf==='all'){
-        // Show the most recent monthly entry for this student
         const rec=getMostRecentProgress(c.id,s.id);
-        rows.push({
-          name:s.name, cls:c.name, o:s.o,
-          month:rec?(rec.month==='baseline'?'Baseline':fmtMonth(rec.month)):'—',
-          level:rec?.level||'—',
-          note:rec?.note||'—',
-          updatedBy:rec?.updatedBy||'—',
-          hasData:!!rec
-        });
+        rows.push({name:s.name,cls:c.name,o:s.o,month:rec?(rec.month==='baseline'?'Baseline':fmtMonth(rec.month)):'—',level:rec?.level||'—',note:rec?.note||'—',updatedBy:rec?.updatedBy||'—',hasData:!!rec});
       } else {
-        // Show the specific month's entry
         const rec=getProgressForMonth(c.id,s.id,mf);
-        rows.push({
-          name:s.name, cls:c.name, o:s.o,
-          month:rec?fmtMonth(mf):fmtMonth(mf)+' (no entry)',
-          level:rec?.level||'—',
-          note:rec?.note||'—',
-          updatedBy:rec?.updatedBy||'—',
-          hasData:!!rec
-        });
+        rows.push({name:s.name,cls:c.name,o:s.o,month:rec?fmtMonth(mf):fmtMonth(mf)+' (no entry)',level:rec?.level||'—',note:rec?.note||'—',updatedBy:rec?.updatedBy||'—',hasData:!!rec});
       }
     });
   });
-
   const container=$('rpro');
   if(!rows.length){
     container.innerHTML='<div class="card" style="text-align:center;padding:20px;color:var(--txt2)">No students found.</div>';
     const bar=$('rproExportBar');if(bar)bar.style.display='none';
     return;
   }
-
   const withData=rows.filter(r=>r.hasData).length;
   const monthLabel=mf==='all'?'All Months (most recent entry per student)':fmtMonth(mf);
-
   container.innerHTML=`
     <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
       <div class="sc bl" style="flex:1;min-width:80px;padding:10px"><div class="si" style="font-size:14px">👥</div><div class="sn" style="font-size:18px">${rows.length}</div><div class="sl">Students</div></div>
@@ -1974,13 +1811,12 @@ function doProgressReport(){
         </tbody>
       </table>
     </div>`;
-  // Store for export
   _lastProgressData={monthLabel,rows:rows.map(r=>({'Name':r.name,'Class':r.cls,'Orphan':r.o?'Yes':'No','Month':r.month,'Level / Surah':r.level,'Progress Note':r.note,'Updated By':r.updatedBy}))};
   const bar=$('rproExportBar');if(bar)bar.style.display=rows.length>0?'block':'none';
 }
 
 // ================================================================
-// EXCEL EXPORT (SheetJS — loaded on demand)
+// EXCEL EXPORT
 // ================================================================
 
 let _xlsxLoaded = false;
@@ -1992,19 +1828,14 @@ async function _loadXlsx(){
   }catch(e){toast('Failed to load Excel library','er');return false;}
 }
 
-/** Helper: build workbook with a summary sheet + data sheet, then trigger download */
 function _downloadXlsx(filename, sheetName, dataRows, summaryRows){
   const wb=XLSX.utils.book_new();
-  // Summary sheet
   if(summaryRows&&summaryRows.length){
     const ws1=XLSX.utils.aoa_to_sheet(summaryRows);
-    // Style header row width
     ws1['!cols']=[{wch:28},{wch:20}];
     XLSX.utils.book_append_sheet(wb,ws1,'Summary');
   }
-  // Data sheet
   const ws2=XLSX.utils.json_to_sheet(dataRows);
-  // Auto-width columns
   if(dataRows.length){
     const keys=Object.keys(dataRows[0]);
     ws2['!cols']=keys.map(k=>({wch:Math.max(k.length,16)+2}));
@@ -2022,16 +1853,7 @@ async function exportDailyReportXlsx(){
   const unmarked=d.rows.filter(r=>r.Status==='Unmarked').length;
   const total=d.rows.length;
   const rate=total>0?Math.round(present/(present+absent||1)*100):0;
-  const summary=[
-    ['Quran School — Daily Attendance Report'],
-    ['Date',d.dayName],
-    ['Total Students',total],
-    ['Present',present],
-    ['Absent',absent],
-    ['Unmarked',unmarked],
-    ['Attendance Rate',rate+'%'],
-    ['Generated',new Date().toLocaleString()],
-  ];
+  const summary=[['Quran School — Daily Attendance Report'],['Date',d.dayName],['Total Students',total],['Present',present],['Absent',absent],['Unmarked',unmarked],['Attendance Rate',rate+'%'],['Generated',new Date().toLocaleString()]];
   _downloadXlsx(`Daily_Attendance_${d.date}.xlsx`,'Attendance',d.rows,summary);
   toast('Excel downloaded ✅','ok');
   await fbLog('export',`Daily attendance export — ${d.date}`);
@@ -2041,13 +1863,7 @@ async function exportMonthlyReportXlsx(){
   if(!_lastMonthlyData||!_lastMonthlyData.rows.length){toast('Generate a report first','er');return;}
   if(!(await _loadXlsx()))return;
   const d=_lastMonthlyData;
-  const summary=[
-    ['Quran School — Monthly Attendance Report'],
-    ['Month',d.monthLabel],
-    ['Report Type',d.label],
-    ['Total Rows',d.rows.length],
-    ['Generated',new Date().toLocaleString()],
-  ];
+  const summary=[['Quran School — Monthly Attendance Report'],['Month',d.monthLabel],['Report Type',d.label],['Total Rows',d.rows.length],['Generated',new Date().toLocaleString()]];
   const sheetName=d.type==='teachers'?'Teachers':'Students';
   _downloadXlsx(`Monthly_Attendance_${d.month}_${d.type}.xlsx`,sheetName,d.rows,summary);
   toast('Excel downloaded ✅','ok');
@@ -2059,23 +1875,12 @@ async function exportProgressReportXlsx(){
   if(!(await _loadXlsx()))return;
   const d=_lastProgressData;
   const withData=d.rows.filter(r=>r['Level / Surah']&&r['Level / Surah']!=='—').length;
-  const summary=[
-    ['Quran School — Student Progress Report'],
-    ['Period',d.monthLabel],
-    ['Total Students',d.rows.length],
-    ['With Progress Data',withData],
-    ['Pending',d.rows.length-withData],
-    ['Generated',new Date().toLocaleString()],
-  ];
+  const summary=[['Quran School — Student Progress Report'],['Period',d.monthLabel],['Total Students',d.rows.length],['With Progress Data',withData],['Pending',d.rows.length-withData],['Generated',new Date().toLocaleString()]];
   _downloadXlsx(`Progress_Report_${today()}.xlsx`,'Progress',d.rows,summary);
   toast('Excel downloaded ✅','ok');
   await fbLog('export','Progress report export');
 }
 
-/**
- * Get the most recent monthly progress record for a student.
- * Checks all monthly keys in the cache.
- */
 function getMostRecentProgress(cid, sid){
   const prefix=`${cid}__${sid}__`;
   let best=null;
@@ -2485,7 +2290,18 @@ function renderAdmin(){
     if(filteredStudents.length>0||adminSearchTerm===''){
       const oc=c.students.filter(s=>s.o).length;
       h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?` <span style="color:var(--orp)">💜${oc}</span>`:''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
-      h+=filteredStudents.map(s=>{const oi=c.students.indexOf(s)+1;return`<div class="ali ${s.o?'io':''}"><span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span><span class="nm">${s.o?'💜 ':''}${s.name}</span><button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')">💜</button><button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')">✏️</button><button class="abtn ed" onclick="mTransferS('${c.id}','${s.id}')" title="Transfer to another class">🔄</button><button class="abtn dl" onclick="dS('${c.id}','${s.id}')">🗑️</button></div>`;}).join('');
+      // ── Student rows — includes new 🔄 Transfer button ──
+      h+=filteredStudents.map(s=>{
+        const oi=c.students.indexOf(s)+1;
+        return`<div class="ali ${s.o?'io':''}">
+          <span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span>
+          <span class="nm">${s.o?'💜 ':''}${s.name}</span>
+          <button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')" title="Toggle orphan">💜</button>
+          <button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')" title="Edit">✏️</button>
+          <button class="abtn ed" onclick="mTransferS('${c.id}','${s.id}')" title="Transfer to another class">🔄</button>
+          <button class="abtn dl" onclick="dS('${c.id}','${s.id}')" title="Delete">🗑️</button>
+        </div>`;
+      }).join('');
       h+=`</div></div>`;
     }
   });
@@ -2537,7 +2353,12 @@ async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim(
 function dT(ti){showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');});}
 function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);}
 async function svPW(un){const p=$('_p').value.trim();if(!p)return;const u=users.find(x=>x.u===un);u.ph=hashPW(p);delete u.p;await fbSaveMain();hideM();toast('Password changed ✅');}
-  // Transfer student to another class
+
+// ================================================================
+// STUDENT TRANSFER — NEW FEATURE
+// ================================================================
+
+/** Open transfer modal for a student */
 function mTransferS(fromCid, sid){
   const fromC=classes.find(c=>c.id===fromCid);
   const s=fromC.students.find(x=>x.id===sid);
@@ -2546,11 +2367,12 @@ function mTransferS(fromCid, sid){
   const opts=otherClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   showM(`<div class="mt">🔄 Transfer Student</div>
     <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:14px;font-weight:700;color:var(--pri-d)">${s.o?'💜 ':''}${s.name}</div>
-      <div style="font-size:12px;color:var(--txt2);margin-top:4px">Currently in <strong>${fromC.name}</strong></div>
+      <div style="font-size:14px;font-weight:700;color:var(--pri-d)">${s.o?'💜 ':''}${escHtml(s.name)}</div>
+      <div style="font-size:12px;color:var(--txt2);margin-top:4px">Currently in <strong>${escHtml(fromC.name)}</strong></div>
     </div>
-    <div class="ig"><label>Transfer to</label>
-      <select id="_toCid" style="width:100%;padding:12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;font-weight:600;background:#fff">${opts}</select>
+    <div class="ig">
+      <label>Transfer to</label>
+      <select id="_toCid" style="padding:12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:14px;font-weight:600;background:#fff;color:var(--pri-d)">${opts}</select>
     </div>
     <div class="mb">
       <button class="btn btn-p" onclick="transferStudent('${fromCid}','${sid}')">🔄 Transfer</button>
@@ -2558,6 +2380,7 @@ function mTransferS(fromCid, sid){
     </div>`);
 }
 
+/** Execute the transfer — move student + ALL their data to the new class */
 async function transferStudent(fromCid, sid){
   const toCid=$('_toCid')?.value;
   if(!toCid||toCid===fromCid){toast('Pick a different class','er');return;}
@@ -2565,18 +2388,103 @@ async function transferStudent(fromCid, sid){
   const toC=classes.find(c=>c.id===toCid);
   const sIdx=fromC.students.findIndex(x=>x.id===sid);
   if(sIdx===-1){toast('Student not found','er');return;}
+
+  hideM();
+  toast('🔄 Transferring student data...','ok');
+
+  // ── 1. Move student object in memory ──
   const [s]=fromC.students.splice(sIdx,1);
   toC.students.push(s);
-  hideM();
+
   try{
+    // ── 2. Save updated class roster ──
     await fbSaveMain();
-    await fbLog('transfer',`${s.name} transferred from ${fromC.name} to ${toC.name}`);
-    toast(`✅ ${s.name} moved to ${toC.name}`,'ok');
+
+    // ── 3. Migrate attendance records ──
+    // Each date doc has flat keys like "c1__s5": "present"
+    // We need to rename "fromCid__sid" → "toCid__sid" in every date doc
+    const oldAttKey = `${fromCid}__${sid}`;
+    const newAttKey = `${toCid}__${sid}`;
+
+    const attSnap = await DB.collection('attendance').get();
+    const attBatch = DB.batch();
+    let attChanged = 0;
+
+    attSnap.forEach(doc=>{
+      const data = doc.data();
+      if(oldAttKey in data){
+        const update = {};
+        update[newAttKey] = data[oldAttKey];        // write under new class
+        update[oldAttKey] = firebase.firestore.FieldValue.delete(); // remove old
+        attBatch.update(doc.ref, update);
+        // Also update local att cache
+        if(att[doc.id]){
+          if(!att[doc.id][toCid]) att[doc.id][toCid]={};
+          att[doc.id][toCid][sid] = data[oldAttKey];
+          if(att[doc.id][fromCid]) delete att[doc.id][fromCid][sid];
+        }
+        attChanged++;
+      }
+    });
+    if(attChanged>0) await attBatch.commit();
+
+    // ── 4. Migrate studentData doc (cid__sid) ──
+    const sdOldRef = DB.collection('studentData').doc(`${fromCid}__${sid}`);
+    const sdNewRef = DB.collection('studentData').doc(`${toCid}__${sid}`);
+    const sdSnap = await sdOldRef.get();
+    if(sdSnap.exists){
+      const sdData = {...sdSnap.data(), cid: toCid};
+      await sdNewRef.set(sdData);
+      await sdOldRef.delete();
+    }
+
+    // ── 5. Migrate studentProgress doc (cid__sid) ──
+    const spOldRef = DB.collection('studentProgress').doc(`${fromCid}__${sid}`);
+    const spNewRef = DB.collection('studentProgress').doc(`${toCid}__${sid}`);
+    const spSnap = await spOldRef.get();
+    if(spSnap.exists){
+      await spNewRef.set({...spSnap.data(), cid: toCid});
+      await spOldRef.delete();
+    }
+
+    // ── 6. Migrate studentProgressMonthly docs (cid__sid__*) ──
+    const oldPrefix = `${fromCid}__${sid}__`;
+    const mpSnap = await DB.collection('studentProgressMonthly')
+      .where('cid','==',fromCid)
+      .get();
+
+    if(!mpSnap.empty){
+      const mpBatch = DB.batch();
+      mpSnap.forEach(doc=>{
+        const d = doc.data();
+        if(d.sid !== sid) return;
+        const oldKey = doc.id;                              // e.g. c1__s5__2025-04
+        const newKey = oldKey.replace(oldPrefix, `${toCid}__${sid}__`);
+        const newRef = DB.collection('studentProgressMonthly').doc(newKey);
+        mpBatch.set(newRef, {...d, cid: toCid});
+        mpBatch.delete(doc.ref);
+        // Update local cache
+        monthlyProgress[newKey] = {...d, cid: toCid};
+        delete monthlyProgress[oldKey];
+      });
+      await mpBatch.commit();
+    }
+
+    await fbLog('transfer',
+      `${s.name} transferred from ${fromC.name} to ${toC.name} (${attChanged} attendance records migrated)`
+    );
+
+    toast(`✅ ${s.name} moved to ${toC.name} — all data transferred`,'ok');
     renderAdmin();
+    updateOrphanCount();
+    refreshDash();
+
   }catch(e){
-    // Rollback on failure
-    toC.students.pop();fromC.students.splice(sIdx,0,s);
-    toast('Transfer failed ❌','er');
+    console.error('Transfer error:',e);
+    // Rollback in-memory move
+    toC.students.pop();
+    fromC.students.splice(sIdx,0,s);
+    toast('Transfer failed ❌ — no changes saved','er');
   }
 }
 
