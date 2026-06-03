@@ -1937,8 +1937,11 @@ function renderSDList(){
     const cardClass=`sd-card ${s.o?'orp':''} ${!complete?'incomplete-profile':''}`;
     const avatar=s.gender==='Female'?'👧':'👦';
     const lwVal=s.liveWith||''; const slVal=s.schoolLevel||'';
+    const latestPrg = getMostRecentProgress(c.id, s.id);
+    const displayLevel = latestPrg?.level || null;
     return`<div class="${cardClass}" id="sd-${s.id}">
-      <div class="sd-card-header"><div class="sd-avatar">${avatar}</div><div class="sd-info"><div class="sd-name">${s.name}<div class="sd-badges">${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}</div></div><div class="sd-meta"><span>#${origIdx}</span>${s.age?`<span>🎂 ${s.age} yrs</span>`:''}${s.level?`<span>📚 ${s.level}</span>`:''}</div></div></div>
+      <div class="sd-card-header"><div class="sd-avatar">${avatar}</div><div class="sd-info"><div class="sd-name">${s.name}<div class="sd-badges">${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}</div></div><div class="sd-meta"><span>#${origIdx}</span>${s.age?`<span>🎂 ${s.age} yrs</span>`:''}${displayLevel?`<span>📚 ${displayLevel}</span>`:''}</div></div></div>
+
       <div class="sd-fields">
         <div class="sd-field"><label>Gender *</label><select id="sd-gender-${s.id}" onchange="markSDDirty('${s.id}')"><option value="">— Select —</option>${GENDER_OPTIONS.map(g=>`<option value="${g}" ${s.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
         <div class="sd-field"><label>Orphan Status</label><select id="sd-orphan-${s.id}" ${!isAdmin?'disabled':''} onchange="markSDDirty('${s.id}')"><option value="0" ${!s.o?'selected':''}>No</option><option value="1" ${s.o?'selected':''}>Yes 💜</option></select></div>
