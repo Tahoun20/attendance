@@ -1083,9 +1083,10 @@ async function loadStudentProgress(){
       const d=doc.data();
       const c=classes.find(x=>x.id===d.cid); if(!c)return;
       const s=c.students.find(x=>x.id===d.sid); if(!s)return;
-      if(d.age!=null)   s.age=d.age;
-      if(d.level!=null) s.level=d.level;
-      if(d.progress!=null) s.progress=d.progress;
+      if(d.age!=null) s.age=d.age;
+      // NOTE: level/progress intentionally NOT copied to student object.
+      // Monthly progress (studentProgressMonthly) is the single source of truth,
+      // so a transferred student never shows a stale cross-class level.
     });
   }catch(e){console.error('loadStudentProgress:',e);}
 }
@@ -1127,6 +1128,7 @@ function getProgressForMonth(cid, sid, month){
 }
 
 function getPreviousMonthProgress(cid, sid, currentMonth){
+  const validLevels=getLevelsForClass(cid);
   const [y,m] = currentMonth.split('-').map(Number);
   const candidates=[];
   for(let i=1;i<=24;i++){
@@ -1136,10 +1138,11 @@ function getPreviousMonthProgress(cid, sid, currentMonth){
   }
   for(const month of candidates){
     const rec=monthlyProgress[`${cid}__${sid}__${month}`];
-    if(rec&&rec.level)return rec;
+    if(rec&&rec.level&&validLevels.includes(rec.level)) return rec;
   }
   const baseline=monthlyProgress[`${cid}__${sid}__baseline`];
-  return baseline||null;
+  if(baseline&&baseline.level&&validLevels.includes(baseline.level)) return baseline;
+  return null;
 }
 
 // ================================================================
@@ -1883,12 +1886,16 @@ async function exportProgressReportXlsx(){
 
 function getMostRecentProgress(cid, sid){
   const prefix=`${cid}__${sid}__`;
+  const validLevels=getLevelsForClass(cid);
   let best=null;
   Object.keys(monthlyProgress).forEach(key=>{
     if(!key.startsWith(prefix))return;
     const rec=monthlyProgress[key];
-    if(rec.month==='baseline'){if(!best)best=rec;return;}
-    if(!best||best.month==='baseline'||rec.month>best.month) best=rec;
+    // Ignore a level that doesn't belong to the student's CURRENT class
+    const cleaned={...rec};
+    if(cleaned.level && !validLevels.includes(cleaned.level)) cleaned.level=null;
+    if(cleaned.month==='baseline'){if(!best)best=cleaned;return;}
+    if(!best||best.month==='baseline'||cleaned.month>best.month) best=cleaned;
   });
   return best;
 }
@@ -2398,6 +2405,7 @@ async function transferStudent(fromCid, sid){
   // ── 1. Move student object in memory ──
   const [s]=fromC.students.splice(sIdx,1);
   toC.students.push(s);
+  delete s.level; delete s.progress;   // clear stale Class 1 level/progress on transfer
 
   try{
     // ── 2. Save updated class roster ──
@@ -2464,10 +2472,17 @@ async function transferStudent(fromCid, sid){
         const oldKey = doc.id;                              // e.g. c1__s5__2025-04
         const newKey = oldKey.replace(oldPrefix, `${toCid}__${sid}__`);
         const newRef = DB.collection('studentProgressMonthly').doc(newKey);
-        mpBatch.set(newRef, {...d, cid: toCid});
+        const destLevels = getLevelsForClass(toCid);
+        const migrated = {...d, cid: toCid};
+        if(migrated.level && !destLevels.includes(migrated.level)){
+          migrated.note = (migrated.note ? migrated.note+' ' : '') +
+            `[level "${migrated.level}" cleared on transfer from ${fromC.name}]`;
+          migrated.level = null;
+        }
+        mpBatch.set(newRef, migrated);
         mpBatch.delete(doc.ref);
         // Update local cache
-        monthlyProgress[newKey] = {...d, cid: toCid};
+        monthlyProgress[newKey] = migrated;
         delete monthlyProgress[oldKey];
       });
       await mpBatch.commit();
