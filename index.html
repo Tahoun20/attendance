@@ -1950,6 +1950,7 @@ function renderSDList(){
       <div class="sd-card-header"><div class="sd-avatar">${avatar}</div><div class="sd-info"><div class="sd-name">${s.name}<div class="sd-badges">${s.o?'<span class="sd-badge orphan">💜 Orphan</span>':''}${complete?'<span class="sd-badge complete">✓ Complete</span>':'<span class="sd-badge incomplete">⚠ Incomplete</span>'}</div></div><div class="sd-meta"><span>#${origIdx}</span>${s.age?`<span>🎂 ${s.age} yrs</span>`:''}${displayLevel?`<span>📚 ${displayLevel}</span>`:''}</div></div></div>
 
       <div class="sd-fields">
+        <div class="sd-field"><label>Age 🎂</label><input type="number" id="sd-age-${s.id}" value="${s.age||''}" placeholder="e.g. 10" min="3" max="25" oninput="markSDDirty('${s.id}')"></div>
         <div class="sd-field"><label>Gender *</label><select id="sd-gender-${s.id}" onchange="markSDDirty('${s.id}')"><option value="">— Select —</option>${GENDER_OPTIONS.map(g=>`<option value="${g}" ${s.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
         <div class="sd-field"><label>Orphan Status</label><select id="sd-orphan-${s.id}" ${!isAdmin?'disabled':''} onchange="markSDDirty('${s.id}')"><option value="0" ${!s.o?'selected':''}>No</option><option value="1" ${s.o?'selected':''}>Yes 💜</option></select></div>
         <div class="sd-field full"><label>Address *</label><input type="text" id="sd-address-${s.id}" value="${escHtml(s.address||'')}" placeholder="Enter address..." oninput="markSDDirty('${s.id}')"></div>
@@ -1979,11 +1980,20 @@ async function saveStudentDataCard(cid,sid){
   const economicStatus=$('sd-economic-'+sid)?.value||null;
   const notes=($('sd-notes-'+sid)?.value||'').trim()||null;
   const orphanVal=$('sd-orphan-'+sid)?.value;
+  const ageRaw=($('sd-age-'+sid)?.value||'').trim();
+  const age=ageRaw?parseInt(ageRaw)||null:null;
   s.gender=gender;s.address=address;s.liveWith=liveWith;s.liveWithOther=liveWithOther;s.schoolLevel=schoolLevel;s.schoolLevelOther=schoolLevelOther;s.economicStatus=economicStatus;s.notes=notes;
+  if(age!=null)s.age=age; else if(ageRaw==='')delete s.age;
   if(isAdmin&&orphanVal!==undefined)s.o=parseInt(orphanVal)||0;
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
   try{
-    await Promise.all([fbSaveStudentData(cid,sid,{gender,address,liveWith,liveWithOther,schoolLevel,schoolLevelOther,economicStatus,notes}),fbSaveMain()]);
+    await Promise.all([
+      fbSaveStudentData(cid,sid,{gender,address,liveWith,liveWithOther,schoolLevel,schoolLevelOther,economicStatus,notes}),
+      age!=null
+        ? DB.collection('studentProgress').doc(cid+'__'+sid).set({cid,sid,age,updatedAt:new Date().toISOString()},{merge:true})
+        : Promise.resolve(),
+      fbSaveMain()
+    ]);
     await fbLog('student_data','Updated data for '+s.name);
     toast('Student data saved ✅');
     if(btn){btn.disabled=false;btn.textContent='✅ Saved';btn.style.background='var(--ok)';}
