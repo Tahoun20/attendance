@@ -451,7 +451,38 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cur-empty .ce-ic{font-size:56px;margin-bottom:12px;opacity:.6}
 .cur-empty h3{font-size:16px;font-weight:700;color:var(--pri-d);margin-bottom:6px}
 .cur-empty p{font-size:12px;color:var(--txt2);max-width:240px;line-height:1.6}
-
+/* ===== ENHANCED LECTURE CONTENT BLOCKS ===== */
+/* Quran ayah block */
+.flc-ayah-block{display:flex;gap:0;border-radius:12px;overflow:hidden;margin:12px 0;box-shadow:0 2px 12px rgba(158,112,0,.12)}
+.flc-ayah-ref{background:linear-gradient(135deg,#9E7000,#C8920A);color:#fff;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:86px;gap:4px;flex-shrink:0}
+.flc-ayah-ref-label{font-size:9px;font-weight:800;opacity:.85;letter-spacing:.5px;text-transform:uppercase;font-family:'Inter',sans-serif}
+.flc-ayah-ref-src{font-size:11px;font-weight:700;text-align:center;line-height:1.5;font-family:'Noto Naskh Arabic','Inter',sans-serif;white-space:pre-line}
+.flc-ayah-text{background:linear-gradient(135deg,#FFFDF0,#FFF8DC);padding:14px 18px;flex:1;direction:rtl;text-align:right;font-family:'Noto Naskh Arabic',Georgia,serif;font-size:17px;font-weight:600;color:#3D2B00;line-height:2.1;border-left:3px solid #C8920A}
+.flc-ayah-translation{background:#FFF9E6;padding:8px 18px 10px;border-top:1px solid #F0E0A0;font-family:'Inter',sans-serif;font-size:12px;color:#5A4500;font-style:italic;line-height:1.7;direction:ltr;text-align:left}
+/* Hadith block */
+.flc-hadith-block{display:flex;gap:0;border-radius:12px;overflow:hidden;margin:12px 0;box-shadow:0 2px 12px rgba(26,107,58,.1)}
+.flc-hadith-ref{background:linear-gradient(135deg,#1A5C38,#2E7D52);color:#fff;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:86px;gap:4px;flex-shrink:0}
+.flc-hadith-ref-label{font-size:9px;font-weight:800;opacity:.85;letter-spacing:.5px;text-transform:uppercase;font-family:'Inter',sans-serif}
+.flc-hadith-ref-src{font-size:11px;font-weight:700;text-align:center;line-height:1.5;font-family:'Noto Naskh Arabic','Inter',sans-serif;white-space:pre-line}
+.flc-hadith-text{background:linear-gradient(135deg,#F2FBF5,#E8F5E9);padding:14px 18px;flex:1;direction:rtl;text-align:right;font-family:'Noto Naskh Arabic',Georgia,serif;font-size:16px;font-weight:600;color:#0D3B20;line-height:2.1;border-left:3px solid #2E7D52}
+.flc-hadith-translation{background:#EDF7F1;padding:8px 18px 10px;border-top:1px solid #B2DFCA;font-family:'Inter',sans-serif;font-size:12px;color:#1A5C38;font-style:italic;line-height:1.7;direction:ltr;text-align:left}
+/* Context note block */
+.flc-context-block{background:linear-gradient(135deg,#F0F4F8,#E8EDF2);border-radius:10px;padding:10px 14px;margin:8px 0;border-right:3px solid #62B6CB;direction:rtl;text-align:right}
+.flc-context-label{font-size:9px;font-weight:800;color:#2D6A8F;margin-bottom:4px;font-family:'Inter',sans-serif;letter-spacing:.5px}
+.flc-context-text{font-size:13px;font-style:italic;color:#1B4965;line-height:1.8;font-family:'Noto Naskh Arabic','Inter',sans-serif}
+/* Bilingual block */
+.flc-bilingual-block{display:flex;gap:0;border-radius:10px;overflow:hidden;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.flc-bilingual-ar{background:linear-gradient(135deg,#F0F7F2,#E8F5E9);flex:1;padding:12px 14px;direction:rtl;text-align:right;font-family:'Noto Naskh Arabic',serif;font-size:15px;line-height:2;color:#1A1A1A;border-right:3px solid #2E7D52}
+.flc-bilingual-en{background:linear-gradient(135deg,#EAF2FB,#E3F2FD);flex:1;padding:12px 14px;direction:ltr;text-align:left;font-family:'Inter',sans-serif;font-size:13px;line-height:1.8;color:#1A1A1A;border-left:3px solid #2D6A8F}
+/* Divider */
+.flc-divider{height:2px;background:linear-gradient(90deg,transparent,#C8920A,transparent);margin:16px 0;border:none}
+@media(max-width:400px){
+  .flc-ayah-ref,.flc-hadith-ref{min-width:68px;padding:8px 10px}
+  .flc-ayah-text,.flc-hadith-text{font-size:15px;padding:12px 14px}
+  .flc-bilingual-block{flex-direction:column}
+  .flc-bilingual-ar{border-right:none;border-bottom:3px solid #2E7D52}
+  .flc-bilingual-en{border-left:none}
+}
 @media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}.fri-form-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -743,6 +774,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
                 <button type="button" class="fri-tb-btn" onclick="friInsert('## ','')">H2 فرعي</button>
                 <button type="button" class="fri-tb-btn" onclick="friInsert('**','**')"><b>بولد</b></button>
                 <button type="button" class="fri-tb-btn" onclick="friInsert('• ','')">• نقطة</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsertAyah()" style="background:#FFF9E6;border-color:#C8920A;color:#9E7000">🕋 آية</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsertHadith()" style="background:#F2FBF5;border-color:#2E7D52;color:#1A5C38">📜 حديث</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('@context ','')">📌 سياق</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('@bilingual ','|English translation')">🔀 ثنائي</button>
+                <button type="button" class="fri-tb-btn" onclick="friInsert('@divider','')">── فاصل</button>
               </div>
               <textarea id="friContent" placeholder="اكتب محتوى الخطبة هنا..." oninput="updateFriPreview()"></textarea>
               <div class="fri-form-hint" style="direction:rtl;text-align:right">💡 <b>#</b> عنوان رئيسي | <b>##</b> عنوان فرعي | <b>**نص**</b> بولد | <b>•</b> نقطة</div>
@@ -2049,17 +2085,129 @@ async function fbDeleteFriLecture(id){
 
 function parseLectureContent(text){
   if(!text)return'';
-  const lines=text.split('\n');let html='';let inBulletList=false;
+  const lines=text.split('\n');
+  let html='';
+  let inBulletList=false;
+  let pendingBlock=null; // {type:'ayah'|'hadith', lines:[]}
+
+  function flushBullet(){if(inBulletList){html+='</ul>';inBulletList=false;}}
+
+  function flushPending(){
+    if(!pendingBlock)return;
+    const {type,lines}=pendingBlock; pendingBlock=null;
+    if(!lines.length)return;
+    const arabicText=lines[0]||'';
+    let source='', translation='';
+    const srcLine=lines.find(l=>l.startsWith('|'));
+    if(srcLine)source=srcLine.slice(1).trim();
+    const trLine=lines.find(l=>l.startsWith('>')||/^@tr\s/i.test(l));
+    if(trLine)translation=trLine.replace(/^>\s*/,'').replace(/^@tr\s*/i,'').trim();
+    if(type==='ayah'){
+      html+=`<div class="flc-ayah-block">
+        <div class="flc-ayah-ref">
+          <div class="flc-ayah-ref-label">آية</div>
+          ${source?`<div class="flc-ayah-ref-src">${escHtml(source.replace(/—/g,'\n'))}</div>`:''}
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column">
+          <div class="flc-ayah-text">${escHtml(arabicText)}</div>
+          ${translation?`<div class="flc-ayah-translation">${escHtml(translation)}</div>`:''}
+        </div>
+      </div>`;
+    } else {
+      html+=`<div class="flc-hadith-block">
+        <div class="flc-hadith-ref">
+          <div class="flc-hadith-ref-label">حديث</div>
+          ${source?`<div class="flc-hadith-ref-src">${escHtml(source.replace(/،/g,'\n').replace(/,/g,'\n'))}</div>`:''}
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column">
+          <div class="flc-hadith-text">${escHtml(arabicText)}</div>
+          ${translation?`<div class="flc-hadith-translation">${escHtml(translation)}</div>`:''}
+        </div>
+      </div>`;
+    }
+  }
+
   lines.forEach(line=>{
     const trimmed=line.trim();
-    if(!trimmed){if(inBulletList){html+='</ul>';inBulletList=false;}html+='<div style="height:8px"></div>';return;}
-    if(trimmed.startsWith('## ')){if(inBulletList){html+='</ul>';inBulletList=false;}html+=`<div class="flc-sub-heading">${applyInline(trimmed.replace(/^##\s*/,''))}</div>`;return;}
-    if(trimmed.startsWith('# ')||trimmed.startsWith('#')){if(inBulletList){html+='</ul>';inBulletList=false;}html+=`<div class="flc-section-heading">📖 ${applyInline(trimmed.replace(/^#+\s*/,''))}</div>`;return;}
-    if(/^[•\-]\s/.test(trimmed)||/^\*\s/.test(trimmed)){if(!inBulletList){html+='<ul class="flc-bullet-list">';inBulletList=true;}html+=`<li>${applyInline(trimmed.replace(/^[•\-\*]\s+/,''))}</li>`;return;}
-    if(inBulletList){html+='</ul>';inBulletList=false;}
+
+    // continuation of pending block
+    if(pendingBlock){
+      if(!trimmed){flushPending();html+='<div style="height:8px"></div>';return;}
+      pendingBlock.lines.push(trimmed);
+      return;
+    }
+
+    if(!trimmed){flushBullet();html+='<div style="height:8px"></div>';return;}
+
+    // @ayah
+    if(/^@ayah/i.test(trimmed)){
+      flushBullet();
+      const rest=trimmed.replace(/^@ayah\s*/i,'');
+      pendingBlock={type:'ayah',lines:rest?[rest]:[]};
+      return;
+    }
+
+    // @hadith
+    if(/^@hadith/i.test(trimmed)){
+      flushBullet();
+      const rest=trimmed.replace(/^@hadith\s*/i,'');
+      pendingBlock={type:'hadith',lines:rest?[rest]:[]};
+      return;
+    }
+
+    // @context
+    if(/^@context\s/i.test(trimmed)){
+      flushBullet();
+      const rest=trimmed.replace(/^@context\s+/i,'');
+      html+=`<div class="flc-context-block"><div class="flc-context-label">📌 ضبط السياق</div><div class="flc-context-text">${applyInline(rest)}</div></div>`;
+      return;
+    }
+
+    // @bilingual ar | en
+    if(/^@bilingual\s/i.test(trimmed)){
+      flushBullet();
+      const rest=trimmed.replace(/^@bilingual\s+/i,'');
+      const[ar,...enParts]=rest.split('|');
+      const en=enParts.join('|').trim();
+      html+=`<div class="flc-bilingual-block"><div class="flc-bilingual-ar">${escHtml((ar||'').trim())}</div><div class="flc-bilingual-en">${escHtml(en)}</div></div>`;
+      return;
+    }
+
+    // @divider
+    if(/^@divider/i.test(trimmed)){
+      flushBullet();
+      html+=`<hr class="flc-divider">`;
+      return;
+    }
+
+    // ## sub-heading
+    if(trimmed.startsWith('## ')){
+      flushBullet();
+      html+=`<div class="flc-sub-heading">${applyInline(trimmed.replace(/^##\s*/,''))}</div>`;
+      return;
+    }
+
+    // # heading
+    if(trimmed.startsWith('#')){
+      flushBullet();
+      html+=`<div class="flc-section-heading">📖 ${applyInline(trimmed.replace(/^#+\s*/,''))}</div>`;
+      return;
+    }
+
+    // bullet
+    if(/^[•\-]\s/.test(trimmed)||/^\*\s/.test(trimmed)){
+      if(!inBulletList){html+='<ul class="flc-bullet-list">';inBulletList=true;}
+      html+=`<li>${applyInline(trimmed.replace(/^[•\-\*]\s+/,''))}</li>`;
+      return;
+    }
+
+    // plain text
+    flushBullet();
     html+=`<div class="flc-plain-text">${applyInline(trimmed)}</div>`;
   });
-  if(inBulletList)html+='</ul>';
+
+  flushBullet();
+  flushPending();
   return html;
 }
 
@@ -2095,7 +2243,40 @@ function friInsert(before,after){
   const newPos=start+before.length+(selected?selected.length:0)+after.length;
   ta.setSelectionRange(newPos,newPos);ta.focus();updateFriPreview();
 }
+// ── أضف هذين الدالتين قبل سطر: function updateFriPreview(){ ──
 
+function friInsertAyah(){
+  const ta=$('friContent');if(!ta)return;
+  const s=ta.selectionStart;
+  const snippet='@ayah نص الآية الكريمة هنا\n| اسم السورة: رقم الآية\n> Optional English translation\n\n';
+  ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);
+  ta.setSelectionRange(s+7,s+20);ta.focus();updateFriPreview();
+}
+
+function friInsertHadith(){
+  const ta=$('friContent');if(!ta)return;
+  const s=ta.selectionStart;
+  const snippet='@hadith «نص الحديث النبوي الشريف»\n| المصدر (مثال: متفق عليه)\n> Optional English translation\n\n';
+  ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);
+  ta.setSelectionRange(s+8,s+8+25);ta.focus();updateFriPreview();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// كذلك استبدل سطر fri-form-hint بهذا:
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ابحث عن:
+//   <div class="fri-form-hint" style="direction:rtl;text-align:right">💡 <b>#</b> عنوان رئيسي | ...
+// واستبدله بـ:
+
+/*
+              <div class="fri-form-hint" style="direction:rtl;text-align:right;line-height:2">
+                💡 <b>#</b> عنوان رئيسي &nbsp;|&nbsp; <b>##</b> عنوان فرعي &nbsp;|&nbsp; <b>**نص**</b> بولد &nbsp;|&nbsp; <b>•</b> نقطة<br>
+                🕋 <b>@ayah</b> نص الآية — ثم في السطر التالي: <b>| المصدر</b> (مثال: البقرة: ٢٨٢) — وفي السطر التالي: <b>&gt; ترجمة</b> (اختياري)<br>
+                📜 <b>@hadith</b> «نص الحديث» — ثم: <b>| المصدر</b> — وفي السطر التالي: <b>&gt; ترجمة</b> (اختياري)<br>
+                📌 <b>@context</b> ملاحظة السياق &nbsp;|&nbsp; 🔀 <b>@bilingual</b> عربي <b>|</b> English &nbsp;|&nbsp; <b>@divider</b> فاصل ذهبي
+              </div>
+*/
+  
 function updateFriPreview(){
   const content=$('friContent')?.value||'';const wrap=$('friPreviewWrap');const body=$('friPreviewBody');if(!wrap||!body)return;
   if(content.trim()){wrap.classList.add('show');body.innerHTML=parseLectureContent(content);}
