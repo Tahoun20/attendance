@@ -1761,9 +1761,10 @@ function rptS(y,mn,dm,cf,tp){
       let p=0,a=0,recordedDays=0;
       for(let d=1;d<=dm;d++){
         const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-        const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;
+        const dy=new Date(y,mn-1,d).getDay();if(dy===5)continue;
         if(new Date(ds)>new Date())continue;
         const dayData=att[ds];if(!dayData||!dayData[c.id])continue;
+        
         recordedDays++;
         const val=(dayData[c.id]||{})[s.id];
         if(val==='present')p++;else if(val==='absent')a++;
@@ -1787,7 +1788,7 @@ function rptT(y,mn,dm){
     let p=0,a=0;
     for(let d=1;d<=dm;d++){
       const ds=y+'-'+String(mn).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      const dy=new Date(y,mn-1,d).getDay();if(dy===5||dy===6)continue;
+      const dy=new Date(y,mn-1,d).getDay();if(dy===5)continue;
       if(new Date(ds)>=new Date(today()))continue;
       const dayRec=tatt[ds];if(!dayRec)continue;
       const x=dayRec[t.id];if(x==='present')p++;else a++;
