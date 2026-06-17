@@ -484,6 +484,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   .flc-bilingual-en{border-left:none}
 }
 @media(max-width:360px){.sc{padding:10px 8px}.sn{font-size:20px}.sname{font-size:11px}.ab{width:36px;height:36px;font-size:16px}.fri-form-grid{grid-template-columns:1fr}}
+
+/* ===== ARCHIVED STUDENTS ===== */
+.ali.archived-student{background:#f8f8f8;opacity:.55;border-left:3px solid #ccc}
+.ali.archived-student .nm{text-decoration:line-through;color:var(--txt2)}
+.archived-section-header{font-size:13px;font-weight:700;color:var(--txt2);margin:14px 0 6px;padding:8px 12px;background:#F0F0F0;border-radius:var(--rs);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.archived-section-header:hover{background:#E8EDF2}
+.abtn.arc{background:#E8EDF2;color:var(--txt2)}
+.abtn.unarc{background:var(--ok);color:#fff}
 </style>
 </head>
 <body>
@@ -1624,7 +1632,7 @@ function renderSL(){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
   const dt=$('ad').value, da=(att[dt]||{})[selCl]||{};
   const ro=isReadOnly();
-  let st=c.students;if(filt==='orphans')st=st.filter(s=>s.o);
+  let st=c.students.filter(s=>!s.archived);if(filt==='orphans')st=st.filter(s=>s.o);
   $('sl').innerHTML=st.map(s=>{
     const v=da[s.id]||'';const idx=c.students.indexOf(s)+1;const missing=!v&&!ro;
     const btns=ro
@@ -1753,7 +1761,7 @@ function rptS(y,mn,dm,cf,tp){
   const search=($('rmSearch')?.value||'').toLowerCase().trim();
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);let rows=[];
   cl.forEach(c=>{
-    let st=c.students;
+    let st=c.students.filter(s=>!s.archived);
     if(tp==='orphans')st=st.filter(s=>s.o);
     else if(tp==='nonorphans')st=st.filter(s=>!s.o);
     if(search)st=st.filter(s=>s.name.toLowerCase().includes(search));
@@ -1963,7 +1971,7 @@ function getFilteredStudents(c){
   const search=($('sdSearch')?.value||'').toLowerCase();
   const gf=$('sdFilterGender')?.value||'';
   const sf=$('sdFilterStatus')?.value||'';
-  return c.students.filter(s=>{
+  return c.students.filter(s=>!s.archived).filter(s=>{
     if(search&&!s.name.toLowerCase().includes(search))return false;
     if(gf&&s.gender!==gf)return false;
     if(sf==='complete'&&!isProfileComplete(s))return false;
@@ -2493,17 +2501,39 @@ function renderAdmin(){
       const oc=c.students.filter(s=>s.o).length;
       h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?` <span style="color:var(--orp)">💜${oc}</span>`:''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
       // ── Student rows — includes new 🔄 Transfer button ──
-      h+=filteredStudents.map(s=>{
-        const oi=c.students.indexOf(s)+1;
-        return`<div class="ali ${s.o?'io':''}">
+      const activeStudents   = filteredStudents.filter(s => !s.archived);
+      const archivedStudents = filteredStudents.filter(s =>  s.archived);
+
+      h += activeStudents.map(s => {
+        const oi = c.students.indexOf(s)+1;
+        return `<div class="ali ${s.o?'io':''}">
           <span style="font-weight:800;color:var(--pri);width:22px;font-size:11px">${oi}</span>
           <span class="nm">${s.o?'💜 ':''}${s.name}</span>
           <button class="abtn ot ${s.o?'on':''}" onclick="tgO('${c.id}','${s.id}')" title="Toggle orphan">💜</button>
           <button class="abtn ed" onclick="mEdS('${c.id}','${s.id}')" title="Edit">✏️</button>
-          <button class="abtn ed" onclick="mTransferS('${c.id}','${s.id}')" title="Transfer to another class">🔄</button>
-          <button class="abtn dl" onclick="dS('${c.id}','${s.id}')" title="Delete">🗑️</button>
+          <button class="abtn ed" onclick="mTransferS('${c.id}','${s.id}')" title="Transfer">🔄</button>
+          <button class="abtn arc" onclick="mArchiveS('${c.id}','${s.id}')" title="Archive">🗃️</button>
+          <button class="abtn dl" onclick="dS('${c.id}','${s.id}')" title="Delete permanently">🗑️</button>
         </div>`;
       }).join('');
+
+      if(archivedStudents.length > 0){
+        h += `<div class="archived-section-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          🗃️ Archived Students (${archivedStudents.length}) <span style="font-size:10px">▼ click to expand</span>
+        </div>
+        <div style="display:none">`;
+        h += archivedStudents.map(s => {
+          const oi = c.students.indexOf(s)+1;
+          return `<div class="ali archived-student">
+            <span style="font-weight:800;color:#ccc;width:22px;font-size:11px">${oi}</span>
+            <span class="nm">${s.o?'💜 ':''}${s.name}</span>
+            <span style="font-size:10px;color:var(--txt2);background:#E8EDF2;padding:2px 8px;border-radius:8px;margin-left:auto">Archived</span>
+            <button class="abtn unarc" onclick="mUnarchiveS('${c.id}','${s.id}')" title="Restore">✅ Restore</button>
+            <button class="abtn dl" onclick="dS('${c.id}','${s.id}')" title="Delete permanently">🗑️</button>
+          </div>`;
+        }).join('');
+        h += `</div>`;
+      }
       h+=`</div></div>`;
     }
   });
@@ -2696,6 +2726,40 @@ async function transferStudent(fromCid, sid){
     fromC.students.splice(sIdx,0,s);
     toast('Transfer failed ❌ — no changes saved','er');
   }
+}
+
+
+// ================================================================
+// ARCHIVE / UNARCHIVE STUDENTS
+// ================================================================
+
+function mArchiveS(ci, si){
+  const s = classes.find(c=>c.id===ci).students.find(x=>x.id===si);
+  showConfirm('\u{1F5C3}\uFE0F Archive Student',
+    `Archive <strong>${s.name}</strong>?<br><small style="color:var(--txt2)">They will be hidden from attendance, reports & data \u2014 but all records are preserved. You can restore them anytime.</small>`,
+    async () => {
+      s.archived = true;
+      await fbSaveMain();
+      renderAdmin();
+      toast('\u{1F5C3}\uFE0F Student archived','ok');
+      await fbLog('archive', `Archived: ${s.name} (${ci})`);
+    }
+  );
+}
+
+function mUnarchiveS(ci, si){
+  const c = classes.find(x=>x.id===ci);
+  const s = c.students.find(x=>x.id===si);
+  showConfirm('\u2705 Restore Student',
+    `Restore <strong>${s.name}</strong> back to <strong>${c.name}</strong>?<br><small style="color:var(--txt2)">They will reappear in attendance, data & reports immediately.</small>`,
+    async () => {
+      delete s.archived;
+      await fbSaveMain();
+      renderAdmin();
+      toast(`\u2705 ${s.name} restored`,'ok');
+      await fbLog('archive', `Restored: ${s.name} (${ci})`);
+    }
+  );
 }
 
 // ================================================================
