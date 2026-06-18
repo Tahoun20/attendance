@@ -492,6 +492,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .archived-section-header:hover{background:#E8EDF2}
 .abtn.arc{background:#E8EDF2;color:var(--txt2)}
 .abtn.unarc{background:var(--ok);color:#fff}
+
+/* ===== ARCHIVED STUDENTS ===== */
+.ali.archived-student{background:#f8f8f8;opacity:.55;border-left:3px solid #ccc}
+.ali.archived-student .nm{text-decoration:line-through;color:var(--txt2)}
+.archived-section-header{font-size:13px;font-weight:700;color:var(--txt2);margin:14px 0 6px;padding:8px 12px;background:#F0F0F0;border-radius:var(--rs);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.archived-section-header:hover{background:#E8EDF2}
+.abtn.arc{background:#E8EDF2;color:var(--txt2)}
+.abtn.unarc{background:var(--ok);color:#fff}
 </style>
 </head>
 <body>
@@ -1264,7 +1272,7 @@ function renderSPList(){
   const isReadOnlyMonth = (!isAdmin && spSelMonth!==cm);
   const isC1=(spSelClass==='c1');
   const searchTerm=isAdmin?($('spSearch')?.value||'').toLowerCase().trim():'';
-  let students=c.students;
+  let students=c.students.filter(s=>!s.archived);
   if(searchTerm) students=students.filter(s=>s.name.toLowerCase().includes(searchTerm));
   if(students.length===0){
     $('spStudentList').innerHTML=`<div class="sp-empty">No students match your search.</div>`;
@@ -1358,7 +1366,7 @@ async function fbSaveMain(){
   if(!DB)return;
   try{
     const cleanClasses=classes.map(c=>({...c,students:c.students.map(s=>{
-      const cl={id:s.id,name:s.name,o:s.o||0};
+      const cl={id:s.id,name:s.name,o:s.o||0};if(s.archived)cl.archived=true;
       if(s.age!=null)cl.age=s.age; if(s.level!=null)cl.level=s.level; if(s.progress!=null)cl.progress=s.progress;
       if(s.gender!=null)cl.gender=s.gender; if(s.address!=null)cl.address=s.address;
       if(s.liveWith!=null)cl.liveWith=s.liveWith; if(s.liveWithOther!=null)cl.liveWithOther=s.liveWithOther;
@@ -1560,11 +1568,11 @@ function refreshDash(){
     $('dashDate').setAttribute('max',td);
   }
 
-  const ts=classes.reduce((s,c)=>s+c.students.length,0);
-  const to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
+  const ts=classes.reduce((s,c)=>s+c.students.filter(x=>!x.archived).length,0);
+  const to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o&&!x.archived).length,0);
   const ta=att[selDate]||{};
   let pr=0,ab=0,opr=0,oab=0,marked=0;
-  classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++;}else if(v==='absent'){ab++;marked++;if(s.o)oab++;}});});
+  classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.filter(s=>!s.archived).forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++;}else if(v==='absent'){ab++;marked++;if(s.o)oab++;}});});
 
   const tagEl=$('dashDateTag');
   if(tagEl&&isAdmin){
@@ -1593,7 +1601,7 @@ function refreshLog(){
 }
 
 function updateOrphanCount(){
-  const total=classes.reduce((s,c)=>s+c.students.filter(x=>x.o).length,0);
+  const total=classes.reduce((s,c)=>s+c.students.filter(x=>x.o&&!x.archived).length,0);
   const el=$('orphanCountDisplay');if(el)el.textContent=total;
 }
 
@@ -1603,7 +1611,7 @@ function updateOrphanCount(){
 
 function renderCS(){
   $('csel').innerHTML=classes.map(c=>
-    `<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.length} students</small></button>`
+    `<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.filter(s=>!s.archived).length} students</small></button>`
   ).join('');
 }
 
@@ -1616,7 +1624,7 @@ function selClass(id){
 
 function renderSF(){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
-  $('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o).length})</button>`;
+  $('sf').innerHTML=`<button class="fb ${filt==='all'?'on':''}" onclick="setF('all')">All (${c.students.filter(s=>!s.archived).length})</button><button class="fb ot ${filt==='orphans'?'on':''}" onclick="setF('orphans')">💜 Orphans (${c.students.filter(s=>s.o&&!s.archived).length})</button>`;
 }
 function setF(m){filt=m;renderSF();renderSL();}
 
@@ -1654,7 +1662,7 @@ function setAt(sid,st,btn){
 function mAll(st){
   const c=classes.find(x=>x.id===selCl);if(!c)return;
   const dt=$('ad').value;if(!att[dt])att[dt]={};if(!att[dt][selCl])att[dt][selCl]={};
-  let ss=c.students;if(filt==='orphans')ss=ss.filter(s=>s.o);
+  let ss=c.students.filter(s=>!s.archived);if(filt==='orphans')ss=ss.filter(s=>s.o);
   ss.forEach(s=>{att[dt][selCl][s.id]=st;});
   renderSL();setUnsaved(true);
 }
@@ -1667,7 +1675,7 @@ async function doSave(){
   const dt=$('ad').value;
   const cls=classes.find(x=>x.id===selCl);
   const da=(att[dt]||{})[selCl]||{};
-  const unmarked=cls.students.filter(s=>!da[s.id]);
+  const unmarked=cls.students.filter(s=>!s.archived&&!da[s.id]);
   if(unmarked.length>0) toast('⚠️ '+unmarked.length+' student'+(unmarked.length>1?'s':'')+' still unmarked','er');
   const btn=$('svbn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Saving...';
   const pc=Object.values(da).filter(v=>v==='present').length;
@@ -1817,7 +1825,7 @@ function doProgressReport(){
   const cl=cf==='all'?classes:classes.filter(c=>c.id===cf);
   let rows=[];
   cl.forEach(c=>{
-    c.students.forEach(s=>{
+    c.students.filter(s=>!s.archived).forEach(s=>{
       if(search&&!s.name.toLowerCase().includes(search))return;
       if(mf==='all'){
         const rec=getMostRecentProgress(c.id,s.id);
@@ -1961,7 +1969,7 @@ function selectSDClass(cid){sdSelClass=cid;renderStudentData();}
 
 function renderSDStats(){
   const c=classes.find(x=>x.id===sdSelClass);if(!c){$('sdStats').innerHTML='';return;}
-  const total=c.students.length,males=c.students.filter(s=>s.gender==='Male').length,females=c.students.filter(s=>s.gender==='Female').length,orphans=c.students.filter(s=>s.o).length,complete=c.students.filter(s=>isProfileComplete(s)).length,incomplete=total-complete;
+  const total=c.students.filter(s=>!s.archived).length,males=c.students.filter(s=>s.gender==='Male'&&!s.archived).length,females=c.students.filter(s=>s.gender==='Female'&&!s.archived).length,orphans=c.students.filter(s=>s.o&&!s.archived).length,complete=c.students.filter(s=>isProfileComplete(s)&&!s.archived).length,incomplete=total-complete;
   $('sdStats').innerHTML=`<div class="sd-stat"><div class="sdn">${total}</div><div class="sdl">Total</div></div><div class="sd-stat"><div class="sdn">👦${males}</div><div class="sdl">Male</div></div><div class="sd-stat"><div class="sdn">👧${females}</div><div class="sdl">Female</div></div><div class="sd-stat"><div class="sdn" style="color:var(--orp)">💜${orphans}</div><div class="sdl">Orphans</div></div><div class="sd-stat complete"><div class="sdn" style="color:var(--ok)">${complete}</div><div class="sdl">Complete</div></div><div class="sd-stat incomplete"><div class="sdn" style="color:var(--warn)">${incomplete}</div><div class="sdl">Incomplete</div></div>`;
 }
 
@@ -2498,8 +2506,8 @@ function renderAdmin(){
   classes.forEach(c=>{
     const filteredStudents=c.students.filter(s=>s.name.toLowerCase().includes(adminSearchTerm));
     if(filteredStudents.length>0||adminSearchTerm===''){
-      const oc=c.students.filter(s=>s.o).length;
-      h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.length})${oc?` <span style="color:var(--orp)">💜${oc}</span>`:''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
+      const oc=c.students.filter(s=>s.o&&!s.archived).length;
+      h+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px"><strong>${c.name} (${c.students.filter(s=>!s.archived).length})${oc?` <span style="color:var(--orp)">💜${oc}</span>`:''}</strong><button class="abtn ad" onclick="mAddS('${c.id}')">+ Add</button></div><div style="max-height:280px;overflow-y:auto">`;
       // ── Student rows — includes new 🔄 Transfer button ──
       const activeStudents   = filteredStudents.filter(s => !s.archived);
       const archivedStudents = filteredStudents.filter(s =>  s.archived);
@@ -2757,6 +2765,39 @@ function mUnarchiveS(ci, si){
       await fbSaveMain();
       renderAdmin();
       toast(`\u2705 ${s.name} restored`,'ok');
+      await fbLog('archive', `Restored: ${s.name} (${ci})`);
+    }
+  );
+}
+
+// ================================================================
+// ARCHIVE / UNARCHIVE STUDENTS
+// ================================================================
+
+function mArchiveS(ci, si){
+  const s = classes.find(c=>c.id===ci).students.find(x=>x.id===si);
+  showConfirm('🗃️ Archive Student',
+    `Archive <strong>${s.name}</strong>?<br><small style="color:var(--txt2)">They will be hidden from attendance, reports & data — but all records are preserved. You can restore them anytime.</small>`,
+    async () => {
+      s.archived = true;
+      await fbSaveMain();
+      renderAdmin();
+      toast('🗃️ Student archived','ok');
+      await fbLog('archive', `Archived: ${s.name} (${ci})`);
+    }
+  );
+}
+
+function mUnarchiveS(ci, si){
+  const c = classes.find(x=>x.id===ci);
+  const s = c.students.find(x=>x.id===si);
+  showConfirm('✅ Restore Student',
+    `Restore <strong>${s.name}</strong> back to <strong>${c.name}</strong>?<br><small style="color:var(--txt2)">They will reappear in attendance, data & reports immediately.</small>`,
+    async () => {
+      delete s.archived;
+      await fbSaveMain();
+      renderAdmin();
+      toast(`✅ ${s.name} restored`,'ok');
       await fbLog('archive', `Restored: ${s.name} (${ci})`);
     }
   );
