@@ -2492,69 +2492,7 @@ function curInsert(before,after){
   const ta=$('curContent');if(!ta)return;const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e);
   ta.value=ta.value.slice(0,s)+before+(sel||'')+after+ta.value.slice(e);const p=s+before.length+(sel?sel.length:0)+after.length;ta.setSelectionRange(p,p);ta.focus();updateCurPreview();
 }
-function curInsertCurAyah(){
-  const ta=$('curContent');if(!ta)return;
-  const s=ta.selectionStart;
-  const snippet='@ayah نص الآية الكريمة هنا\n| اسم السورة: رقم الآية\n> Optional English translation\n\n';
-  ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);
-  ta.setSelectionRange(s+7,s+7+20);ta.focus();updateCurPreview();
-}
-function curInsertCurHadith(){
-  const ta=$('curContent');if(!ta)return;
-  const s=ta.selectionStart;
-  const snippet='@hadith «نص الحديث النبوي الشريف»\n| المصدر (مثال: متفق عليه)\n> Optional English translation\n\n';
-  ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);
-  ta.setSelectionRange(s+8,s+8+25);ta.focus();updateCurPreview();
-}
- 
-// === NEW parseCurContent (replace entire old function) ===
-function parseCurContent(text){
-  if(!text)return'';
-  const lines=text.split('\n');let html='';let inBullet=false;let inVocab=false;let vocabRows=[];
-  let pendingBlock=null;
-  function flushBullet(){if(inBullet){html+='</ul>';inBullet=false;}}
-  function flushVocab(){
-    if(!inVocab)return;inVocab=false;if(!vocabRows.length){vocabRows=[];return;}
-    let rows=vocabRows.map(r=>{const parts=r.split('|').map(s=>s.trim());const ar=escHtml(parts[0]||'');const en=escHtml(parts[1]||'');const nt=escHtml(parts[2]||'');return`<tr><td class="vocab-arabic">${ar}</td><td class="vocab-english">${en}</td>${nt?`<td class="vocab-note">${nt}</td>`:''}</tr>`;}).join('');
-    const hasNote=vocabRows.some(r=>r.split('|').length>2);
-    html+=`<div class="cur-vocab-wrap"><table class="cur-vocab-table"><thead><tr><th>عربي</th><th>English</th>${hasNote?'<th>ملاحظة</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>`;vocabRows=[];
-  }
-  function flushPending(){
-    if(!pendingBlock)return;
-    const {type,lines:bl}=pendingBlock;pendingBlock=null;
-    if(!bl.length)return;
-    const arabicText=bl[0]||'';
-    let source='',translation='';
-    const srcLine=bl.find(l=>l.startsWith('|'));
-    if(srcLine)source=srcLine.slice(1).trim();
-    const trLine=bl.find(l=>l.startsWith('>')||/^@tr\s/i.test(l));
-    if(trLine)translation=trLine.replace(/^>\s*/,'').replace(/^@tr\s*/i,'').trim();
-    if(type==='ayah'){
-      html+=`<div class="flc-ayah-block"><div class="flc-ayah-ref"><div class="flc-ayah-ref-label">آية</div>${source?`<div class="flc-ayah-ref-src">${escHtml(source.replace(/—/g,'\n'))}</div>`:''}</div><div style="flex:1;display:flex;flex-direction:column"><div class="flc-ayah-text">${escHtml(arabicText)}</div>${translation?`<div class="flc-ayah-translation">${escHtml(translation)}</div>`:''}</div></div>`;
-    } else {
-      html+=`<div class="flc-hadith-block"><div class="flc-hadith-ref"><div class="flc-hadith-ref-label">حديث</div>${source?`<div class="flc-hadith-ref-src">${escHtml(source.replace(/،/g,'\n').replace(/,/g,'\n'))}</div>`:''}</div><div style="flex:1;display:flex;flex-direction:column"><div class="flc-hadith-text">${escHtml(arabicText)}</div>${translation?`<div class="flc-hadith-translation">${escHtml(translation)}</div>`:''}</div></div>`;
-    }
-  }
-  lines.forEach(line=>{
-    const trimmed=line.trim();
-    if(pendingBlock){if(!trimmed){flushPending();html+='<div style="height:8px"></div>';return;}pendingBlock.lines.push(trimmed);return;}
-    if(!trimmed){flushBullet();flushVocab();html+='<div style="height:8px"></div>';return;}
-    if(inVocab){if(trimmed.includes('|')){vocabRows.push(trimmed);return;}else flushVocab();}
-    if(/^@ayah/i.test(trimmed)){flushBullet();flushVocab();const rest=trimmed.replace(/^@ayah\s*/i,'');pendingBlock={type:'ayah',lines:rest?[rest]:[]};return;}
-    if(/^@hadith/i.test(trimmed)){flushBullet();flushVocab();const rest=trimmed.replace(/^@hadith\s*/i,'');pendingBlock={type:'hadith',lines:rest?[rest]:[]};return;}
-    if(/^@context\s/i.test(trimmed)){flushBullet();flushVocab();const rest=trimmed.replace(/^@context\s+/i,'');html+=`<div class="flc-context-block"><div class="flc-context-label">📌 ملاحظة</div><div class="flc-context-text">${applyInline(rest)}</div></div>`;return;}
-    if(/^@divider/i.test(trimmed)){flushBullet();flushVocab();html+=`<hr class="flc-divider">`;return;}
-    if(trimmed.toLowerCase()==='@vocab'){flushBullet();inVocab=true;vocabRows=[];return;}
-    if(/^@bi\s/i.test(trimmed)){flushBullet();flushVocab();const rest=trimmed.replace(/^@bi\s+/i,'');const[ar,en,...more]=rest.split('|').map(s=>s.trim());const note=more.join('|').trim();html+=`<div class="cur-bilingual"><div class="cur-bi-ar">${applyInline(ar||'')}</div><div class="cur-bi-sep">⟷</div><div class="cur-bi-en">${applyInline(en||'')}${note?`<div style="font-size:11px;color:var(--txt2);margin-top:2px;font-style:italic">${escHtml(note)}</div>`:''}</div></div>`;return;}
-    if(/^@ar\s/i.test(trimmed)){flushBullet();flushVocab();html+=`<div class="cur-para ar">${applyInline(trimmed.replace(/^@ar\s+/i,''))}</div>`;return;}
-    if(/^@en\s/i.test(trimmed)){flushBullet();flushVocab();html+=`<div class="cur-para">${applyInline(trimmed.replace(/^@en\s+/i,''))}</div>`;return;}
-    if(trimmed.startsWith('## ')){flushBullet();flushVocab();const t=trimmed.replace(/^##\s*/,'');const isAr=/[\u0600-\u06FF]/.test(t);html+=`<div class="cur-h2${isAr?' rtl':''}">${applyInline(t)}</div>`;return;}
-    if(trimmed.startsWith('#')){flushBullet();flushVocab();html+=`<div class="cur-h1">${applyInline(trimmed.replace(/^#+\s*/,''))}</div>`;return;}
-    if(/^[•\-]\s/.test(trimmed)||/^\*\s/.test(trimmed)){flushVocab();const content=trimmed.replace(/^[•\-\*]\s+/,'');const isAr=/[\u0600-\u06FF]/.test(content);if(!inBullet){html+=`<ul class="cur-bullet-list${isAr?' ar':''}">`;inBullet=true;}html+=`<li>${applyInline(content)}</li>`;return;}
-    flushBullet();flushVocab();const isAr=/[\u0600-\u06FF]/.test(trimmed);html+=`<div class="cur-para${isAr?' ar':''}">${applyInline(trimmed)}</div>`;
-  });
-  flushBullet();flushVocab();flushPending();return html;
-}const ta=$('curContent');if(!ta)return;const s=ta.selectionStart;const snippet='\n@vocab\nكلمة عربية | English word | ملاحظة\nكلمة ثانية | Second word\n';ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);ta.setSelectionRange(s+snippet.length,s+snippet.length);ta.focus();updateCurPreview();}
+function curInsertVocab(){const ta=$('curContent');if(!ta)return;const s=ta.selectionStart;const snippet='\n@vocab\nكلمة عربية | English word | ملاحظة\nكلمة ثانية | Second word\n';ta.value=ta.value.slice(0,s)+snippet+ta.value.slice(s);ta.setSelectionRange(s+snippet.length,s+snippet.length);ta.focus();updateCurPreview();}
 function updateCurPreview(){const content=$('curContent')?.value||'';const wrap=$('curPreviewWrap');const body=$('curPreviewBody');if(!wrap||!body)return;if(content.trim()){wrap.classList.add('show');body.innerHTML=parseCurContent(content);}else wrap.classList.remove('show');}
 
 // ================================================================
