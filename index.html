@@ -423,6 +423,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cur-bi-en{flex:1;min-width:100px;font-size:13px;color:var(--pri-d);text-align:left;line-height:1.8}
 .cur-add-card{background:linear-gradient(135deg,#fff,var(--cur-l));border:2px dashed #A5D6B0;border-radius:var(--r);padding:16px;margin-bottom:14px}
 .cur-add-title{font-size:14px;font-weight:800;color:var(--cur);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.cur-type-toggle{display:flex;gap:8px;margin-bottom:12px;background:#fff;border-radius:var(--rs);padding:4px;border:2px solid var(--cur-l)}
+.cur-type-btn{flex:1;padding:9px;border:none;background:none;border-radius:7px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--txt2);transition:.2s}
+.cur-type-btn.on{background:var(--cur);color:#fff}
+#curPdfInput{padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff;width:100%}
+.cur-pdf-open{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--rs);background:linear-gradient(135deg,var(--cur),var(--cur-m));color:#fff;font:inherit;font-size:13px;font-weight:700;text-decoration:none}
+.cur-pdf-open:hover{opacity:.9}
+.cur-pdf-meta{font-size:11px;color:var(--txt2);margin-top:8px}
+.cur-order-btns{display:flex;flex-direction:column;gap:2px}
+.cur-order-btn{width:22px;height:18px;border:none;border-radius:4px;background:#E8EDF2;color:var(--txt2);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.cur-order-btn:hover{background:var(--cur-l);color:var(--cur)}
+.cur-order-btn:disabled{opacity:.3;cursor:not-allowed}
+.cur-type-badge{background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
 .cur-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .cur-form-field{display:flex;flex-direction:column;gap:4px}
 .cur-form-field.full{grid-column:1/-1}
@@ -736,10 +748,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div id="curAdminForm" style="display:none">
         <div class="cur-add-card">
           <div class="cur-add-title">➕ إضافة مقال جديد</div>
+          <div class="cur-type-toggle">
+            <button type="button" class="cur-type-btn on" id="curTypeBtn-text" onclick="setCurContentType('text')">📝 نص</button>
+            <button type="button" class="cur-type-btn" id="curTypeBtn-pdf" onclick="setCurContentType('pdf')">📄 درس PDF</button>
+          </div>
           <div class="cur-form-grid">
             <div class="cur-form-field"><label>عنوان المقال *</label><input type="text" id="curTitle" placeholder="مثال: الأفعال الأساسية" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div>
             <div class="cur-form-field"><label>التصنيف</label><input type="text" id="curCat" placeholder="مثال: نحو، مفردات، قواعد..." style="direction:rtl;text-align:right"></div>
-            <div class="cur-form-field full">
+            <div class="cur-form-field full" id="curTextWrap">
               <label>محتوى المقال *</label>
               <div class="cur-toolbar">
                 <button type="button" class="cur-tb-btn" onclick="curInsert('# ','')">H1 عنوان</button>
@@ -757,6 +773,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <textarea id="curContent" oninput="updateCurPreview()" placeholder="اكتب المقال هنا..."></textarea>
               <div class="cur-form-hint">💡 <b># عنوان</b> | <b>## فرعي</b> | <b>**بولد**</b> | <b>• نقطة</b><br>🟢 <b>@ar</b> سطر عربي | 🔵 <b>@en</b> English line | ⚡ <b>@bi عربي | English</b><br>📊 <b>@vocab</b> ثم: <b>عربي | English | ملاحظة</b></div>
               <div class="cur-preview-wrap" id="curPreviewWrap"><div class="cur-preview-label">👁 معاينة مباشرة</div><div class="cur-preview-body" id="curPreviewBody"></div></div>
+            </div>
+            <div class="cur-form-field full" id="curPdfWrap" style="display:none">
+              <label>ملف PDF *</label>
+              <input type="file" id="curPdfInput" accept="application/pdf" onchange="handleCurPdfSelect(this)">
+              <div class="cur-form-hint">💡 يُفضّل ملف PDF قصير (درس واحد). الحد الأقصى ${CUR_PDF_MAX_MB} ميجابايت. سيفتحه المعلم مباشرة على الموبايل.</div>
+              <div id="curPdfFileInfo" style="display:none;margin-top:6px;font-size:12px;font-weight:700;color:var(--cur)"></div>
             </div>
           </div>
           <button class="cur-save-btn" id="curSaveBtn" onclick="saveCurArticle()">📖 نشر المقال</button>
@@ -861,7 +883,7 @@ const GENDER_OPTIONS       = ['Male','Female'];
 // APP STATE
 // ================================================================
 
-let DB = null, firebaseReady = false;
+let DB = null, Storage = null, firebaseReady = false;
 let user = null;
 let att = {}, tatt = {}, logs = [];
 let selCl = null, filt = 'all', adminSearchTerm = '';
@@ -882,6 +904,9 @@ let friTopicFilter = 'all';
 // Curriculum state
 let curArticles = [];
 let curCatFilter = 'all';
+let curContentType = 'text'; // 'text' | 'pdf' — for the add-article form
+let curPdfFile = null;       // selected File object for a pending PDF upload
+const CUR_PDF_MAX_MB = 8;    // max PDF size (megabytes)
 
 // Levels config
 let classLevels = { c1: [...DEFAULT_C1_LEVELS], c2: [...DEFAULT_SURAHS] };
@@ -995,7 +1020,8 @@ async function initFirebase(){
   try{
     await Promise.all([
       loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'),
-      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js')
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js')
     ]);
     firebase.initializeApp({
       apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",
@@ -1006,6 +1032,7 @@ async function initFirebase(){
       appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"
     });
     DB=firebase.firestore();
+    Storage=firebase.storage();
     try{await DB.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('Persistence:',e.code)}
     firebaseReady=true;
     await loadAllData();
@@ -1535,6 +1562,7 @@ function _go(pg,btn){
     const cf=$('curAdminForm');if(cf)cf.style.display=isAdmin?'block':'none';
     const ff=$('friAdminForm');if(ff)ff.style.display=isAdmin?'block':'none';
     if(isAdmin&&$('friDate')&&!$('friDate').value)$('friDate').value=today();
+    if(isAdmin&&$('curTypeBtn-text'))setCurContentType('text');
     switchLibTab('cur');
   }
 }
@@ -2564,29 +2592,117 @@ function buildCurCatFilter(){
 }
 function setCurCat(t){curCatFilter=t;renderCurArticles();}
 
+// order helpers — lessons are ordered within their own category
+function nextCurOrder(category){
+  const key=category||'';
+  const items=curArticles.filter(a=>(a.category||'')===key);
+  if(!items.length)return 1;
+  return Math.max(...items.map(a=>a.order||0))+1;
+}
+
+async function moveCurArticle(id,dir){
+  const art=curArticles.find(a=>a.id===id);if(!art)return;
+  const key=art.category||'';
+  const siblings=curArticles.filter(a=>(a.category||'')===key).sort((a,b)=>(a.order||0)-(b.order||0));
+  const idx=siblings.findIndex(a=>a.id===id);
+  const swapIdx=dir==='up'?idx-1:idx+1;
+  if(swapIdx<0||swapIdx>=siblings.length)return;
+  const other=siblings[swapIdx];
+  const aOrder=art.order||0, bOrder=other.order||0;
+  try{
+    await Promise.all([
+      fbUpdateCurArticle(art.id,{order:bOrder}),
+      fbUpdateCurArticle(other.id,{order:aOrder})
+    ]);
+  }catch(e){toast('فشل تغيير الترتيب ❌','er');}
+}
+
 function renderCurArticles(){
   buildCurCatFilter();updateCurStats();
   const isAdmin=user&&user.r==='admin';
   const search=($('curSearch')?.value||'').toLowerCase();
   let filtered=curArticles.filter(a=>{if(curCatFilter!=='all'&&a.category!==curCatFilter)return false;if(search&&!a.title.toLowerCase().includes(search)&&!(a.content||'').toLowerCase().includes(search))return false;return true;});
+  // sort by category, then by manual order within category
+  filtered=filtered.slice().sort((a,b)=>{
+    const ca=(a.category||''),cb=(b.category||'');
+    if(ca!==cb)return ca.localeCompare(cb,'ar');
+    return (a.order||0)-(b.order||0);
+  });
   const container=$('curArticlesList');if(!container)return;
   if(!filtered.length){container.innerHTML=`<div class="cur-empty"><div class="ce-ic">📖</div><h3>${curArticles.length===0?'لا توجد مقالات بعد':'لا توجد نتائج'}</h3><p>${curArticles.length===0?'سيقوم الأدمن بنشر مقالات المنهج هنا.':'جرّب بحثاً أو تصنيفاً مختلفاً.'}</p></div>`;return;}
   container.innerHTML=filtered.map((art,idx)=>{
-    const contentHtml=parseCurContent(art.content||'');
+    const isPdf=art.type==='pdf';
+    const key=art.category||'';
+    const siblings=filtered.filter(a=>(a.category||'')===key);
+    const posInGroup=siblings.findIndex(a=>a.id===art.id);
+    const orderBtns=isAdmin?`<div class="cur-order-btns" onclick="event.stopPropagation()">
+      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','up')" ${posInGroup===0?'disabled':''}>▲</button>
+      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','down')" ${posInGroup===siblings.length-1?'disabled':''}>▼</button>
+    </div>`:'';
     const adminBtns=isAdmin?`<div class="cur-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editCurArticle('${art.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteCurArticle('${art.id}')">🗑️</button></div>`:'';
     const dateLbl=art.createdAt?new Date(art.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'}):'';
-    return`<div class="cur-article-card" id="cacard-${art.id}"><div class="cur-article-header" onclick="toggleCurCard('${art.id}')"><div class="cur-art-num">${filtered.length-idx}</div><div class="cur-art-meta"><div class="cur-art-title">${escHtml(art.title||'بدون عنوان')}</div><div class="cur-art-badges">${art.category?`<span class="cur-cat-badge">${escHtml(art.category)}</span>`:''}</div></div>${adminBtns}<div class="cur-toggle-ic" id="caic-${art.id}">▼</div></div><div class="cur-art-body" id="cabody-${art.id}">${contentHtml}<div class="cur-art-footer"><span>بقلم ${escHtml(art.createdBy||'Admin')}</span><span>${dateLbl}</span></div></div></div>`;
+    const bodyHtml=isPdf
+      ?`<div style="text-align:center;padding:6px 0">
+          <a class="cur-pdf-open" href="${escHtml(art.fileURL||'')}" target="_blank" rel="noopener">📄 فتح الدرس (PDF)</a>
+          ${art.fileSize?`<div class="cur-pdf-meta">حجم الملف: ${(art.fileSize/1024/1024).toFixed(1)} MB</div>`:''}
+        </div>`
+      :parseCurContent(art.content||'');
+    return`<div class="cur-article-card" id="cacard-${art.id}"><div class="cur-article-header" onclick="toggleCurCard('${art.id}')">${orderBtns}<div class="cur-art-num">${idx+1}</div><div class="cur-art-meta"><div class="cur-art-title">${escHtml(art.title||'بدون عنوان')}</div><div class="cur-art-badges">${art.category?`<span class="cur-cat-badge">${escHtml(art.category)}</span>`:''}${isPdf?`<span class="cur-type-badge">📄 PDF</span>`:''}</div></div>${adminBtns}<div class="cur-toggle-ic" id="caic-${art.id}">▼</div></div><div class="cur-art-body" id="cabody-${art.id}">${bodyHtml}<div class="cur-art-footer"><span>بقلم ${escHtml(art.createdBy||'Admin')}</span><span>${dateLbl}</span></div></div></div>`;
   }).join('');
 }
 
 function toggleCurCard(id){const body=$('cabody-'+id);const icon=$('caic-'+id);if(!body)return;const open=body.classList.toggle('open');if(icon)icon.classList.toggle('open',open);}
 
+function setCurContentType(type){
+  curContentType=type;
+  const btnText=$('curTypeBtn-text'),btnPdf=$('curTypeBtn-pdf');
+  if(btnText)btnText.classList.toggle('on',type==='text');
+  if(btnPdf)btnPdf.classList.toggle('on',type==='pdf');
+  const textWrap=$('curTextWrap'),pdfWrap=$('curPdfWrap');
+  if(textWrap)textWrap.style.display=type==='text'?'block':'none';
+  if(pdfWrap)pdfWrap.style.display=type==='pdf'?'block':'none';
+}
+
+function handleCurPdfSelect(input){
+  const file=input.files&&input.files[0];
+  const info=$('curPdfFileInfo');
+  if(!file){curPdfFile=null;if(info)info.style.display='none';return;}
+  if(file.type!=='application/pdf'){toast('الرجاء اختيار ملف PDF فقط','er');input.value='';curPdfFile=null;if(info)info.style.display='none';return;}
+  if(file.size>CUR_PDF_MAX_MB*1024*1024){toast(`حجم الملف يتجاوز ${CUR_PDF_MAX_MB} ميجابايت`,'er');input.value='';curPdfFile=null;if(info)info.style.display='none';return;}
+  curPdfFile=file;
+  if(info){info.style.display='block';info.textContent=`📎 ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;}
+}
+
 async function saveCurArticle(){
-  const title=($('curTitle')?.value||'').trim();const category=($('curCat')?.value||'').trim();const content=($('curContent')?.value||'').trim();
-  if(!title){toast('يرجى إدخال العنوان','er');return;}if(!content){toast('يرجى إدخال المحتوى','er');return;}
+  const title=($('curTitle')?.value||'').trim();const category=($('curCat')?.value||'').trim();
+  if(!title){toast('يرجى إدخال العنوان','er');return;}
+
+  if(curContentType==='pdf'){
+    if(!curPdfFile){toast('يرجى اختيار ملف PDF','er');return;}
+    if(!Storage){toast('خدمة التخزين غير متاحة حالياً','er');return;}
+    const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ الرفع...';
+    try{
+      const storagePath=`curriculum_pdfs/${Date.now()}_${curPdfFile.name}`;
+      const ref=Storage.ref(storagePath);
+      await ref.put(curPdfFile);
+      const fileURL=await ref.getDownloadURL();
+      const order=nextCurOrder(category);
+      await fbSaveCurArticle({title,category,type:'pdf',fileURL,storagePath,fileSize:curPdfFile.size,order});
+      await fbLog('curriculum','نشر درس PDF: '+title);
+      $('curTitle').value='';$('curCat').value='';$('curPdfInput').value='';curPdfFile=null;
+      const info=$('curPdfFileInfo');if(info)info.style.display='none';
+      toast('تم نشر الدرس ✅','ok');btn.disabled=false;btn.innerHTML='📖 نشر المقال';
+      $('curArticlesList').scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){console.error('PDF upload:',e);toast('فشل رفع الملف ❌','er');btn.disabled=false;btn.innerHTML='📖 نشر المقال';}
+    return;
+  }
+
+  const content=($('curContent')?.value||'').trim();
+  if(!content){toast('يرجى إدخال المحتوى','er');return;}
   const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
   try{
-    await fbSaveCurArticle({title,category,content});await fbLog('curriculum','نشر مقال: '+title);
+    const order=nextCurOrder(category);
+    await fbSaveCurArticle({title,category,type:'text',content,order});await fbLog('curriculum','نشر مقال: '+title);
     $('curTitle').value='';$('curCat').value='';$('curContent').value='';const pw=$('curPreviewWrap');if(pw)pw.classList.remove('show');
     toast('تم نشر المقال ✅','ok');btn.disabled=false;btn.innerHTML='📖 نشر المقال';
     $('curArticlesList').scrollIntoView({behavior:'smooth',block:'start'});
@@ -2595,18 +2711,54 @@ async function saveCurArticle(){
 
 function editCurArticle(id){
   const art=curArticles.find(a=>a.id===id);if(!art)return;
+  if(art.type==='pdf'){
+    showM(`<div class="mt">✏️ تعديل الدرس</div><div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div><div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div><div class="ig"><label>استبدال ملف PDF (اختياري)</label><input type="file" id="_cpdf" accept="application/pdf"></div><div class="mb"><button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
+    return;
+  }
   showM(`<div class="mt">✏️ تعديل المقال</div><div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div><div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div><div class="ig"><label>المحتوى</label><textarea id="_ccontent" style="width:100%;min-height:180px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:13px;resize:vertical;line-height:1.8">${escHtml(art.content||'')}</textarea></div><div class="mb"><button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
 }
 async function saveEditCurArticle(id){
-  const title=($('_ct')?.value||'').trim();const category=($('_cc')?.value||'').trim();const content=($('_ccontent')?.value||'').trim();
-  if(!title||!content){toast('العنوان والمحتوى مطلوبان','er');return;}
+  const art=curArticles.find(a=>a.id===id);if(!art)return;
+  const title=($('_ct')?.value||'').trim();const category=($('_cc')?.value||'').trim();
+  if(!title){toast('العنوان مطلوب','er');return;}
+
+  if(art.type==='pdf'){
+    const fileInput=$('_cpdf');
+    const newFile=fileInput&&fileInput.files&&fileInput.files[0];
+    try{
+      const updates={title,category};
+      if(newFile){
+        if(newFile.type!=='application/pdf'){toast('الرجاء اختيار ملف PDF فقط','er');return;}
+        if(newFile.size>CUR_PDF_MAX_MB*1024*1024){toast(`حجم الملف يتجاوز ${CUR_PDF_MAX_MB} ميجابايت`,'er');return;}
+        if(Storage){
+          const storagePath=`curriculum_pdfs/${Date.now()}_${newFile.name}`;
+          const ref=Storage.ref(storagePath);
+          await ref.put(newFile);
+          updates.fileURL=await ref.getDownloadURL();
+          updates.fileSize=newFile.size;
+          const oldPath=art.storagePath;
+          updates.storagePath=storagePath;
+          if(oldPath){try{await Storage.ref(oldPath).delete();}catch(e){}}
+        }
+      }
+      await fbUpdateCurArticle(id,updates);await fbLog('curriculum','تعديل درس PDF: '+title);hideM();toast('تم التحديث ✅','ok');
+    }catch(e){console.error('saveEditCurArticle pdf:',e);toast('فشل التحديث ❌','er');}
+    return;
+  }
+
+  const content=($('_ccontent')?.value||'').trim();
+  if(!content){toast('العنوان والمحتوى مطلوبان','er');return;}
   try{await fbUpdateCurArticle(id,{title,category,content});await fbLog('curriculum','تعديل مقال: '+title);hideM();toast('تم التحديث ✅','ok');}
   catch(e){toast('فشل التحديث ❌','er');}
 }
 function deleteCurArticle(id){
   const art=curArticles.find(a=>a.id===id);
   showConfirm('حذف المقال',`هل تريد حذف "${art?.title||'هذا المقال'}"؟`,async()=>{
-    try{await fbDeleteCurArticle(id);await fbLog('curriculum','حذف مقال: '+(art?.title||id));toast('تم الحذف','ok');}
+    try{
+      await fbDeleteCurArticle(id);
+      if(art&&art.type==='pdf'&&art.storagePath&&Storage){try{await Storage.ref(art.storagePath).delete();}catch(e){}}
+      await fbLog('curriculum','حذف مقال: '+(art?.title||id));toast('تم الحذف','ok');
+    }
     catch(e){toast('فشل الحذف ❌','er');}
   });
 }
