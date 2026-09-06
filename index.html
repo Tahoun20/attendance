@@ -426,7 +426,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cur-type-toggle{display:flex;gap:8px;margin-bottom:12px;background:#fff;border-radius:var(--rs);padding:4px;border:2px solid var(--cur-l)}
 .cur-type-btn{flex:1;padding:9px;border:none;background:none;border-radius:7px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--txt2);transition:.2s}
 .cur-type-btn.on{background:var(--cur);color:#fff}
-#curPdfInput{padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff;width:100%}
+#curPdfUrl{padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);font:inherit;font-size:13px;background:#fff;width:100%}
+#curPdfUrl:focus{outline:none;border-color:var(--cur)}
 .cur-pdf-open{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--rs);background:linear-gradient(135deg,var(--cur),var(--cur-m));color:#fff;font:inherit;font-size:13px;font-weight:700;text-decoration:none}
 .cur-pdf-open:hover{opacity:.9}
 .cur-pdf-meta{font-size:11px;color:var(--txt2);margin-top:8px}
@@ -775,10 +776,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <div class="cur-preview-wrap" id="curPreviewWrap"><div class="cur-preview-label">👁 معاينة مباشرة</div><div class="cur-preview-body" id="curPreviewBody"></div></div>
             </div>
             <div class="cur-form-field full" id="curPdfWrap" style="display:none">
-              <label>ملف PDF *</label>
-              <input type="file" id="curPdfInput" accept="application/pdf" onchange="handleCurPdfSelect(this)">
-              <div class="cur-form-hint">💡 يُفضّل ملف PDF قصير (درس واحد). الحد الأقصى ${CUR_PDF_MAX_MB} ميجابايت. سيفتحه المعلم مباشرة على الموبايل.</div>
-              <div id="curPdfFileInfo" style="display:none;margin-top:6px;font-size:12px;font-weight:700;color:var(--cur)"></div>
+              <label>رابط ملف PDF (Google Drive) *</label>
+              <input type="url" id="curPdfUrl" placeholder="https://drive.google.com/file/d/..." style="direction:ltr;text-align:left">
+              <div class="cur-form-hint">💡 ارفع الملف على Google Drive، ثم من زر المشاركة اختر "Anyone with the link" والصق الرابط هنا. سيفتحه المعلم مباشرة على الموبايل بعارض جوجل درايف.</div>
             </div>
           </div>
           <button class="cur-save-btn" id="curSaveBtn" onclick="saveCurArticle()">📖 نشر المقال</button>
@@ -883,7 +883,7 @@ const GENDER_OPTIONS       = ['Male','Female'];
 // APP STATE
 // ================================================================
 
-let DB = null, Storage = null, firebaseReady = false;
+let DB = null, firebaseReady = false;
 let user = null;
 let att = {}, tatt = {}, logs = [];
 let selCl = null, filt = 'all', adminSearchTerm = '';
@@ -905,8 +905,6 @@ let friTopicFilter = 'all';
 let curArticles = [];
 let curCatFilter = 'all';
 let curContentType = 'text'; // 'text' | 'pdf' — for the add-article form
-let curPdfFile = null;       // selected File object for a pending PDF upload
-const CUR_PDF_MAX_MB = 8;    // max PDF size (megabytes)
 
 // Levels config
 let classLevels = { c1: [...DEFAULT_C1_LEVELS], c2: [...DEFAULT_SURAHS] };
@@ -1020,8 +1018,7 @@ async function initFirebase(){
   try{
     await Promise.all([
       loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'),
-      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'),
-      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js')
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js')
     ]);
     firebase.initializeApp({
       apiKey:"AIzaSyBeZrJfTv7UKgmg9_yZg94bZ8QOKLtwi04",
@@ -1032,7 +1029,6 @@ async function initFirebase(){
       appId:"1:600563978552:web:c18ac92a640a4ff4ddb1cd"
     });
     DB=firebase.firestore();
-    Storage=firebase.storage();
     try{await DB.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('Persistence:',e.code)}
     firebaseReady=true;
     await loadAllData();
@@ -2644,7 +2640,6 @@ function renderCurArticles(){
     const bodyHtml=isPdf
       ?`<div style="text-align:center;padding:6px 0">
           <a class="cur-pdf-open" href="${escHtml(art.fileURL||'')}" target="_blank" rel="noopener">📄 فتح الدرس (PDF)</a>
-          ${art.fileSize?`<div class="cur-pdf-meta">حجم الملف: ${(art.fileSize/1024/1024).toFixed(1)} MB</div>`:''}
         </div>`
       :parseCurContent(art.content||'');
     return`<div class="cur-article-card" id="cacard-${art.id}"><div class="cur-article-header" onclick="toggleCurCard('${art.id}')">${orderBtns}<div class="cur-art-num">${idx+1}</div><div class="cur-art-meta"><div class="cur-art-title">${escHtml(art.title||'بدون عنوان')}</div><div class="cur-art-badges">${art.category?`<span class="cur-cat-badge">${escHtml(art.category)}</span>`:''}${isPdf?`<span class="cur-type-badge">📄 PDF</span>`:''}</div></div>${adminBtns}<div class="cur-toggle-ic" id="caic-${art.id}">▼</div></div><div class="cur-art-body" id="cabody-${art.id}">${bodyHtml}<div class="cur-art-footer"><span>بقلم ${escHtml(art.createdBy||'Admin')}</span><span>${dateLbl}</span></div></div></div>`;
@@ -2663,37 +2658,25 @@ function setCurContentType(type){
   if(pdfWrap)pdfWrap.style.display=type==='pdf'?'block':'none';
 }
 
-function handleCurPdfSelect(input){
-  const file=input.files&&input.files[0];
-  const info=$('curPdfFileInfo');
-  if(!file){curPdfFile=null;if(info)info.style.display='none';return;}
-  if(file.type!=='application/pdf'){toast('الرجاء اختيار ملف PDF فقط','er');input.value='';curPdfFile=null;if(info)info.style.display='none';return;}
-  if(file.size>CUR_PDF_MAX_MB*1024*1024){toast(`حجم الملف يتجاوز ${CUR_PDF_MAX_MB} ميجابايت`,'er');input.value='';curPdfFile=null;if(info)info.style.display='none';return;}
-  curPdfFile=file;
-  if(info){info.style.display='block';info.textContent=`📎 ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;}
-}
+function isLikelyUrl(s){ return /^https?:\/\/.+/i.test((s||'').trim()); }
 
 async function saveCurArticle(){
   const title=($('curTitle')?.value||'').trim();const category=($('curCat')?.value||'').trim();
   if(!title){toast('يرجى إدخال العنوان','er');return;}
 
   if(curContentType==='pdf'){
-    if(!curPdfFile){toast('يرجى اختيار ملف PDF','er');return;}
-    if(!Storage){toast('خدمة التخزين غير متاحة حالياً','er');return;}
-    const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ الرفع...';
+    const fileURL=($('curPdfUrl')?.value||'').trim();
+    if(!fileURL){toast('يرجى لصق رابط ملف PDF','er');return;}
+    if(!isLikelyUrl(fileURL)){toast('الرابط غير صالح — يجب أن يبدأ بـ https://','er');return;}
+    const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
     try{
-      const storagePath=`curriculum_pdfs/${Date.now()}_${curPdfFile.name}`;
-      const ref=Storage.ref(storagePath);
-      await ref.put(curPdfFile);
-      const fileURL=await ref.getDownloadURL();
       const order=nextCurOrder(category);
-      await fbSaveCurArticle({title,category,type:'pdf',fileURL,storagePath,fileSize:curPdfFile.size,order});
+      await fbSaveCurArticle({title,category,type:'pdf',fileURL,order});
       await fbLog('curriculum','نشر درس PDF: '+title);
-      $('curTitle').value='';$('curCat').value='';$('curPdfInput').value='';curPdfFile=null;
-      const info=$('curPdfFileInfo');if(info)info.style.display='none';
+      $('curTitle').value='';$('curCat').value='';$('curPdfUrl').value='';
       toast('تم نشر الدرس ✅','ok');btn.disabled=false;btn.innerHTML='📖 نشر المقال';
       $('curArticlesList').scrollIntoView({behavior:'smooth',block:'start'});
-    }catch(e){console.error('PDF upload:',e);toast('فشل رفع الملف ❌','er');btn.disabled=false;btn.innerHTML='📖 نشر المقال';}
+    }catch(e){console.error('saveCurArticle pdf:',e);toast('فشل النشر ❌','er');btn.disabled=false;btn.innerHTML='📖 نشر المقال';}
     return;
   }
 
@@ -2712,7 +2695,7 @@ async function saveCurArticle(){
 function editCurArticle(id){
   const art=curArticles.find(a=>a.id===id);if(!art)return;
   if(art.type==='pdf'){
-    showM(`<div class="mt">✏️ تعديل الدرس</div><div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div><div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div><div class="ig"><label>استبدال ملف PDF (اختياري)</label><input type="file" id="_cpdf" accept="application/pdf"></div><div class="mb"><button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
+    showM(`<div class="mt">✏️ تعديل الدرس</div><div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div><div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div><div class="ig"><label>رابط ملف PDF</label><input type="url" id="_cpdfurl" value="${escHtml(art.fileURL||'')}" style="direction:ltr;text-align:left"></div><div class="mb"><button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
     return;
   }
   showM(`<div class="mt">✏️ تعديل المقال</div><div class="ig"><label>العنوان</label><input type="text" id="_ct" value="${escHtml(art.title||'')}" style="direction:rtl;text-align:right;font-family:'Noto Naskh Arabic','Inter',sans-serif"></div><div class="ig"><label>التصنيف</label><input type="text" id="_cc" value="${escHtml(art.category||'')}" style="direction:rtl;text-align:right"></div><div class="ig"><label>المحتوى</label><textarea id="_ccontent" style="width:100%;min-height:180px;padding:10px;border:2px solid #E8EDF2;border-radius:8px;font-family:'Noto Naskh Arabic','Inter',sans-serif;font-size:13px;resize:vertical;line-height:1.8">${escHtml(art.content||'')}</textarea></div><div class="mb"><button class="btn btn-p" onclick="saveEditCurArticle('${id}')">💾 حفظ</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
@@ -2723,25 +2706,11 @@ async function saveEditCurArticle(id){
   if(!title){toast('العنوان مطلوب','er');return;}
 
   if(art.type==='pdf'){
-    const fileInput=$('_cpdf');
-    const newFile=fileInput&&fileInput.files&&fileInput.files[0];
+    const fileURL=($('_cpdfurl')?.value||'').trim();
+    if(!fileURL){toast('يرجى إدخال رابط الملف','er');return;}
+    if(!isLikelyUrl(fileURL)){toast('الرابط غير صالح — يجب أن يبدأ بـ https://','er');return;}
     try{
-      const updates={title,category};
-      if(newFile){
-        if(newFile.type!=='application/pdf'){toast('الرجاء اختيار ملف PDF فقط','er');return;}
-        if(newFile.size>CUR_PDF_MAX_MB*1024*1024){toast(`حجم الملف يتجاوز ${CUR_PDF_MAX_MB} ميجابايت`,'er');return;}
-        if(Storage){
-          const storagePath=`curriculum_pdfs/${Date.now()}_${newFile.name}`;
-          const ref=Storage.ref(storagePath);
-          await ref.put(newFile);
-          updates.fileURL=await ref.getDownloadURL();
-          updates.fileSize=newFile.size;
-          const oldPath=art.storagePath;
-          updates.storagePath=storagePath;
-          if(oldPath){try{await Storage.ref(oldPath).delete();}catch(e){}}
-        }
-      }
-      await fbUpdateCurArticle(id,updates);await fbLog('curriculum','تعديل درس PDF: '+title);hideM();toast('تم التحديث ✅','ok');
+      await fbUpdateCurArticle(id,{title,category,fileURL});await fbLog('curriculum','تعديل درس PDF: '+title);hideM();toast('تم التحديث ✅','ok');
     }catch(e){console.error('saveEditCurArticle pdf:',e);toast('فشل التحديث ❌','er');}
     return;
   }
@@ -2756,7 +2725,6 @@ function deleteCurArticle(id){
   showConfirm('حذف المقال',`هل تريد حذف "${art?.title||'هذا المقال'}"؟`,async()=>{
     try{
       await fbDeleteCurArticle(id);
-      if(art&&art.type==='pdf'&&art.storagePath&&Storage){try{await Storage.ref(art.storagePath).delete();}catch(e){}}
       await fbLog('curriculum','حذف مقال: '+(art?.title||id));toast('تم الحذف','ok');
     }
     catch(e){toast('فشل الحذف ❌','er');}
