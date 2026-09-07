@@ -791,7 +791,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       <div class="cur-search-bar"><input type="text" id="curSearch" placeholder="🔍 ابحث في المقالات..." oninput="renderCurArticles()"></div>
       <div class="cur-cat-filter" id="curCatFilter"></div>
-      <div id="curReorderBar" style="display:none;margin-bottom:12px"><button class="abtn ad" onclick="openCurReorderModal()" style="width:100%;justify-content:center">🔀 إعادة ترتيب دروس هذا التصنيف بالسحب</button></div>
+      <div id="curReorderBar" style="display:none;margin-bottom:12px"><button class="abtn ad" onclick="openCurReorderModal()" style="width:100%;justify-content:center">🔀 إعادة ترتيب الدروس بالسحب</button></div>
       <div id="curArticlesList"></div>
     </div>
 
@@ -2594,22 +2594,25 @@ function buildCurCatFilter(){
 }
 function setCurCat(t){curCatFilter=t;renderCurArticles();}
 
-// order helpers — lessons are ordered within their own category
-function nextCurOrder(category){
-  const key=category||'';
-  const items=curArticles.filter(a=>(a.category||'')===key);
-  if(!items.length)return 1;
-  return Math.max(...items.map(a=>a.order||0))+1;
+// order helpers — a single global order across ALL curriculum items (category is just a filter label)
+function nextCurOrder(){
+  if(!curArticles.length)return 1;
+  return Math.max(...curArticles.map(a=>a.order||0))+1;
+}
+
+function getCurFilteredSorted(){
+  const search=($('curSearch')?.value||'').toLowerCase();
+  let filtered=curArticles.filter(a=>{if(curCatFilter!=='all'&&a.category!==curCatFilter)return false;if(search&&!a.title.toLowerCase().includes(search)&&!(a.content||'').toLowerCase().includes(search))return false;return true;});
+  return filtered.slice().sort((a,b)=>(a.order||0)-(b.order||0));
 }
 
 async function moveCurArticle(id,dir){
-  const art=curArticles.find(a=>a.id===id);if(!art)return;
-  const key=art.category||'';
-  const siblings=curArticles.filter(a=>(a.category||'')===key).sort((a,b)=>(a.order||0)-(b.order||0));
-  const idx=siblings.findIndex(a=>a.id===id);
+  const list=getCurFilteredSorted();
+  const idx=list.findIndex(a=>a.id===id);
+  if(idx===-1)return;
   const swapIdx=dir==='up'?idx-1:idx+1;
-  if(swapIdx<0||swapIdx>=siblings.length)return;
-  const other=siblings[swapIdx];
+  if(swapIdx<0||swapIdx>=list.length)return;
+  const art=list[idx],other=list[swapIdx];
   const aOrder=art.order||0, bOrder=other.order||0;
   try{
     await Promise.all([
@@ -2619,21 +2622,21 @@ async function moveCurArticle(id,dir){
   }catch(e){toast('فشل تغيير الترتيب ❌','er');}
 }
 
-// ── Drag-to-reorder modal (per category) ──
+// ── Drag-to-reorder modal — works for a specific category OR "الكل" ──
 function openCurReorderModal(){
-  if(curCatFilter==='all'){toast('اختر تصنيفًا أولاً من الأعلى لإعادة ترتيبه','er');return;}
-  const key=curCatFilter;
-  const items=curArticles.filter(a=>(a.category||'')===key).sort((a,b)=>(a.order||0)-(b.order||0));
+  const items=getCurFilteredSorted();
   if(items.length<2){toast('لا يوجد ما يكفي من الدروس لإعادة الترتيب','er');return;}
+  const label=curCatFilter==='all'?'كل الدروس':curCatFilter;
   const listHtml=items.map(a=>`<div class="cur-reorder-item" data-id="${a.id}">
       <span class="cur-reorder-handle">⠿</span>
       <span class="cur-reorder-title">${escHtml(a.title||'بدون عنوان')}</span>
+      ${a.category?`<span class="cur-cat-badge">${escHtml(a.category)}</span>`:''}
       ${a.type==='pdf'?'<span class="cur-type-badge">📄 PDF</span>':''}
     </div>`).join('');
-  showM(`<div class="mt">🔀 ترتيب: ${escHtml(key)}</div>
+  showM(`<div class="mt">🔀 ترتيب: ${escHtml(label)}</div>
     <div style="font-size:11px;color:var(--txt2);text-align:center;margin-bottom:10px">اسحب من ⠿ لأعلى أو لأسفل لتغيير الترتيب</div>
     <div id="curReorderList">${listHtml}</div>
-    <div class="mb"><button class="btn btn-p" onclick="saveCurReorder('${key.replace(/'/g,"\\'")}')">💾 حفظ الترتيب</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
+    <div class="mb"><button class="btn btn-p" onclick="saveCurReorder()">💾 حفظ الترتيب</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
   initCurReorderDrag();
 }
 
@@ -2674,13 +2677,16 @@ function initCurReorderDrag(){
   });
 }
 
-async function saveCurReorder(category){
+async function saveCurReorder(){
   const list=$('curReorderList');if(!list)return;
   const ids=[...list.querySelectorAll('.cur-reorder-item')].map(el=>el.dataset.id);
+  // preserve the existing "slots" (order values) held by exactly this set of items,
+  // and reassign them in the new drag sequence — this never disturbs items outside this view
+  const slots=ids.map(id=>{const a=curArticles.find(x=>x.id===id);return a?(a.order||0):0;}).sort((a,b)=>a-b);
   try{
-    await Promise.all(ids.map((id,i)=>fbUpdateCurArticle(id,{order:i+1})));
+    await Promise.all(ids.map((id,i)=>fbUpdateCurArticle(id,{order:slots[i]})));
     hideM();toast('تم حفظ الترتيب ✅','ok');
-    await fbLog('curriculum','إعادة ترتيب دروس تصنيف: '+category);
+    await fbLog('curriculum','إعادة ترتيب الدروس');
   }catch(e){toast('فشل حفظ الترتيب ❌','er');}
 }
 
@@ -2688,25 +2694,15 @@ function renderCurArticles(){
   buildCurCatFilter();updateCurStats();
   const isAdmin=user&&user.r==='admin';
   const reorderBar=$('curReorderBar');
-  if(reorderBar)reorderBar.style.display=(isAdmin&&curCatFilter!=='all')?'block':'none';
-  const search=($('curSearch')?.value||'').toLowerCase();
-  let filtered=curArticles.filter(a=>{if(curCatFilter!=='all'&&a.category!==curCatFilter)return false;if(search&&!a.title.toLowerCase().includes(search)&&!(a.content||'').toLowerCase().includes(search))return false;return true;});
-  // sort by category, then by manual order within category
-  filtered=filtered.slice().sort((a,b)=>{
-    const ca=(a.category||''),cb=(b.category||'');
-    if(ca!==cb)return ca.localeCompare(cb,'ar');
-    return (a.order||0)-(b.order||0);
-  });
+  if(reorderBar)reorderBar.style.display=isAdmin?'block':'none';
+  const filtered=getCurFilteredSorted();
   const container=$('curArticlesList');if(!container)return;
   if(!filtered.length){container.innerHTML=`<div class="cur-empty"><div class="ce-ic">📖</div><h3>${curArticles.length===0?'لا توجد مقالات بعد':'لا توجد نتائج'}</h3><p>${curArticles.length===0?'سيقوم الأدمن بنشر مقالات المنهج هنا.':'جرّب بحثاً أو تصنيفاً مختلفاً.'}</p></div>`;return;}
   container.innerHTML=filtered.map((art,idx)=>{
     const isPdf=art.type==='pdf';
-    const key=art.category||'';
-    const siblings=filtered.filter(a=>(a.category||'')===key);
-    const posInGroup=siblings.findIndex(a=>a.id===art.id);
     const orderBtns=isAdmin?`<div class="cur-order-btns" onclick="event.stopPropagation()">
-      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','up')" ${posInGroup===0?'disabled':''}>▲</button>
-      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','down')" ${posInGroup===siblings.length-1?'disabled':''}>▼</button>
+      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','up')" ${idx===0?'disabled':''}>▲</button>
+      <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','down')" ${idx===filtered.length-1?'disabled':''}>▼</button>
     </div>`:'';
     const adminBtns=isAdmin?`<div class="cur-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editCurArticle('${art.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteCurArticle('${art.id}')">🗑️</button></div>`:'';
     const dateLbl=art.createdAt?new Date(art.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'}):'';
@@ -2743,7 +2739,7 @@ async function saveCurArticle(){
     if(!isLikelyUrl(fileURL)){toast('الرابط غير صالح — يجب أن يبدأ بـ https://','er');return;}
     const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
     try{
-      const order=nextCurOrder(category);
+      const order=nextCurOrder();
       await fbSaveCurArticle({title,category,type:'pdf',fileURL,order});
       await fbLog('curriculum','نشر درس PDF: '+title);
       $('curTitle').value='';$('curCat').value='';$('curPdfUrl').value='';
@@ -2757,7 +2753,7 @@ async function saveCurArticle(){
   if(!content){toast('يرجى إدخال المحتوى','er');return;}
   const btn=$('curSaveBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> جارٍ النشر...';
   try{
-    const order=nextCurOrder(category);
+    const order=nextCurOrder();
     await fbSaveCurArticle({title,category,type:'text',content,order});await fbLog('curriculum','نشر مقال: '+title);
     $('curTitle').value='';$('curCat').value='';$('curContent').value='';const pw=$('curPreviewWrap');if(pw)pw.classList.remove('show');
     toast('تم نشر المقال ✅','ok');btn.disabled=false;btn.innerHTML='📖 نشر المقال';
