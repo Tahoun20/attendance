@@ -995,6 +995,17 @@ function getLevelsForClass(classId){
   return['Level 1'];
 }
 
+// ── Teacher class access ──
+// user.classIds: undefined/null = all classes; array = only these classes. Admin always sees all.
+function allowedClassIds(){
+  if(!user||user.r==='admin')return null;
+  return Array.isArray(user.classIds)?user.classIds:null;
+}
+function visibleClasses(){
+  const ids=allowedClassIds();
+  return ids?classes.filter(c=>ids.includes(c.id)):classes;
+}
+
 // ================================================================
 // SESSION
 // ================================================================
@@ -1090,7 +1101,10 @@ async function loadAllData(){
     DB.collection('appData').doc('main').onSnapshot(doc=>{
       if(doc.exists){
         const d=doc.data();
-        if(d.users)    users=d.users;
+        if(d.users){
+          users=d.users;
+          if(user){const fresh=users.find(x=>x.u===user.u&&x.r===user.r);if(fresh)user=fresh;}
+        }
         if(d.teachers) teachers=d.teachers;
         if(d.classLevels) classLevels=d.classLevels;
         if(d.classes){
@@ -1275,9 +1289,10 @@ function onSpMonthChange(){
 }
 
 function renderStudentProgress(){
-  if(!spSelClass||!classes.find(c=>c.id===spSelClass)) spSelClass=classes[0]?.id;
+  const vc=visibleClasses();
+  if(!spSelClass||!vc.find(c=>c.id===spSelClass)) spSelClass=vc[0]?.id;
   if(!spSelMonth) spSelMonth=thisMonth();
-  $('spClassTabs').innerHTML=classes.map(c=>
+  $('spClassTabs').innerHTML=vc.map(c=>
     `<button class="sp-class-tab ${spSelClass===c.id?'on':''}" onclick="spSelCl('${c.id}')">${c.name}</button>`
   ).join('');
   buildMonthOptions();
@@ -1601,11 +1616,12 @@ function refreshDash(){
     $('dashDate').setAttribute('max',td);
   }
 
-  const ts=classes.reduce((s,c)=>s+c.students.filter(x=>!x.archived).length,0);
-  const to=classes.reduce((s,c)=>s+c.students.filter(x=>x.o&&!x.archived).length,0);
+  const vc=visibleClasses();
+  const ts=vc.reduce((s,c)=>s+c.students.filter(x=>!x.archived).length,0);
+  const to=vc.reduce((s,c)=>s+c.students.filter(x=>x.o&&!x.archived).length,0);
   const ta=att[selDate]||{};
   let pr=0,ab=0,opr=0,oab=0,marked=0;
-  classes.forEach(c=>{const cd=(ta[c.id]||{});c.students.filter(s=>!s.archived).forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++;}else if(v==='absent'){ab++;marked++;if(s.o)oab++;}});});
+  vc.forEach(c=>{const cd=(ta[c.id]||{});c.students.filter(s=>!s.archived).forEach(s=>{const v=cd[s.id];if(v==='present'){pr++;marked++;if(s.o)opr++;}else if(v==='absent'){ab++;marked++;if(s.o)oab++;}});});
 
   const tagEl=$('dashDateTag');
   if(tagEl&&isAdmin){
@@ -1643,7 +1659,9 @@ function updateOrphanCount(){
 // ================================================================
 
 function renderCS(){
-  $('csel').innerHTML=classes.map(c=>
+  const vc=visibleClasses();
+  if(!vc.length){$('csel').innerHTML='<div class="card" style="grid-column:1/-1;text-align:center;color:var(--txt2)">No classes assigned to you. Contact admin.</div>';return;}
+  $('csel').innerHTML=vc.map(c=>
     `<button class="cb ${selCl===c.id?'on':''}" onclick="selClass('${c.id}')">${c.name}<small>${c.students.filter(s=>!s.archived).length} students</small></button>`
   ).join('');
 }
@@ -1993,7 +2011,9 @@ function getMostRecentProgress(cid, sid){
 function isProfileComplete(s){return s.age&&s.gender&&s.address&&s.liveWith&&s.schoolLevel&&s.economicStatus;}
 
 function renderStudentData(){
-  $('sdClassTabs').innerHTML=classes.map(c=>
+  const vc=visibleClasses();
+  if(!vc.find(c=>c.id===sdSelClass)) sdSelClass=vc[0]?.id||null;
+  $('sdClassTabs').innerHTML=vc.map(c=>
     `<button class="sp-class-tab ${sdSelClass===c.id?'on':''}" onclick="selectSDClass('${c.id}')">${c.name}</button>`
   ).join('');
   renderSDStats(); renderSDList();
@@ -2873,7 +2893,7 @@ function renderAdmin(){
   });
   h+=`<button class="abtn ad" onclick="mAddC()" style="margin-top:6px">+ Add Class</button>`;
   $('ac').innerHTML=h;
-  $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
+  $('at').innerHTML=teachers.map(t=>`<div class="ali"><span class="nm">${t.name}</span><span style="font-size:11px;color:var(--txt2)">@${t.u}</span>${teacherAccessBadge(t.id)}<button class="abtn ed" onclick="mTPerm('${t.id}')" title="Class access">🏫</button><button class="abtn ed" onclick="mEdT('${t.id}')">✏️</button><button class="abtn dl" onclick="dT('${t.id}')">🗑️</button></div>`).join('');
   $('ap').innerHTML=users.map(u=>`<div class="ali"><span class="nm">${u.n} (@${u.u})</span><button class="abtn ed" onclick="mPW('${u.u}')">🔑</button></div>`).join('');
   renderLevelsAdmin();
 }
@@ -2919,6 +2939,64 @@ async function svT(ti){const t=teachers.find(x=>x.id===ti),n=$('_n').value.trim(
 function dT(ti){showConfirm('Delete Teacher','Delete this teacher and their login account?',async()=>{teachers=teachers.filter(x=>x.id!==ti);users=users.filter(x=>x.tid!==ti);await fbSaveMain();renderAdmin();toast('Deleted');});}
 function mPW(un){showM(`<div class="mt">Change Password</div><div class="ig"><label>New Password</label><input type="text" id="_p"></div><div class="mb"><button class="btn btn-p" onclick="svPW('${un}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);}
 async function svPW(un){const p=$('_p').value.trim();if(!p)return;const u=users.find(x=>x.u===un);u.ph=hashPW(p);delete u.p;await fbSaveMain();hideM();toast('Password changed ✅');}
+
+// ================================================================
+// TEACHER CLASS ACCESS (admin)
+// ================================================================
+
+function teacherAccessBadge(ti){
+  const u=users.find(x=>x.tid===ti);
+  if(!u||!Array.isArray(u.classIds))return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--acc-l);color:var(--pri)">All classes</span>`;
+  const names=u.classIds.map(id=>classes.find(c=>c.id===id)?.name).filter(Boolean);
+  return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:#FFF3CD;color:#856404">${names.length?escHtml(names.join(', ')):'No class'}</span>`;
+}
+
+function mTPerm(ti){
+  const t=teachers.find(x=>x.id===ti);
+  const u=users.find(x=>x.tid===ti);
+  if(!t||!u){toast('No login account for this teacher','er');return;}
+  const all=!Array.isArray(u.classIds);
+  const sel=all?[]:u.classIds;
+  showM(`<div class="mt">🏫 Class Access</div>
+    <div style="text-align:center;font-size:14px;font-weight:700;color:var(--pri-d);margin-bottom:14px">${escHtml(t.name)}</div>
+    <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);margin-bottom:8px;cursor:pointer">
+      <input type="radio" name="_tpm" value="all" ${all?'checked':''} onchange="tpermToggle()" style="width:18px;height:18px;accent-color:var(--pri)">
+      <span style="font-size:13px;font-weight:700">All classes</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #E8EDF2;border-radius:var(--rs);margin-bottom:8px;cursor:pointer">
+      <input type="radio" name="_tpm" value="sel" ${!all?'checked':''} onchange="tpermToggle()" style="width:18px;height:18px;accent-color:var(--pri)">
+      <span style="font-size:13px;font-weight:700">Selected classes only</span>
+    </label>
+    <div id="_tpmList" style="display:${all?'none':'block'};background:#FAFBFC;border-radius:var(--rs);padding:8px 12px">
+      ${classes.map(c=>`<label style="display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;font-size:13px;font-weight:600"><input type="checkbox" class="_tpmc" value="${c.id}" ${sel.includes(c.id)?'checked':''} style="width:18px;height:18px;accent-color:var(--pri)">${escHtml(c.name)}</label>`).join('')}
+    </div>
+    <div class="mb"><button class="btn btn-p" onclick="svTPerm('${ti}')">Save</button><button class="btn btn-s" onclick="hideM()">Cancel</button></div>`);
+}
+
+function tpermToggle(){
+  const mode=document.querySelector('input[name="_tpm"]:checked')?.value;
+  const list=$('_tpmList');if(list)list.style.display=mode==='sel'?'block':'none';
+}
+
+async function svTPerm(ti){
+  const t=teachers.find(x=>x.id===ti);
+  const u=users.find(x=>x.tid===ti);if(!u)return;
+  const mode=document.querySelector('input[name="_tpm"]:checked')?.value||'all';
+  let detail;
+  if(mode==='all'){
+    delete u.classIds;
+    detail='All classes';
+  } else {
+    const ids=[...document.querySelectorAll('._tpmc:checked')].map(x=>x.value);
+    if(!ids.length){toast('Select at least one class','er');return;}
+    u.classIds=ids;
+    detail=ids.map(id=>classes.find(c=>c.id===id)?.name||id).join(', ');
+  }
+  await fbSaveMain();
+  hideM();renderAdmin();
+  toast('Access updated ✅','ok');
+  await fbLog('permissions',`${t?.name||u.n} → ${detail}`);
+}
 
 // ================================================================
 // STUDENT TRANSFER — NEW FEATURE
