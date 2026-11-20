@@ -2615,9 +2615,55 @@ function buildCurCatFilter(){
 function setCurCat(t){curCatFilter=t;renderCurArticles();}
 
 // order helpers — a single global order across ALL curriculum items (category is just a filter label)
+// new lessons go to the TOP (smallest order value)
 function nextCurOrder(){
   if(!curArticles.length)return 1;
-  return Math.max(...curArticles.map(a=>a.order||0))+1;
+  return Math.min(...curArticles.map(a=>a.order||0))-1;
+}
+
+// Apply a new sequence for the items in the current view, then renumber the
+// whole list 1..n so order values are always unique (only changed docs are written).
+async function applyCurOrder(newIds){
+  const full=curArticles.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+  const subset=new Set(newIds);
+  let k=0;
+  const byId=new Map(curArticles.map(x=>[x.id,x]));
+  const merged=full.map(a=>subset.has(a.id)?byId.get(newIds[k++]):a);
+  const updates=[];
+  merged.forEach((a,i)=>{
+    if((a.order||0)!==i+1){a.order=i+1;updates.push(fbUpdateCurArticle(a.id,{order:i+1}));}
+  });
+  renderCurArticles();
+  await Promise.all(updates);
+}
+
+// Move one lesson to a position (1-based) inside the current view
+async function moveCurTo(id,pos){
+  const ids=getCurFilteredSorted().map(a=>a.id);
+  const from=ids.indexOf(id);if(from===-1)return;
+  ids.splice(from,1);
+  const to=Math.max(0,Math.min(ids.length,pos-1));
+  ids.splice(to,0,id);
+  try{await applyCurOrder(ids);hideM();toast('تم نقل الدرس ✅','ok');}
+  catch(e){toast('فشل تغيير الترتيب ❌','er');}
+}
+
+function mCurPos(id){
+  const list=getCurFilteredSorted();
+  const idx=list.findIndex(a=>a.id===id);if(idx===-1)return;
+  const art=list[idx];const n=list.length;
+  showM(`<div class="mt">↕️ نقل الدرس</div>
+    <div style="text-align:center;font-size:14px;font-weight:700;color:var(--pri-d);margin-bottom:4px;font-family:'Noto Naskh Arabic','Inter',sans-serif">${escHtml(art.title||'بدون عنوان')}</div>
+    <div style="text-align:center;font-size:12px;color:var(--txt2);margin-bottom:14px">المكان الحالي: ${idx+1} من ${n}</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-p" style="flex:1;padding:11px;font-size:13px" onclick="moveCurTo('${id}',1)">⏫ إلى الأعلى</button>
+      <button class="btn btn-p" style="flex:1;padding:11px;font-size:13px" onclick="moveCurTo('${id}',${n})">⏬ إلى الأسفل</button>
+    </div>
+    <div class="ig" style="margin-bottom:6px"><label style="text-align:right">أو اكتب رقم المكان (1 - ${n})</label>
+      <div style="display:flex;gap:8px"><input type="number" id="_cpos" min="1" max="${n}" value="${idx+1}" style="flex:1;text-align:center;font-weight:700">
+      <button class="btn btn-p" style="width:auto;padding:0 18px;font-size:13px" onclick="moveCurTo('${id}',parseInt($('_cpos').value)||1)">نقل</button></div>
+    </div>
+    <div class="mb"><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
 }
 
 function getCurFilteredSorted(){
@@ -2632,14 +2678,10 @@ async function moveCurArticle(id,dir){
   if(idx===-1)return;
   const swapIdx=dir==='up'?idx-1:idx+1;
   if(swapIdx<0||swapIdx>=list.length)return;
-  const art=list[idx],other=list[swapIdx];
-  const aOrder=art.order||0, bOrder=other.order||0;
-  try{
-    await Promise.all([
-      fbUpdateCurArticle(art.id,{order:bOrder}),
-      fbUpdateCurArticle(other.id,{order:aOrder})
-    ]);
-  }catch(e){toast('فشل تغيير الترتيب ❌','er');}
+  const ids=list.map(a=>a.id);
+  [ids[idx],ids[swapIdx]]=[ids[swapIdx],ids[idx]];
+  try{await applyCurOrder(ids);}
+  catch(e){toast('فشل تغيير الترتيب ❌','er');}
 }
 
 // ── Drag-to-reorder modal — works for a specific category OR "الكل" ──
@@ -2652,9 +2694,11 @@ function openCurReorderModal(){
       <span class="cur-reorder-title">${escHtml(a.title||'بدون عنوان')}</span>
       ${a.category?`<span class="cur-cat-badge">${escHtml(a.category)}</span>`:''}
       ${a.type==='pdf'?'<span class="cur-type-badge">📄 PDF</span>':''}
+      <button class="level-move-btn" title="إلى الأعلى" onclick="const it=this.closest('.cur-reorder-item');it.parentElement.prepend(it)">⏫</button>
+      <button class="level-move-btn" title="إلى الأسفل" onclick="const it=this.closest('.cur-reorder-item');it.parentElement.append(it)">⏬</button>
     </div>`).join('');
   showM(`<div class="mt">🔀 ترتيب: ${escHtml(label)}</div>
-    <div style="font-size:11px;color:var(--txt2);text-align:center;margin-bottom:10px">اسحب من ⠿ لأعلى أو لأسفل لتغيير الترتيب</div>
+    <div style="font-size:11px;color:var(--txt2);text-align:center;margin-bottom:10px">اسحب من ⠿ لأي مكان، أو اضغط ⏫ / ⏬ للنقل للأعلى أو للأسفل مباشرة</div>
     <div id="curReorderList">${listHtml}</div>
     <div class="mb"><button class="btn btn-p" onclick="saveCurReorder()">💾 حفظ الترتيب</button><button class="btn btn-s" onclick="hideM()">إلغاء</button></div>`);
   initCurReorderDrag();
@@ -2702,9 +2746,8 @@ async function saveCurReorder(){
   const ids=[...list.querySelectorAll('.cur-reorder-item')].map(el=>el.dataset.id);
   // preserve the existing "slots" (order values) held by exactly this set of items,
   // and reassign them in the new drag sequence — this never disturbs items outside this view
-  const slots=ids.map(id=>{const a=curArticles.find(x=>x.id===id);return a?(a.order||0):0;}).sort((a,b)=>a-b);
   try{
-    await Promise.all(ids.map((id,i)=>fbUpdateCurArticle(id,{order:slots[i]})));
+    await applyCurOrder(ids);
     hideM();toast('تم حفظ الترتيب ✅','ok');
     await fbLog('curriculum','إعادة ترتيب الدروس');
   }catch(e){toast('فشل حفظ الترتيب ❌','er');}
@@ -2724,7 +2767,7 @@ function renderCurArticles(){
       <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','up')" ${idx===0?'disabled':''}>▲</button>
       <button class="cur-order-btn" onclick="moveCurArticle('${art.id}','down')" ${idx===filtered.length-1?'disabled':''}>▼</button>
     </div>`:'';
-    const adminBtns=isAdmin?`<div class="cur-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();editCurArticle('${art.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteCurArticle('${art.id}')">🗑️</button></div>`:'';
+    const adminBtns=isAdmin?`<div class="cur-admin-btns"><button class="abtn ed" onclick="event.stopPropagation();mCurPos('${art.id}')" title="نقل">↕️</button><button class="abtn ed" onclick="event.stopPropagation();editCurArticle('${art.id}')">✏️</button><button class="abtn dl" onclick="event.stopPropagation();deleteCurArticle('${art.id}')">🗑️</button></div>`:'';
     const dateLbl=art.createdAt?new Date(art.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'}):'';
     const bodyHtml=isPdf
       ?`<div style="text-align:center;padding:6px 0">
